@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Shield, AlertCircle, Loader2 } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
+import { supabase } from '@/lib/supabase';
 
 export default function Login() {
   const [email, setEmail] = useState('');
