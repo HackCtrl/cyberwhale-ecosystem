@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform } from 'framer-motion';
@@ -15,7 +14,8 @@ import {
   ArrowRight,
   Zap,
   Award,
-  Check
+  Check,
+  Calendar
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -235,7 +235,7 @@ export default function HomePage() {
             <div className="lg:w-1/2 mb-12 lg:mb-0">
               <h2 className="text-2xl font-bold text-cyberblue-400 mb-2">CTF ПЛАТФОРМА</h2>
               <h3 className="text-3xl md:text-4xl font-bold text-white mb-6">
-                Проверьте свои навыки в реальных сценариях
+                Проверьте свои ��авыки в реальных сценариях
               </h3>
               <p className="text-xl text-gray-300 mb-8">
                 Наша CTF платформа предлагает разнообразные задания по кибербезопасности, от начального до продвинутого уровня. 
@@ -515,7 +515,7 @@ export default function HomePage() {
                   <ul className="space-y-4">
                     <li className="flex items-center">
                       <Users className="w-5 h-5 text-cyberblue-400 mr-3" />
-                      <span className="text-gray-300">5,000+ активных участников</span>
+                      <span className="text-gray-300">5,000+ активных участни��ов</span>
                     </li>
                     <li className="flex items-center">
                       <Terminal className="w-5 h-5 text-cyberblue-400 mr-3" />

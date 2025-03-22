@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Shield, Users, Bot, BookOpen, ExternalLink, Mail, GitHub, Twitter } from 'lucide-react';
+import { Shield, Users, Bot, BookOpen, ExternalLink, Mail, Github, Twitter } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -15,7 +14,7 @@ export default function Footer() {
             </p>
             <div className="flex space-x-4">
               <a href="#" className="text-gray-400 hover:text-white transition">
-                <GitHub className="w-5 h-5" />
+                <Github className="w-5 h-5" />
               </a>
               <a href="#" className="text-gray-400 hover:text-white transition">
                 <Twitter className="w-5 h-5" />

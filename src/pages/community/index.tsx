@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { 
@@ -12,7 +11,8 @@ import {
   ChevronRight, 
   Bell, 
   User,
-  Zap
+  Zap,
+  ShieldCheck as Shield
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
