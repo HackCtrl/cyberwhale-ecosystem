@@ -20,7 +20,13 @@ import Products from "./pages/products/index";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import ForgotPassword from "./pages/auth/ForgotPassword";
+import Profile from "./pages/profile/index";
+import Settings from "./pages/settings/index";
 import NotFound from "./pages/NotFound";
+
+// Layout
+import Navbar from "./components/layout/Navbar";
+import Footer from "./components/layout/Footer";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +52,7 @@ const App = () => {
             <Toaster />
             <Sonner />
             <BrowserRouter>
+              <Navbar />
               <div className="content-wrapper">
                 <Routes>
                   <Route path="/" element={<HomePage />} />
@@ -72,10 +79,15 @@ const App = () => {
                   <Route path="/register" element={<Register />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   
+                  {/* User Routes */}
+                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/settings" element={<Settings />} />
+                  
                   {/* Not Found Route */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </div>
+              <Footer />
             </BrowserRouter>
           </TooltipProvider>
         </AuthProvider>

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
@@ -14,6 +13,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import UserMenu from './UserMenu';
 
 type NavLink = {
   name: string;
@@ -57,7 +57,6 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
 
-  // Update current state based on location
   const updatedNavLinks = navLinks.map(link => ({
     ...link,
     current: location.pathname === link.to || location.pathname.startsWith(`${link.to}/`),
@@ -92,7 +91,6 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-4">
             {updatedNavLinks.map((link) => (
               <div key={link.to} className="relative group">
@@ -144,19 +142,9 @@ export default function Navbar() {
                 onChange={(e) => setSearchValue(e.target.value)}
               />
             </div>
-            <Link to="/login">
-              <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white">
-                Войти
-              </Button>
-            </Link>
-            <Link to="/register">
-              <Button size="sm" className="bg-cyberblue-500 hover:bg-cyberblue-600 text-white">
-                Регистрация
-              </Button>
-            </Link>
+            <UserMenu />
           </div>
 
-          {/* Mobile menu button */}
           <div className="flex items-center md:hidden">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -172,7 +160,6 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile menu */}
       {mobileMenuOpen && (
         <div className="md:hidden bg-cyberdark-900/95 backdrop-blur-md border-b border-cyberdark-800 animate-fade-in">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
@@ -227,18 +214,7 @@ export default function Navbar() {
                   onChange={(e) => setSearchValue(e.target.value)}
                 />
               </div>
-              <div className="flex space-x-2">
-                <Link to="/login" className="w-1/2">
-                  <Button variant="outline" className="w-full" onClick={() => setMobileMenuOpen(false)}>
-                    Войти
-                  </Button>
-                </Link>
-                <Link to="/register" className="w-1/2">
-                  <Button className="w-full bg-cyberblue-500" onClick={() => setMobileMenuOpen(false)}>
-                    Регистрация
-                  </Button>
-                </Link>
-              </div>
+              <UserMenu />
             </div>
           </div>
         </div>

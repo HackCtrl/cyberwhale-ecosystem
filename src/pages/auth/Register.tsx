@@ -6,47 +6,18 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Shield, AlertCircle, Loader2, Check } from 'lucide-react';
+import { Shield, AlertCircle, Loader2 } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
+import { supabase } from '@/lib/supabase';
 
 export default function Register() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [verificationCode, setVerificationCode] = useState('');
-  const [codeSent, setCodeSent] = useState(false);
-  const [sendingCode, setSendingCode] = useState(false);
   
-  const { register, sendVerificationCode, isLoading, error } = useAuth();
+  const { register, isLoading, error } = useAuth();
   const navigate = useNavigate();
-  
-  const handleSendCode = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    
-    if (!email || !email.includes('@')) {
-      toast({
-        variant: "destructive",
-        title: "Ошибка",
-        description: "Пожалуйста, введите корректный email",
-      });
-      return;
-    }
-    
-    setSendingCode(true);
-    try {
-      await sendVerificationCode(email);
-      setCodeSent(true);
-      toast({
-        title: "Код отправлен",
-        description: "Проверьте вашу электронную почту для получения кода подтверждения",
-      });
-    } catch (err) {
-      // Error is handled by the auth context
-    } finally {
-      setSendingCode(false);
-    }
-  };
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -60,24 +31,54 @@ export default function Register() {
       return;
     }
     
-    if (!codeSent) {
+    try {
+      await register(username, email, password);
+      toast({
+        title: "Регистрация успешна",
+        description: "Для завершения регистрации проверьте электронную почту.",
+      });
+      // Не перенаправляем пока не подтвердят email
+    } catch (err) {
+      // Error is handled by the auth context
+      console.error('Registration error:', err);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/`
+        }
+      });
+      
+      if (error) throw error;
+    } catch (err) {
       toast({
         variant: "destructive",
         title: "Ошибка",
-        description: "Необходимо отправить и ввести код подтверждения",
+        description: "Не удалось войти через Google",
       });
-      return;
     }
-    
+  };
+
+  const handleGithubLogin = async () => {
     try {
-      await register(username, email, password, verificationCode);
-      toast({
-        title: "Регистрация успешна",
-        description: "Добро пожаловать в CyberWhale!",
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'github',
+        options: {
+          redirectTo: `${window.location.origin}/`
+        }
       });
-      navigate('/');
+      
+      if (error) throw error;
     } catch (err) {
-      // Error is handled by the auth context
+      toast({
+        variant: "destructive",
+        title: "Ошибка",
+        description: "Не удалось войти через GitHub",
+      });
     }
   };
 
@@ -129,61 +130,20 @@ export default function Register() {
                 <Label htmlFor="email" className="block text-sm font-medium text-gray-200">
                   Email
                 </Label>
-                <div className="mt-1 flex">
+                <div className="mt-1">
                   <Input
                     id="email"
                     name="email"
                     type="email"
                     autoComplete="email"
                     required
-                    className="bg-cyberdark-700 border-cyberdark-600 flex-1"
+                    className="bg-cyberdark-700 border-cyberdark-600"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="your@email.com"
-                    disabled={codeSent}
                   />
-                  <Button
-                    type="button"
-                    onClick={handleSendCode}
-                    disabled={sendingCode || codeSent}
-                    className="ml-2 whitespace-nowrap"
-                  >
-                    {sendingCode ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : codeSent ? (
-                      <>
-                        <Check className="h-4 w-4 mr-1" />
-                        Отправлен
-                      </>
-                    ) : (
-                      'Отправить код'
-                    )}
-                  </Button>
                 </div>
               </div>
-
-              {codeSent && (
-                <div>
-                  <Label htmlFor="verification-code" className="block text-sm font-medium text-gray-200">
-                    Код подтверждения
-                  </Label>
-                  <div className="mt-1">
-                    <Input
-                      id="verification-code"
-                      name="verification-code"
-                      type="text"
-                      required
-                      className="bg-cyberdark-700 border-cyberdark-600"
-                      value={verificationCode}
-                      onChange={(e) => setVerificationCode(e.target.value)}
-                      placeholder="123456"
-                    />
-                  </div>
-                  <p className="mt-1 text-xs text-gray-400">
-                    Введите код подтверждения, отправленный на ваш email. Для демо используйте: 123456
-                  </p>
-                </div>
-              )}
 
               <div>
                 <Label htmlFor="password" className="block text-sm font-medium text-gray-200">
@@ -244,7 +204,7 @@ export default function Register() {
               <div>
                 <Button
                   type="submit"
-                  disabled={isLoading || !codeSent}
+                  disabled={isLoading}
                   className="w-full bg-cyberblue-500 hover:bg-cyberblue-600"
                 >
                   {isLoading ? (
@@ -274,6 +234,7 @@ export default function Register() {
                   <Button
                     variant="outline"
                     className="w-full border-cyberdark-600 bg-cyberdark-700 text-white hover:bg-cyberdark-600"
+                    onClick={handleGoogleLogin}
                   >
                     <span className="sr-only">Sign up with Google</span>
                     <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -288,6 +249,7 @@ export default function Register() {
                   <Button 
                     variant="outline"
                     className="w-full border-cyberdark-600 bg-cyberdark-700 text-white hover:bg-cyberdark-600"
+                    onClick={handleGithubLogin}
                   >
                     <span className="sr-only">Sign up with GitHub</span>
                     <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">

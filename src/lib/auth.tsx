@@ -1,140 +1,206 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { User as SupabaseUser } from '@supabase/supabase-js';
+import { useNavigate } from 'react-router-dom';
 import { User } from '@/types';
+import { supabase } from '@/lib/supabase';
+import { toast } from '@/components/ui/use-toast';
 
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   error: string | null;
   login: (email: string, password: string) => Promise<void>;
-  register: (username: string, email: string, password: string, verificationCode: string) => Promise<void>;
+  register: (username: string, email: string, password: string) => Promise<void>;
   logout: () => void;
-  sendVerificationCode: (email: string) => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Mock implementation for demo purposes
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
+  // Check for user session on initial load
   useEffect(() => {
-    // Check if user is stored in localStorage
-    const storedUser = localStorage.getItem('cyberwhale_user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+    console.log("Auth provider mounted");
+    
+    // Get current session
+    const checkSession = async () => {
+      setIsLoading(true);
+      
+      const { data, error } = await supabase.auth.getSession();
+      
+      if (error) {
+        console.error('Error checking session:', error);
+        setIsLoading(false);
+        return;
+      }
+      
+      if (data.session) {
+        await handleUserLogin(data.session.user);
+      } else {
+        setIsLoading(false);
+      }
+    };
+    
+    // Set up auth state listener
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        console.log('Auth state changed:', event);
+        
+        if (event === 'SIGNED_IN' && session) {
+          await handleUserLogin(session.user);
+        } else if (event === 'SIGNED_OUT') {
+          setUser(null);
+        }
+      }
+    );
+    
+    checkSession();
+    
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
+  
+  // Convert Supabase user to our User type
+  const handleUserLogin = async (supabaseUser: SupabaseUser) => {
+    try {
+      // First check if profile exists
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', supabaseUser.id)
+        .single();
+      
+      if (profileError && profileError.code !== 'PGRST116') {
+        console.error('Error fetching profile:', profileError);
+        throw profileError;
+      }
+      
+      let userProfile = profile;
+      
+      // If profile doesn't exist, create one
+      if (!profile) {
+        const newProfile = {
+          id: supabaseUser.id,
+          username: supabaseUser.email?.split('@')[0] || 'user',
+          avatar_url: `https://api.dicebear.com/7.x/avataaars/svg?seed=${supabaseUser.email}`,
+          level: 1,
+          points: 0,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
+        
+        const { data: createdProfile, error: createError } = await supabase
+          .from('profiles')
+          .insert(newProfile)
+          .select()
+          .single();
+        
+        if (createError) {
+          console.error('Error creating profile:', createError);
+          throw createError;
+        }
+        
+        userProfile = createdProfile;
+      }
+      
+      // Map to our User type
+      const mappedUser: User = {
+        id: supabaseUser.id,
+        username: userProfile.username,
+        email: supabaseUser.email || '',
+        avatar: userProfile.avatar_url || undefined,
+        role: 'user',
+        points: userProfile.points,
+        level: userProfile.level,
+        createdAt: new Date(userProfile.created_at)
+      };
+      
+      setUser(mappedUser);
+    } catch (err) {
+      console.error('Error in handleUserLogin:', err);
+      setError('Ошибка при получении профиля пользователя');
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
-  }, []);
+  };
 
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     setError(null);
     
     try {
-      // Simulate API request
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Mock validation
-      if (email !== 'demo@example.com' && email !== 'user@example.com') {
-        throw new Error('Неверный email или пароль');
-      }
-      
-      if (password !== 'password123') {
-        throw new Error('Неверный email или пароль');
-      }
-      
-      // Mock successful login
-      const mockUser: User = {
-        id: '1',
-        username: email === 'demo@example.com' ? 'demo_user' : 'test_user',
+      const { data, error } = await supabase.auth.signInWithPassword({
         email,
-        avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + email,
-        role: 'user',
-        points: 150,
-        level: 2,
-        createdAt: new Date(),
-      };
+        password
+      });
       
-      setUser(mockUser);
-      localStorage.setItem('cyberwhale_user', JSON.stringify(mockUser));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Произошла ошибка при входе');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const register = async (username: string, email: string, password: string, verificationCode: string) => {
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      // Simulate API request
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      if (error) throw error;
       
-      // Mock validation
-      if (!username || !email || !password) {
-        throw new Error('Все поля обязательны для заполнения');
-      }
-      
-      if (password.length < 8) {
-        throw new Error('Пароль должен содержать не менее 8 символов');
-      }
-      
-      if (verificationCode !== '123456') {
-        throw new Error('Неверный код подтверждения');
-      }
-      
-      // Mock successful registration
-      const mockUser: User = {
-        id: Date.now().toString(),
-        username,
-        email,
-        avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=' + email,
-        role: 'user',
-        points: 0,
-        level: 1,
-        createdAt: new Date(),
-      };
-      
-      setUser(mockUser);
-      localStorage.setItem('cyberwhale_user', JSON.stringify(mockUser));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Произошла ошибка при регистрации');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const logout = () => {
-    setUser(null);
-    localStorage.removeItem('cyberwhale_user');
-  };
-
-  const sendVerificationCode = async (email: string) => {
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      // Simulate API request
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      if (!email || !email.includes('@')) {
-        throw new Error('Пожалуйста, введите корректный email');
-      }
-      
-      // In a real application, this would send a verification code
-      console.log(`Verification code 123456 sent to ${email}`);
-      
-      // For demonstration, we'll show a success message in the UI
-      return Promise.resolve();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Ошибка отправки кода');
+      toast({
+        title: "Успешный вход",
+        description: "Добро пожаловать в CyberWhale!",
+      });
+    } catch (err: any) {
+      setError(err.message || 'Ошибка при входе');
       return Promise.reject(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const register = async (username: string, email: string, password: string) => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      // Register user with Supabase Auth
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            username
+          }
+        }
+      });
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Регистрация успешна",
+        description: "На ваш email отправлено письмо для подтверждения.",
+      });
+    } catch (err: any) {
+      setError(err.message || 'Ошибка при регистрации');
+      return Promise.reject(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const logout = async () => {
+    setIsLoading(true);
+    
+    try {
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) throw error;
+      
+      setUser(null);
+      toast({
+        title: "Выход выполнен",
+        description: "Вы успешно вышли из системы.",
+      });
+      navigate('/');
+    } catch (err: any) {
+      setError(err.message || 'Ошибка при выходе');
     } finally {
       setIsLoading(false);
     }
@@ -145,19 +211,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setError(null);
     
     try {
-      // Simulate API request
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
       
-      if (!email || !email.includes('@')) {
-        throw new Error('Пожалуйста, введите корректный email');
-      }
+      if (error) throw error;
       
-      // In a real application, this would send a reset link
-      console.log(`Password reset link sent to ${email}`);
-      
-      return Promise.resolve();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Ошибка сброса пароля');
+      toast({
+        title: "Сброс пароля",
+        description: "На ваш email отправлена инструкция по сбросу пароля.",
+      });
+    } catch (err: any) {
+      setError(err.message || 'Ошибка при сбросе пароля');
       return Promise.reject(err);
     } finally {
       setIsLoading(false);
@@ -172,7 +237,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       login,
       register,
       logout,
-      sendVerificationCode,
       resetPassword,
     }}>
       {children}

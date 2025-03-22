@@ -20,13 +20,48 @@ export default function Login() {
     
     try {
       await login(email, password);
-      toast({
-        title: "Успешный вход",
-        description: "Добро пожаловать в CyberWhale!",
-      });
       navigate('/');
     } catch (err) {
       // Error is handled by the auth context
+      console.error('Login error:', err);
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: `${window.location.origin}/`
+        }
+      });
+      
+      if (error) throw error;
+    } catch (err) {
+      toast({
+        variant: "destructive",
+        title: "Ошибка",
+        description: "Не удалось войти через Google",
+      });
+    }
+  };
+
+  const handleGithubLogin = async () => {
+    try {
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'github',
+        options: {
+          redirectTo: `${window.location.origin}/`
+        }
+      });
+      
+      if (error) throw error;
+    } catch (err) {
+      toast({
+        variant: "destructive",
+        title: "Ошибка",
+        description: "Не удалось войти через GitHub",
+      });
     }
   };
 
@@ -147,6 +182,7 @@ export default function Login() {
                   <Button
                     variant="outline"
                     className="w-full border-cyberdark-600 bg-cyberdark-700 text-white hover:bg-cyberdark-600"
+                    onClick={handleGoogleLogin}
                   >
                     <span className="sr-only">Sign in with Google</span>
                     <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -161,6 +197,7 @@ export default function Login() {
                   <Button 
                     variant="outline"
                     className="w-full border-cyberdark-600 bg-cyberdark-700 text-white hover:bg-cyberdark-600"
+                    onClick={handleGithubLogin}
                   >
                     <span className="sr-only">Sign in with GitHub</span>
                     <svg className="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
