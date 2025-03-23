@@ -20,7 +20,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
 import ChatAssistant from '@/components/layout/ChatAssistant';
 
 export default function HomePage() {
@@ -235,7 +234,7 @@ export default function HomePage() {
             <div className="lg:w-1/2 mb-12 lg:mb-0">
               <h2 className="text-2xl font-bold text-cyberblue-400 mb-2">CTF ПЛАТФОРМА</h2>
               <h3 className="text-3xl md:text-4xl font-bold text-white mb-6">
-                Проверьте свои ��авыки в реальных сценариях
+                Проверьте свои навыки в реальных сценариях
               </h3>
               <p className="text-xl text-gray-300 mb-8">
                 Наша CTF платформа предлагает разнообразные задания по кибербезопасности, от начального до продвинутого уровня. 
@@ -515,7 +514,7 @@ export default function HomePage() {
                   <ul className="space-y-4">
                     <li className="flex items-center">
                       <Users className="w-5 h-5 text-cyberblue-400 mr-3" />
-                      <span className="text-gray-300">5,000+ активных участни��ов</span>
+                      <span className="text-gray-300">5,000+ активных участников</span>
                     </li>
                     <li className="flex items-center">
                       <Terminal className="w-5 h-5 text-cyberblue-400 mr-3" />
@@ -586,159 +585,3 @@ export default function HomePage() {
             
             <div className="bg-gradient-to-br from-cyberdark-800 to-cyberdark-700 rounded-lg p-6 border border-cyberdark-700 text-center">
               <div className="w-14 h-14 bg-cyberdark-700/50 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Book className="h-8 w-8 text-cyberblue-500" />
-              </div>
-              <div className="text-4xl font-bold text-white mb-2">50+</div>
-              <div className="text-gray-400">Учебных материалов</div>
-            </div>
-            
-            <div className="bg-gradient-to-br from-cyberdark-800 to-cyberdark-700 rounded-lg p-6 border border-cyberdark-700 text-center">
-              <div className="w-14 h-14 bg-cyberdark-700/50 rounded-lg flex items-center justify-center mx-auto mb-4">
-                <Award className="h-8 w-8 text-cyberblue-500" />
-              </div>
-              <div className="text-4xl font-bold text-white mb-2">24/7</div>
-              <div className="text-gray-400">Круглосуточная поддержка</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      {/* Testimonials section */}
-      <div ref={testimonialsRef} className="transition-opacity duration-1000 bg-gradient-to-b from-cyberdark-900 to-cyberdark-800 py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-2xl font-bold text-cyberblue-400 mb-2">ОТЗЫВЫ</h2>
-            <h3 className="text-3xl md:text-4xl font-bold text-white">
-              Что говорят наши пользователи
-            </h3>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="glass-card rounded-lg p-6 border border-cyberdark-700">
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 rounded-full bg-cyberdark-600"></div>
-                <div className="ml-4">
-                  <div className="font-medium text-white">Александр К.</div>
-                  <div className="text-gray-400 text-sm">Специалист по безопасности</div>
-                </div>
-              </div>
-              <p className="text-gray-300 mb-4">
-                "CyberWhale помог мне значительно улучшить мои навыки в области тестирования на проникновение. 
-                CTF задания очень реалистичны и охватывают широкий спектр уязвимостей."
-              </p>
-              <div className="flex text-yellow-500">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                </svg>
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                </svg>
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                </svg>
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                </svg>
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                </svg>
-              </div>
-            </div>
-            
-            <div className="glass-card rounded-lg p-6 border border-cyberdark-700">
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 rounded-full bg-cyberdark-600"></div>
-                <div className="ml-4">
-                  <div className="font-medium text-white">Мария С.</div>
-                  <div className="text-gray-400 text-sm">Студентка</div>
-                </div>
-              </div>
-              <p className="text-gray-300 mb-4">
-                "Как новичку в кибербезопасности, мне очень помог ИИ-ассистент. Он всегда дает
-                понятные ответы и направляет меня в нужное русло. База знаний также очень подробная
-                и структурированная."
-              </p>
-              <div className="flex text-yellow-500">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                </svg>
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                </svg>
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                </svg>
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                </svg>
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                </svg>
-              </div>
-            </div>
-            
-            <div className="glass-card rounded-lg p-6 border border-cyberdark-700">
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 rounded-full bg-cyberdark-600"></div>
-                <div className="ml-4">
-                  <div className="font-medium text-white">Дмитрий В.</div>
-                  <div className="text-gray-400 text-sm">Разработчик</div>
-                </div>
-              </div>
-              <p className="text-gray-300 mb-4">
-                "Сообщество CyberWhale - это отличное место для обмена опытом и знаниями.
-                Я нашел здесь много единомышленников и получил ценные советы от опытных 
-                специалистов. Рекомендую всем!"
-              </p>
-              <div className="flex text-yellow-500">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                </svg>
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                </svg>
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                </svg>
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                </svg>
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                </svg>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      {/* CTA section */}
-      <div ref={ctaRef} className="transition-opacity duration-1000 bg-cyberdark-800 py-20">
-        <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-            Начните свой путь в кибербезопасности сегодня
-          </h2>
-          <p className="text-xl text-gray-300 mb-10 max-w-3xl mx-auto">
-            Присоединяйтесь к тысячам участников нашей платформы и начните свое путешествие
-            в мир кибербезопасности. Регистрация займет всего минуту.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link to="/register">
-              <Button className="bg-cyberblue-500 hover:bg-cyberblue-600 btn-glow text-lg px-8 py-6">
-                Зарегистрироваться
-              </Button>
-            </Link>
-            <Link to="/about">
-              <Button variant="outline" className="text-white text-lg px-8 py-6">
-                Узнать больше
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </div>
-      
-      <Footer />
-      <ChatAssistant />
-    </div>
-  );
-}

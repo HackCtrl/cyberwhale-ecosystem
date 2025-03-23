@@ -42,15 +42,10 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <a 
-                  href="https://t.me/HackCtrl_Official" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="text-gray-400 hover:text-white transition flex items-center"
-                >
+                <Link to="/community" className="text-gray-400 hover:text-white transition flex items-center">
                   <Users className="w-4 h-4 mr-2" />
                   <span>Сообщество</span>
-                </a>
+                </Link>
               </li>
               <li>
                 <Link to="/knowledge" className="text-gray-400 hover:text-white transition flex items-center">
