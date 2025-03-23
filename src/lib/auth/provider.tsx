@@ -26,45 +26,58 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const checkSession = async () => {
       setIsLoading(true);
       
-      const { data, error } = await supabase.auth.getSession();
-      
-      if (error) {
-        console.error('Error checking session:', error);
-        setIsLoading(false);
-        return;
-      }
-      
-      if (data.session) {
-        const userProfile = await handleUserLogin(data.session.user);
-        if (userProfile) {
-          setUser(userProfile);
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('Error checking session:', error);
+          setIsLoading(false);
+          return;
         }
-        setIsLoading(false);
-      } else {
+        
+        if (data.session) {
+          const userProfile = await handleUserLogin(data.session.user);
+          if (userProfile) {
+            setUser(userProfile);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to check auth session:', err);
+      } finally {
         setIsLoading(false);
       }
     };
     
     // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        console.log('Auth state changed:', event);
-        
-        if (event === 'SIGNED_IN' && session) {
-          const userProfile = await handleUserLogin(session.user);
-          if (userProfile) {
-            setUser(userProfile);
+    let subscription: { unsubscribe: () => void } | null = null;
+    
+    try {
+      const { data } = supabase.auth.onAuthStateChange(
+        async (event, session) => {
+          console.log('Auth state changed:', event);
+          
+          if (event === 'SIGNED_IN' && session) {
+            const userProfile = await handleUserLogin(session.user);
+            if (userProfile) {
+              setUser(userProfile);
+            }
+          } else if (event === 'SIGNED_OUT') {
+            setUser(null);
           }
-        } else if (event === 'SIGNED_OUT') {
-          setUser(null);
         }
-      }
-    );
+      );
+      
+      subscription = data.subscription;
+    } catch (err) {
+      console.error('Failed to set up auth listener:', err);
+    }
     
     checkSession();
     
     return () => {
-      subscription.unsubscribe();
+      if (subscription) {
+        subscription.unsubscribe();
+      }
     };
   }, [navigate]);
 

@@ -2,14 +2,13 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from '@/types/supabase';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+// Try to get values from environment variables, otherwise use placeholder values
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://placeholder-supabase-url.supabase.co';
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'placeholder-anon-key';
 
-if (!supabaseUrl || !supabaseKey) {
-  console.error('Missing Supabase environment variables');
+// Still log a warning but don't cause a crash
+if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
+  console.warn('Missing Supabase environment variables. Authentication features will not work properly.');
 }
 
-export const supabase = createClient<Database>(
-  supabaseUrl as string, 
-  supabaseKey as string
-);
+export const supabase = createClient<Database>(supabaseUrl, supabaseKey);

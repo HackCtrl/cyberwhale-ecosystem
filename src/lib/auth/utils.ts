@@ -32,18 +32,24 @@ export const handleUserLogin = async (supabaseUser: SupabaseUser): Promise<User 
         updated_at: new Date().toISOString()
       };
       
-      const { data: createdProfile, error: createError } = await supabase
-        .from('profiles')
-        .insert(newProfile)
-        .select()
-        .single();
-      
-      if (createError) {
-        console.error('Error creating profile:', createError);
-        throw createError;
+      try {
+        const { data: createdProfile, error: createError } = await supabase
+          .from('profiles')
+          .insert(newProfile)
+          .select()
+          .single();
+        
+        if (createError) {
+          console.error('Error creating profile:', createError);
+          throw createError;
+        }
+        
+        userProfile = createdProfile;
+      } catch (createErr) {
+        console.error('Failed to create profile:', createErr);
+        // Fallback to use the new profile object if Supabase insert fails
+        userProfile = newProfile;
       }
-      
-      userProfile = createdProfile;
     }
     
     // Map to our User type
