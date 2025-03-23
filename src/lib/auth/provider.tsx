@@ -1,24 +1,18 @@
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { User as SupabaseUser } from '@supabase/supabase-js';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { User as SupabaseUser } from '@supabase/supabase-js';
 import { User } from '@/types';
 import { supabase } from '@/lib/supabase';
 import { toast } from '@/components/ui/use-toast';
+import { AuthContext } from './context';
+import { handleUserLogin } from './utils';
 
-interface AuthContextType {
-  user: User | null;
-  isLoading: boolean;
-  error: string | null;
-  login: (email: string, password: string) => Promise<void>;
-  register: (username: string, email: string, password: string) => Promise<void>;
-  logout: () => void;
-  resetPassword: (email: string) => Promise<void>;
+interface AuthProviderProps {
+  children: React.ReactNode;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
-
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -41,7 +35,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
       
       if (data.session) {
-        await handleUserLogin(data.session.user);
+        const userProfile = await handleUserLogin(data.session.user);
+        if (userProfile) {
+          setUser(userProfile);
+        }
+        setIsLoading(false);
       } else {
         setIsLoading(false);
       }
@@ -53,7 +51,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.log('Auth state changed:', event);
         
         if (event === 'SIGNED_IN' && session) {
-          await handleUserLogin(session.user);
+          const userProfile = await handleUserLogin(session.user);
+          if (userProfile) {
+            setUser(userProfile);
+          }
         } else if (event === 'SIGNED_OUT') {
           setUser(null);
         }
@@ -66,70 +67,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       subscription.unsubscribe();
     };
   }, [navigate]);
-  
-  // Convert Supabase user to our User type
-  const handleUserLogin = async (supabaseUser: SupabaseUser) => {
-    try {
-      // First check if profile exists
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', supabaseUser.id)
-        .single();
-      
-      if (profileError && profileError.code !== 'PGRST116') {
-        console.error('Error fetching profile:', profileError);
-        throw profileError;
-      }
-      
-      let userProfile = profile;
-      
-      // If profile doesn't exist, create one
-      if (!profile) {
-        const newProfile = {
-          id: supabaseUser.id,
-          username: supabaseUser.email?.split('@')[0] || 'user',
-          avatar_url: `https://api.dicebear.com/7.x/avataaars/svg?seed=${supabaseUser.email}`,
-          level: 1,
-          points: 0,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        };
-        
-        const { data: createdProfile, error: createError } = await supabase
-          .from('profiles')
-          .insert(newProfile)
-          .select()
-          .single();
-        
-        if (createError) {
-          console.error('Error creating profile:', createError);
-          throw createError;
-        }
-        
-        userProfile = createdProfile;
-      }
-      
-      // Map to our User type
-      const mappedUser: User = {
-        id: supabaseUser.id,
-        username: userProfile.username,
-        email: supabaseUser.email || '',
-        avatar: userProfile.avatar_url || undefined,
-        role: 'user',
-        points: userProfile.points,
-        level: userProfile.level,
-        createdAt: new Date(userProfile.created_at)
-      };
-      
-      setUser(mappedUser);
-    } catch (err) {
-      console.error('Error in handleUserLogin:', err);
-      setError('Ошибка при получении профиля пользователя');
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const login = async (email: string, password: string) => {
     setIsLoading(true);
@@ -242,12 +179,4 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       {children}
     </AuthContext.Provider>
   );
-};
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
 };
