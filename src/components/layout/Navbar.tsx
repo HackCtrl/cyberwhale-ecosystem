@@ -1,9 +1,9 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { 
   ChevronDown, 
   Menu, 
-  Search, 
   Shield, 
   Database, 
   Bot, 
@@ -11,9 +11,9 @@ import {
   X 
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import UserMenu from './UserMenu';
+import SearchBox from '@/components/search/SearchBox';
 
 type NavLink = {
   name: string;
@@ -41,7 +41,7 @@ const navLinks: NavLink[] = [
   },
   {
     name: 'Сообщество',
-    to: '/community',
+    to: 'https://t.me/HackCtrl_Official',
     icon: <Users className="w-4 h-4 mr-1" />,
   },
   {
@@ -55,7 +55,7 @@ export default function Navbar() {
   const location = useLocation();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [searchValue, setSearchValue] = useState('');
+  const [isMobileSearchVisible, setIsMobileSearchVisible] = useState(false);
 
   const updatedNavLinks = navLinks.map(link => ({
     ...link,
@@ -76,6 +76,8 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const isExternalLink = (url: string) => url.startsWith('http');
+
   return (
     <nav
       className={cn(
@@ -92,8 +94,23 @@ export default function Navbar() {
           </div>
 
           <div className="hidden md:flex items-center space-x-4">
-            {updatedNavLinks.map((link) => (
-              <div key={link.to} className="relative group">
+            {updatedNavLinks.map((link) => {
+              const LinkComponent = isExternalLink(link.to) ? (
+                <a
+                  href={link.to}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={cn(
+                    "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
+                    link.current
+                      ? "text-white bg-secondary/50"
+                      : "text-gray-300 hover:text-white hover:bg-secondary/30"
+                  )}
+                >
+                  {link.icon}
+                  {link.name}
+                </a>
+              ) : (
                 <Link
                   to={link.to}
                   className={cn(
@@ -109,39 +126,36 @@ export default function Navbar() {
                     <ChevronDown className="ml-1 w-4 h-4 transition-transform group-hover:rotate-180" />
                   )}
                 </Link>
-                {link.submenu && (
-                  <div className="absolute left-0 mt-1 w-48 rounded-md shadow-lg bg-secondary py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 transform origin-top-right">
-                    {link.submenu.map((sublink) => (
-                      <Link
-                        key={sublink.to}
-                        to={sublink.to}
-                        className={cn(
-                          "block px-4 py-2 text-sm",
-                          sublink.current
-                            ? "text-white bg-primary/20"
-                            : "text-gray-300 hover:text-white hover:bg-secondary/50"
-                        )}
-                      >
-                        {sublink.name}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
+              );
+
+              return (
+                <div key={link.to} className="relative group">
+                  {LinkComponent}
+                  {link.submenu && (
+                    <div className="absolute left-0 mt-1 w-48 rounded-md shadow-lg bg-secondary py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 transform origin-top-right">
+                      {link.submenu.map((sublink) => (
+                        <Link
+                          key={sublink.to}
+                          to={sublink.to}
+                          className={cn(
+                            "block px-4 py-2 text-sm",
+                            sublink.current
+                              ? "text-white bg-primary/20"
+                              : "text-gray-300 hover:text-white hover:bg-secondary/50"
+                          )}
+                        >
+                          {sublink.name}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
 
           <div className="hidden md:flex items-center space-x-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input
-                type="search"
-                placeholder="Поиск по сайту..."
-                className="pl-10 w-60 bg-cyberdark-800 border-cyberdark-700 text-sm"
-                value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
-              />
-            </div>
+            <SearchBox className="w-60" />
             <UserMenu />
           </div>
 
@@ -163,8 +177,26 @@ export default function Navbar() {
       {mobileMenuOpen && (
         <div className="md:hidden bg-cyberdark-900/95 backdrop-blur-md border-b border-cyberdark-800 animate-fade-in">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-            {updatedNavLinks.map((link) => (
-              <React.Fragment key={link.to}>
+            {updatedNavLinks.map((link) => {
+              const MobileLinkComponent = isExternalLink(link.to) ? (
+                <a
+                  href={link.to}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={cn(
+                    "block px-3 py-2 rounded-md text-base font-medium",
+                    link.current
+                      ? "text-white bg-secondary"
+                      : "text-gray-300 hover:text-white hover:bg-secondary/50"
+                  )}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <div className="flex items-center">
+                    {link.icon}
+                    {link.name}
+                  </div>
+                </a>
+              ) : (
                 <Link
                   to={link.to}
                   className={cn(
@@ -180,40 +212,37 @@ export default function Navbar() {
                     {link.name}
                   </div>
                 </Link>
-                {link.submenu && (
-                  <div className="pl-4 space-y-1">
-                    {link.submenu.map((sublink) => (
-                      <Link
-                        key={sublink.to}
-                        to={sublink.to}
-                        className={cn(
-                          "block px-3 py-2 rounded-md text-sm font-medium",
-                          sublink.current
-                            ? "text-white bg-secondary/70"
-                            : "text-gray-300 hover:text-white hover:bg-secondary/30"
-                        )}
-                        onClick={() => setMobileMenuOpen(false)}
-                      >
-                        {sublink.name}
-                      </Link>
-                    ))}
-                  </div>
-                )}
-              </React.Fragment>
-            ))}
+              );
+
+              return (
+                <React.Fragment key={link.to}>
+                  {MobileLinkComponent}
+                  {link.submenu && (
+                    <div className="pl-4 space-y-1">
+                      {link.submenu.map((sublink) => (
+                        <Link
+                          key={sublink.to}
+                          to={sublink.to}
+                          className={cn(
+                            "block px-3 py-2 rounded-md text-sm font-medium",
+                            sublink.current
+                              ? "text-white bg-secondary/70"
+                              : "text-gray-300 hover:text-white hover:bg-secondary/30"
+                          )}
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          {sublink.name}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </React.Fragment>
+              );
+            })}
           </div>
           <div className="pt-4 pb-3 border-t border-cyberdark-800">
             <div className="px-4 py-2">
-              <div className="relative mb-3">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <Input
-                  type="search"
-                  placeholder="Поиск по сайту..."
-                  className="pl-10 w-full bg-cyberdark-800 border-cyberdark-700"
-                  value={searchValue}
-                  onChange={(e) => setSearchValue(e.target.value)}
-                />
-              </div>
+              <SearchBox className="w-full mb-3" />
               <UserMenu />
             </div>
           </div>

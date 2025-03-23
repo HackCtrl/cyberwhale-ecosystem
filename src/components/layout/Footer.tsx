@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Shield, Users, Bot, BookOpen, ExternalLink, Mail, Github, Twitter } from 'lucide-react';
@@ -13,13 +14,13 @@ export default function Footer() {
               Ваш путь в мир кибербезопасности начинается здесь. Учитесь, практикуйтесь и становитесь экспертом вместе с нами.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-gray-400 hover:text-white transition">
+              <a href="https://github.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition">
                 <Github className="w-5 h-5" />
               </a>
-              <a href="#" className="text-gray-400 hover:text-white transition">
+              <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition">
                 <Twitter className="w-5 h-5" />
               </a>
-              <a href="mailto:contact@cyberwhale.com" className="text-gray-400 hover:text-white transition">
+              <a href="mailto:cyberehaleoffical@gmail.com" className="text-gray-400 hover:text-white transition">
                 <Mail className="w-5 h-5" />
               </a>
             </div>
@@ -41,10 +42,15 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link to="/community" className="text-gray-400 hover:text-white transition flex items-center">
+                <a 
+                  href="https://t.me/HackCtrl_Official" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="text-gray-400 hover:text-white transition flex items-center"
+                >
                   <Users className="w-4 h-4 mr-2" />
                   <span>Сообщество</span>
-                </Link>
+                </a>
               </li>
               <li>
                 <Link to="/knowledge" className="text-gray-400 hover:text-white transition flex items-center">
@@ -86,13 +92,15 @@ export default function Footer() {
             <p className="text-gray-400 text-sm mb-4">
               Есть вопросы или предложения? Напишите нам.
             </p>
-            <Link 
-              to="/contact" 
+            <a 
+              href="https://t.me/Valerri_09" 
+              target="_blank" 
+              rel="noopener noreferrer" 
               className="inline-flex items-center px-4 py-2 rounded bg-cyberblue-500 hover:bg-cyberblue-600 text-white transition"
             >
               Связаться
               <ExternalLink className="ml-2 w-4 h-4" />
-            </Link>
+            </a>
           </div>
         </div>
         
