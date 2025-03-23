@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform } from 'framer-motion';
@@ -499,12 +500,12 @@ export default function HomePage() {
                 </li>
               </ul>
               
-              <Link to="/community">
+              <a href="https://t.me/HackCtrl_Official" target="_blank" rel="noopener noreferrer">
                 <Button className="bg-cyberblue-500 hover:bg-cyberblue-600 btn-glow">
-                  Присоединиться к сообществу
+                  Присоединиться к Telegram
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
-              </Link>
+              </a>
             </div>
             
             <div className="lg:w-1/2 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -585,3 +586,22 @@ export default function HomePage() {
             
             <div className="bg-gradient-to-br from-cyberdark-800 to-cyberdark-700 rounded-lg p-6 border border-cyberdark-700 text-center">
               <div className="w-14 h-14 bg-cyberdark-700/50 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <Book className="h-8 w-8 text-cyberblue-500" />
+              </div>
+              <div className="text-4xl font-bold text-white mb-2">50+</div>
+              <div className="text-gray-400">Учебных материалов</div>
+            </div>
+            
+            <div className="bg-gradient-to-br from-cyberdark-800 to-cyberdark-700 rounded-lg p-6 border border-cyberdark-700 text-center">
+              <div className="w-14 h-14 bg-cyberdark-700/50 rounded-lg flex items-center justify-center mx-auto mb-4">
+                <Award className="h-8 w-8 text-cyberblue-500" />
+              </div>
+              <div className="text-4xl font-bold text-white mb-2">20+</div>
+              <div className="text-gray-400">Партнеров</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
