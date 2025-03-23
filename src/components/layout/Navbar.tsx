@@ -41,7 +41,7 @@ const navLinks: NavLink[] = [
   },
   {
     name: 'Сообщество',
-    to: 'https://t.me/HackCtrl_Official',
+    to: '/community', // Keep this as internal link to /community
     icon: <Users className="w-4 h-4 mr-1" />,
   },
   {

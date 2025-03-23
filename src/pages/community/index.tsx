@@ -24,7 +24,6 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import ChatAssistant from '@/components/layout/ChatAssistant';
 
-// Mock upcoming events
 const mockEvents: Event[] = [
   {
     id: '1',
@@ -64,7 +63,6 @@ const mockEvents: Event[] = [
   },
 ];
 
-// Mock forum topics
 const mockTopics = [
   {
     id: '1',
@@ -113,14 +111,13 @@ const mockTopics = [
   },
 ];
 
-// Component for event cards
 const EventCard = ({ event }: { event: Event }) => {
   const [registered, setRegistered] = useState(false);
   
   const handleRegister = () => {
     setRegistered(!registered);
     toast({
-      title: registered ? "Регистрация отменена" : "Вы зарегистрированы!",
+      title: registered ? "Регистрация отменен��" : "Вы зарегистрированы!",
       description: registered 
         ? `Вы отменили регистрацию на событие "${event.title}"` 
         : `Вы успешно зарегистрировались на событие "${event.title}"`,
@@ -218,7 +215,6 @@ export default function Community() {
       <Navbar />
       
       <div className="pt-20 flex-grow">
-        {/* Hero section */}
         <div className="bg-gradient-to-b from-cyberdark-800 to-cyberdark-900">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div className="text-center max-w-3xl mx-auto">
@@ -250,14 +246,17 @@ export default function Community() {
               
               <div className="flex flex-col sm:flex-row justify-center gap-4">
                 <a 
-                  href="https://t.me/cyberwhale" 
+                  href="https://t.me/HackCtrl_Official" 
                   target="_blank" 
                   rel="noopener noreferrer" 
                   className="inline-flex items-center justify-center"
                 >
                   <Button className="bg-cyberblue-500 hover:bg-cyberblue-600 btn-glow">
-                    Присоединиться к Telegram
-                    <ExternalLink className="ml-2 h-4 w-4" />
+                    Присоединиться к сообществу
+                    <svg className="ml-2 h-4 w-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path fillRule="evenodd" clipRule="evenodd" d="M22.05 2.25c.566 0 1.029.463 1.029 1.03v17.445c0 .566-.463 1.029-1.03 1.029H4.604a1.029 1.029 0 01-1.03-1.03V3.28c0-.567.464-1.03 1.03-1.03h17.446zM4.604 1A2.28 2.28 0 002.325 3.28v17.445A2.28 2.28 0 004.604 23H22.05a2.28 2.28 0 002.28-2.28V3.28A2.28 2.28 0 0022.05 1H4.604z" fill="currentColor"/>
+                      <path d="M10.75 8.848c2.798-1.21 4.355-1.887 4.67-2.03.95-.432 2.058-.147 2.347.917.117.432.216 1.328.294 2.687.117 2.079.311 5.586-.117 7.32-.216.874-.639 1.167-1.056 1.198-.899.061-1.581-.54-2.452-1.062-.49-.295-2.179-1.4-2.935-1.771-.432-.216-.961-.433-1.58.147-.372.355-1.257 1.225-1.803 1.756-.249.246-.558.338-.838.329a.66.66 0 01-.34-.075c-.413-.153-.911-.352-1.209-.468-.932-.36-1.674-.726-1.602-1.529.037-.4.269-.803.9-1.323 1.684-1.384 3.175-2.56 4.104-3.405 1.184-1.077 2.576-2.712 1.617-3.69z" fill="currentColor"/>
+                    </svg>
                   </Button>
                 </a>
                 <a 
@@ -266,7 +265,9 @@ export default function Community() {
                 >
                   <Button variant="outline">
                     Предстоящие события
-                    <ChevronRight className="ml-2 h-4 w-4" />
+                    <svg xmlns="http://www.w3.org/2000/svg" className="ml-2 h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                    </svg>
                   </Button>
                 </a>
               </div>
@@ -275,7 +276,6 @@ export default function Community() {
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          {/* Upcoming events section */}
           <div id="events" className="mb-20">
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-2xl font-bold text-white">Предстоящие события</h2>
@@ -292,7 +292,6 @@ export default function Community() {
             </div>
           </div>
           
-          {/* Forum section */}
           <div className="mb-20">
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-2xl font-bold text-white">Обсуждения на форуме</h2>
@@ -348,7 +347,6 @@ export default function Community() {
             </div>
           </div>
           
-          {/* Members section */}
           <div className="mb-20">
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-2xl font-bold text-white">Активные участники</h2>
@@ -389,7 +387,6 @@ export default function Community() {
             </div>
           </div>
           
-          {/* Communication channels */}
           <div>
             <div className="flex items-center justify-between mb-8">
               <h2 className="text-2xl font-bold text-white">Каналы коммуникации</h2>
@@ -647,7 +644,6 @@ export default function Community() {
           </div>
         </div>
         
-        {/* CTA section */}
         <div className="bg-gradient-to-b from-cyberdark-900 to-cyberdark-800 py-20">
           <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">

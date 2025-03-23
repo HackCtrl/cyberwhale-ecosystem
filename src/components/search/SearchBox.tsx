@@ -45,11 +45,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({
     inputRef.current?.focus();
   };
 
-  const handleResultClick = (result: SearchResult) => {
-    if (!result.url.startsWith('http')) {
-      navigate(result.url);
-    }
-    
+  const handleResultClick = () => {
     // Close search dropdown
     setQuery('');
     setResults([]);
@@ -113,7 +109,7 @@ const SearchBox: React.FC<SearchBoxProps> = ({
           <SearchResults 
             results={results} 
             isLoading={isLoading} 
-            onResultClick={() => handleResultClick(results[0])} 
+            onResultClick={handleResultClick} 
           />
         </div>
       )}

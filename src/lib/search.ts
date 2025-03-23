@@ -70,6 +70,7 @@ const searchableContent: SearchResult[] = [
 ];
 
 // Search function that filters content based on query
+// Improved to better match exact user input and prioritize results
 export function searchContent(query: string): SearchResult[] {
   if (!query || query.trim() === '') {
     return [];
@@ -77,10 +78,53 @@ export function searchContent(query: string): SearchResult[] {
   
   const normalizedQuery = query.toLowerCase().trim();
   
-  return searchableContent.filter((item) => {
-    return (
-      item.title.toLowerCase().includes(normalizedQuery) ||
-      item.description.toLowerCase().includes(normalizedQuery)
-    );
-  });
+  // Score-based search results
+  const scoredResults = searchableContent.map(item => {
+    let score = 0;
+    const titleLower = item.title.toLowerCase();
+    const descLower = item.description.toLowerCase();
+    
+    // Exact matches in title get highest priority
+    if (titleLower === normalizedQuery) {
+      score += 100;
+    } 
+    // Title starts with query
+    else if (titleLower.startsWith(normalizedQuery)) {
+      score += 75;
+    }
+    // Title contains query
+    else if (titleLower.includes(normalizedQuery)) {
+      score += 50;
+    }
+    
+    // Description exact match
+    if (descLower === normalizedQuery) {
+      score += 30;
+    }
+    // Description contains query
+    else if (descLower.includes(normalizedQuery)) {
+      score += 15;
+    }
+    
+    // Word match in title (for multi-word searches)
+    normalizedQuery.split(' ').forEach(word => {
+      if (word.length > 2 && titleLower.includes(word)) {
+        score += 10;
+      }
+    });
+    
+    // Word match in description
+    normalizedQuery.split(' ').forEach(word => {
+      if (word.length > 2 && descLower.includes(word)) {
+        score += 5;
+      }
+    });
+    
+    return { item, score };
+  }).filter(({ score }) => score > 0);
+  
+  // Sort by score (highest first) and return the items
+  return scoredResults
+    .sort((a, b) => b.score - a.score)
+    .map(({ item }) => item);
 }
