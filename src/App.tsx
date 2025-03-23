@@ -47,11 +47,11 @@ const App = () => {
   return (
     <div className="app-container">
       <QueryClientProvider client={queryClient}>
-        <AuthProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <BrowserRouter>
+        <BrowserRouter>
+          <AuthProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
               <Navbar />
               <div className="content-wrapper">
                 <Routes>
@@ -88,9 +88,9 @@ const App = () => {
                 </Routes>
               </div>
               <Footer />
-            </BrowserRouter>
-          </TooltipProvider>
-        </AuthProvider>
+            </TooltipProvider>
+          </AuthProvider>
+        </BrowserRouter>
       </QueryClientProvider>
     </div>
   );
