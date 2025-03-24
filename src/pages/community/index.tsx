@@ -1,4 +1,6 @@
-import React from 'react';
+
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import Navbar from '@/components/layout/Navbar';
 import ChatAssistant from '@/components/layout/ChatAssistant';
 
@@ -116,9 +118,9 @@ const EventCard = ({ event }: { event: Event }) => {
   const handleRegister = () => {
     setRegistered(!registered);
     toast({
-      title: registered ? "Регистрация отменен��" : "Вы зарегистрированы!",
+      title: registered ? "Регистрация отменена" : "Вы зарегистрированы!",
       description: registered 
-        ? `Вы ��тменили регистрацию на событие "${event.title}"` 
+        ? `Вы отменили регистрацию на событие "${event.title}"` 
         : `Вы успешно зарегистрировались на событие "${event.title}"`,
     });
   };
@@ -667,6 +669,6 @@ export default function Community() {
           </div>
         </div>
       </div>
-      
-
-
+    </div>
+  );
+}
