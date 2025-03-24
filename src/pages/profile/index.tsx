@@ -1,26 +1,11 @@
 
-import React, { useState } from 'react';
-import { 
-  User, 
-  Medal, 
-  Flag, 
-  Star, 
-  Calendar, 
-  Shield, 
-  Clock, 
-  Award, 
-  Edit,
-  Plus,
-  Loader2
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import ChatAssistant from '@/components/layout/ChatAssistant';
+import React from 'react';
 import { useAuth } from '@/lib/auth';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Loader2, Shield, Award, User } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
 
 export default function Profile() {
   const { user, isLoading } = useAuth();
