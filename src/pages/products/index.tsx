@@ -1,6 +1,7 @@
+import React from 'react';
+import Navbar from '@/components/layout/Navbar';
+import ChatAssistant from '@/components/layout/ChatAssistant';
 
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { 
   Shield, 
   Eye, 
@@ -20,9 +21,6 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Product } from '@/types';
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
-import ChatAssistant from '@/components/layout/ChatAssistant';
 
 // Mock products data
 const mockProducts: Product[] = [
@@ -637,7 +635,6 @@ export default function Products() {
         </div>
       </div>
 
-      <Footer />
       <ChatAssistant />
     </div>
   );

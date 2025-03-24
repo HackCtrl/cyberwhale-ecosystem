@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
@@ -20,7 +19,6 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
 import ChatAssistant from '@/components/layout/ChatAssistant';
 
 type Message = {
@@ -473,7 +471,6 @@ export default function AIAssistant() {
         </div>
       </div>
 
-      <Footer />
       <ChatAssistant />
     </div>
   );

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -17,7 +16,6 @@ import {
 } from 'lucide-react';
 import { ChallengeCategory, Challenge } from '@/types';
 import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
 import ChatAssistant from '@/components/layout/ChatAssistant';
 
 // Mock CTF challenges data
@@ -393,7 +391,6 @@ export default function CTFPlatform() {
         </div>
       </div>
 
-      <Footer />
       <ChatAssistant />
     </div>
   );

@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React from 'react';
+import Navbar from '@/components/layout/Navbar';
+import ChatAssistant from '@/components/layout/ChatAssistant';
+
 import { 
   Users, 
   Globe, 
@@ -20,9 +22,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { toast } from '@/components/ui/use-toast';
 import { Event } from '@/types';
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
-import ChatAssistant from '@/components/layout/ChatAssistant';
 
 const mockEvents: Event[] = [
   {
@@ -119,7 +118,7 @@ const EventCard = ({ event }: { event: Event }) => {
     toast({
       title: registered ? "Регистрация отменен��" : "Вы зарегистрированы!",
       description: registered 
-        ? `Вы отменили регистрацию на событие "${event.title}"` 
+        ? `Вы ��тменили регистрацию на событие "${event.title}"` 
         : `Вы успешно зарегистрировались на событие "${event.title}"`,
     });
   };
@@ -668,9 +667,6 @@ export default function Community() {
           </div>
         </div>
       </div>
+      
 
-      <Footer />
-      <ChatAssistant />
-    </div>
-  );
-}
+
