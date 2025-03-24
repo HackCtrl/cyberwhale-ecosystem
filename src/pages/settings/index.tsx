@@ -1,29 +1,26 @@
-
 import React, { useState } from 'react';
-import { useAuth } from '@/lib/auth';
-import { supabase } from '@/lib/supabase';
-import { toast } from '@/components/ui/use-toast';
 import { 
-  Card, 
-  CardContent, 
-  CardDescription, 
-  CardFooter, 
-  CardHeader, 
-  CardTitle 
-} from '@/components/ui/card';
-import { 
-  Tabs, 
-  TabsContent, 
-  TabsList, 
-  TabsTrigger 
-} from '@/components/ui/tabs';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+  Settings, 
+  UserCircle, 
+  Bell, 
+  Lock, 
+  Shield, 
+  CreditCard, 
+  HelpCircle,
+  LogOut
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
-import { Switch } from '@/components/ui/switch';
-import { Loader2, User, Settings, Shield, Bell, Lock } from 'lucide-react';
+import ChatAssistant from '@/components/layout/ChatAssistant';
 
 export default function SettingsPage() {
   const { user, isLoading } = useAuth();
@@ -162,7 +159,7 @@ export default function SettingsPage() {
         <Tabs defaultValue="profile" className="space-y-6">
           <TabsList className="bg-cyberdark-800 border border-cyberdark-700">
             <TabsTrigger value="profile" className="data-[state=active]:bg-cyberdark-700">
-              <User className="h-4 w-4 mr-2" />
+              <UserCircle className="h-4 w-4 mr-2" />
               Профиль
             </TabsTrigger>
             <TabsTrigger value="security" className="data-[state=active]:bg-cyberdark-700">
