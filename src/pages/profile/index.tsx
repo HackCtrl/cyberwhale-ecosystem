@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { 
   User, 
@@ -9,15 +10,17 @@ import {
   Clock, 
   Award, 
   Edit,
-  Plus
+  Plus,
+  Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import ChatAssistant from '@/components/layout/ChatAssistant';
+import { useAuth } from '@/lib/auth';
 
 export default function Profile() {
   const { user, isLoading } = useAuth();

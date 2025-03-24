@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { 
   Settings, 
@@ -7,7 +8,8 @@ import {
   Shield, 
   CreditCard, 
   HelpCircle,
-  LogOut
+  LogOut,
+  Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,10 +19,13 @@ import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import ChatAssistant from '@/components/layout/ChatAssistant';
+import { useAuth } from '@/lib/auth';
+import { supabase } from '@/lib/supabase';
+import { useToast, toast } from '@/hooks/use-toast';
 
 export default function SettingsPage() {
   const { user, isLoading } = useAuth();

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { 
   Shield, 
@@ -14,6 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Input } from '@/components/ui/input';
 import ChatAssistant from '@/components/layout/ChatAssistant';
 
 export default function Products() {
@@ -30,7 +32,7 @@ export default function Products() {
         </div>
       </div>
 
-      <Tabs defaultvalue="all" className="w-full">
+      <Tabs defaultValue="all" className="w-full">
         <TabsList className="bg-cyberdark-800 border-cyberdark-700 rounded-md p-1">
           <TabsTrigger value="all" className="data-[state=active]:bg-cyberblue-500 data-[state=active]:text-white">Все</TabsTrigger>
           <TabsTrigger value="security" className="data-[state=active]:bg-cyberblue-500 data-[state=active]:text-white">Безопасность</TabsTrigger>
