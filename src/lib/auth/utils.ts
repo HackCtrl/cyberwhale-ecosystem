@@ -52,6 +52,10 @@ export const handleUserLogin = async (supabaseUser: SupabaseUser): Promise<User 
       }
     }
     
+    if (!userProfile) {
+      return null;
+    }
+    
     // Map to our User type
     const mappedUser: User = {
       id: supabaseUser.id,

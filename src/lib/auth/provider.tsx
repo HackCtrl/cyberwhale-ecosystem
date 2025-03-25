@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Session, User as SupabaseUser } from '@supabase/supabase-js';
@@ -20,11 +19,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Check for user session on initial load
   useEffect(() => {
     console.log("Auth provider mounted");
     
-    // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, currentSession) => {
         console.log('Auth state changed:', event);
@@ -36,7 +33,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           setUser(userProfile);
           setIsLoading(false);
           
-          // Redirect to home page or intended page after sign in
           const returnUrl = new URLSearchParams(location.search).get('returnUrl');
           const redirectTo = returnUrl || '/';
           if (location.pathname.includes('/login') || location.pathname.includes('/register')) {
@@ -63,7 +59,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
     );
     
-    // THEN check for existing session
     supabase.auth.getSession().then(async ({ data: { session: currentSession } }) => {
       setSession(currentSession);
       
@@ -106,7 +101,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setError(null);
     
     try {
-      // Register user with Supabase Auth
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -216,7 +210,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       if (!user) throw new Error('Пользователь не авторизован');
       
-      // Update auth user metadata if username is provided
       if (updates.username) {
         const { error: authError } = await supabase.auth.updateUser({
           data: { username: updates.username }
@@ -225,7 +218,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         if (authError) throw authError;
       }
       
-      // Update profile in database
       const profileUpdates: any = {};
       
       if (updates.username) profileUpdates.username = updates.username;
@@ -243,7 +235,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         if (profileError) throw profileError;
       }
       
-      // Update local user state
       setUser({
         ...user,
         ...updates
