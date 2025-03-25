@@ -1,14 +1,84 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '@/lib/auth';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Shield, Award, User } from 'lucide-react';
+import { Loader2, Shield, Award, User, Upload, Camera } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
+import { Button } from '@/components/ui/button';
+import { toast } from '@/components/ui/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { getAvatarFallbackText } from '@/lib/auth/utils';
 
 export default function Profile() {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, updateProfile } = useAuth();
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || !files[0] || !user) return;
+    
+    const file = files[0];
+    
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Ошибка",
+        description: "Пожалуйста, загрузите изображение",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    // Validate file size (max 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      toast({
+        title: "Ошибка",
+        description: "Размер изображения не должен превышать 2MB",
+        variant: "destructive"
+      });
+      return;
+    }
+    
+    setIsUploading(true);
+    
+    try {
+      // Create a storage bucket if it doesn't exist (this will be handled by RLS)
+      const fileName = `avatar-${user.id}-${Date.now()}`;
+      const fileExt = file.name.split('.').pop();
+      const filePath = `${fileName}.${fileExt}`;
+      
+      // Upload the file
+      const { error: uploadError, data } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file);
+      
+      if (uploadError) throw uploadError;
+      
+      // Get the public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+      
+      // Update the user profile with the new avatar URL
+      await updateProfile({ avatar: publicUrl });
+      
+      toast({
+        title: "Успешно",
+        description: "Аватар успешно обновлен",
+      });
+    } catch (error: any) {
+      console.error('Error uploading avatar:', error);
+      toast({
+        title: "Ошибка",
+        description: error.message || "Не удалось загрузить аватар",
+        variant: "destructive"
+      });
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -39,12 +109,34 @@ export default function Profile() {
     <div className="min-h-screen bg-cyberdark-900 pt-20 pb-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         <div className="flex flex-col items-center mb-8">
-          <Avatar className="h-24 w-24 rounded-full border-4 border-cyberdark-700">
-            <AvatarImage src={user.avatar} alt={user.username} />
-            <AvatarFallback className="bg-cyberdark-700 text-xl font-bold text-white">
-              {user.username.substring(0, 2).toUpperCase()}
-            </AvatarFallback>
-          </Avatar>
+          <div className="relative group">
+            <Avatar className="h-24 w-24 rounded-full border-4 border-cyberdark-700">
+              <AvatarImage src={user.avatar} alt={user.username} />
+              <AvatarFallback className="bg-cyberdark-700 text-xl font-bold text-white">
+                {getAvatarFallbackText(user.username)}
+              </AvatarFallback>
+            </Avatar>
+            
+            <label 
+              htmlFor="avatar-upload" 
+              className="absolute bottom-0 right-0 p-1.5 rounded-full bg-cyberblue-500 hover:bg-cyberblue-600 cursor-pointer"
+            >
+              {isUploading ? (
+                <Loader2 className="h-4 w-4 text-white animate-spin" />
+              ) : (
+                <Camera className="h-4 w-4 text-white" />
+              )}
+            </label>
+            <input 
+              id="avatar-upload" 
+              type="file" 
+              accept="image/*" 
+              className="hidden" 
+              onChange={handleAvatarUpload}
+              disabled={isUploading}
+            />
+          </div>
+          
           <h1 className="mt-4 text-3xl font-bold text-white">{user.username}</h1>
           <p className="text-gray-400">{user.email}</p>
           <div className="flex items-center mt-2">

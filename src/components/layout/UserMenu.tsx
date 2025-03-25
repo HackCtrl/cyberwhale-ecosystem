@@ -19,19 +19,24 @@ export default function UserMenu() {
   const { user, logout, isLoading } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   
-  if (isLoading) {
-    return (
-      <div className="flex items-center space-x-2">
-        <Avatar className="h-8 w-8 rounded-full border border-cyberdark-600">
-          <AvatarFallback className="bg-cyberdark-700 text-white animate-pulse">
-            ...
-          </AvatarFallback>
-        </Avatar>
-      </div>
-    );
-  }
+  // Add a fallback timer to prevent infinite loading state
+  const [loadingTimeout, setLoadingTimeout] = useState(false);
   
-  if (!user) {
+  React.useEffect(() => {
+    // Set a timeout to exit loading state after 3 seconds if it's still loading
+    if (isLoading) {
+      const timer = setTimeout(() => {
+        setLoadingTimeout(true);
+      }, 3000);
+      
+      return () => clearTimeout(timer);
+    } else {
+      setLoadingTimeout(false);
+    }
+  }, [isLoading]);
+  
+  // Show login/register buttons if not loading or loading timeout has occurred and no user
+  if ((!isLoading || loadingTimeout) && !user) {
     return (
       <div className="flex items-center space-x-2">
         <Link to="/login">
@@ -47,6 +52,19 @@ export default function UserMenu() {
       </div>
     );
   }
+  
+  // Only show loading state if we haven't timed out
+  if (isLoading && !loadingTimeout) {
+    return (
+      <div className="flex items-center space-x-2">
+        <Avatar className="h-8 w-8 rounded-full border border-cyberdark-600">
+          <AvatarFallback className="bg-cyberdark-700 text-white animate-pulse">
+            ...
+          </AvatarFallback>
+        </Avatar>
+      </div>
+    );
+  }
 
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
@@ -56,27 +74,27 @@ export default function UserMenu() {
           className="flex items-center space-x-2 px-2 py-1 hover:bg-cyberdark-800 rounded-md"
         >
           <Avatar className="h-8 w-8 rounded-full border border-cyberdark-600">
-            <AvatarImage src={user.avatar} alt={user.username} />
+            <AvatarImage src={user?.avatar} alt={user?.username || 'User'} />
             <AvatarFallback className="bg-cyberdark-700 text-white">
-              {getAvatarFallbackText(user.username)}
+              {getAvatarFallbackText(user?.username || 'User')}
             </AvatarFallback>
           </Avatar>
           <div className="hidden md:flex flex-col items-start">
-            <span className="text-sm font-medium text-white">{user.username}</span>
-            <span className="text-xs text-gray-400">Уровень {user.level}</span>
+            <span className="text-sm font-medium text-white">{user?.username || 'User'}</span>
+            <span className="text-xs text-gray-400">Уровень {user?.level || 1}</span>
           </div>
           <ChevronDown className="h-4 w-4 text-gray-400" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="bg-cyberdark-800 border-cyberdark-700 text-white">
         <div className="px-4 py-2 md:hidden">
-          <p className="text-sm font-medium">{user.username}</p>
-          <p className="text-xs text-gray-400">{user.email}</p>
+          <p className="text-sm font-medium">{user?.username || 'User'}</p>
+          <p className="text-xs text-gray-400">{user?.email || ''}</p>
         </div>
         <DropdownMenuLabel className="md:hidden">
           <div className="flex items-center space-x-2 text-white">
             <Award className="h-4 w-4 text-cyberblue-500" />
-            <span>Уровень {user.level} • {user.points} очков</span>
+            <span>Уровень {user?.level || 1} • {user?.points || 0} очков</span>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator className="md:hidden border-cyberdark-700" />
@@ -92,7 +110,7 @@ export default function UserMenu() {
             <span>Уведомления</span>
           </Link>
         </DropdownMenuItem>
-        {user.role === 'admin' && (
+        {user?.role === 'admin' && (
           <DropdownMenuItem className="focus:bg-cyberdark-700" asChild>
             <Link to="/admin" className="flex cursor-pointer">
               <Shield className="mr-2 h-4 w-4" />
@@ -107,7 +125,13 @@ export default function UserMenu() {
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator className="border-cyberdark-700" />
-        <DropdownMenuItem className="focus:bg-cyberdark-700 text-red-400 focus:text-red-300" onClick={logout}>
+        <DropdownMenuItem 
+          className="focus:bg-cyberdark-700 text-red-400 focus:text-red-300 cursor-pointer"
+          onClick={() => {
+            logout();
+            setIsOpen(false);
+          }}
+        >
           <LogOut className="mr-2 h-4 w-4" />
           <span>Выйти</span>
         </DropdownMenuItem>

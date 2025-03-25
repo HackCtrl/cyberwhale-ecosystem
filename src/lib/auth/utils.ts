@@ -6,6 +6,13 @@ import { supabase } from '@/integrations/supabase/client';
 // Convert Supabase user to our User type
 export const handleUserLogin = async (supabaseUser: SupabaseUser): Promise<User | null> => {
   try {
+    if (!supabaseUser) {
+      console.error('No Supabase user provided to handleUserLogin');
+      return null;
+    }
+    
+    console.log('Processing Supabase user:', supabaseUser.id);
+    
     // First check if profile exists
     const { data: profile, error: profileError } = await supabase
       .from('profiles')
@@ -22,6 +29,7 @@ export const handleUserLogin = async (supabaseUser: SupabaseUser): Promise<User 
     
     // If profile doesn't exist, create one
     if (!profile) {
+      console.log('Creating new profile for user:', supabaseUser.id);
       const newProfile = {
         id: supabaseUser.id,
         username: supabaseUser.user_metadata?.username || supabaseUser.email?.split('@')[0] || 'user',
@@ -44,15 +52,19 @@ export const handleUserLogin = async (supabaseUser: SupabaseUser): Promise<User 
           throw createError;
         }
         
+        console.log('Created new profile:', createdProfile);
         userProfile = createdProfile;
       } catch (createErr) {
         console.error('Failed to create profile:', createErr);
         // Fallback to use the new profile object if Supabase insert fails
         userProfile = newProfile;
       }
+    } else {
+      console.log('Found existing profile:', profile);
     }
     
     if (!userProfile) {
+      console.error('No user profile available after checks');
       return null;
     }
     
@@ -63,11 +75,12 @@ export const handleUserLogin = async (supabaseUser: SupabaseUser): Promise<User 
       email: supabaseUser.email || '',
       avatar: userProfile.avatar_url || undefined,
       role: supabaseUser.app_metadata?.role || 'user',
-      points: userProfile.points,
-      level: userProfile.level,
+      points: userProfile.points || 0,
+      level: userProfile.level || 1,
       createdAt: new Date(userProfile.created_at)
     };
     
+    console.log('Mapped user:', mappedUser);
     return mappedUser;
   } catch (err) {
     console.error('Error in handleUserLogin:', err);
