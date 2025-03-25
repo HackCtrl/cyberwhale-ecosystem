@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Session, User as SupabaseUser } from '@supabase/supabase-js';
@@ -108,20 +109,51 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           data: {
             username
           },
-          emailRedirectTo: `${window.location.origin}/auth/confirm`
+          emailRedirectTo: `${window.location.origin}/auth/confirm`,
         }
       });
       
       if (error) throw error;
       
-      toast({
-        title: "Регистрация успешна",
-        description: "На ваш email отправлено письмо для подтверждения.",
-      });
+      if (!data.session) {
+        // If email confirmation is required
+        toast({
+          title: "Требуется подтверждение",
+          description: "На вашу почту отправлен код подтверждения.",
+        });
+        navigate('/verify-otp', { state: { email } });
+      }
       
       return data;
     } catch (err: any) {
       setError(err.message || 'Ошибка при регистрации');
+      return Promise.reject(err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const verifyOtp = async (email: string, token: string) => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const { data, error } = await supabase.auth.verifyOtp({
+        email,
+        token,
+        type: 'signup'
+      });
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Аккаунт подтвержден",
+        description: "Ваш аккаунт успешно подтвержден.",
+      });
+      
+      return data;
+    } catch (err: any) {
+      setError(err.message || 'Ошибка при подтверждении');
       return Promise.reject(err);
     } finally {
       setIsLoading(false);
@@ -266,6 +298,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       resetPassword,
       updatePassword,
       updateProfile,
+      verifyOtp,
     }}>
       {children}
     </AuthContext.Provider>

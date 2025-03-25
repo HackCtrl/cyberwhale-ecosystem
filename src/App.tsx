@@ -22,6 +22,7 @@ import Register from "./pages/auth/Register";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import ResetPassword from "./pages/auth/ResetPassword";
 import EmailConfirm from "./pages/auth/EmailConfirm";
+import VerifyOTP from "./pages/auth/VerifyOTP";
 import Profile from "./pages/profile/index";
 import Settings from "./pages/settings/index";
 import NotFound from "./pages/NotFound";
@@ -82,6 +83,7 @@ const App = () => {
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/reset-password" element={<ResetPassword />} />
                   <Route path="/auth/confirm" element={<EmailConfirm />} />
+                  <Route path="/verify-otp" element={<VerifyOTP />} />
                   
                   {/* User Routes */}
                   <Route path="/profile" element={<Profile />} />
