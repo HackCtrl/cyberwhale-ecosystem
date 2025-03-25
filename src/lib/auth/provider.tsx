@@ -1,8 +1,8 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from './context';
 import { useAuthState } from './useAuthState';
+import { User } from '@/types';
 import { 
   login, 
   register, 
