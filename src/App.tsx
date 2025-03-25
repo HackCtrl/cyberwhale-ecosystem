@@ -20,6 +20,8 @@ import Products from "./pages/products/index";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPassword from "./pages/auth/ResetPassword";
+import EmailConfirm from "./pages/auth/EmailConfirm";
 import Profile from "./pages/profile/index";
 import Settings from "./pages/settings/index";
 import NotFound from "./pages/NotFound";
@@ -78,6 +80,8 @@ const App = () => {
                   <Route path="/login" element={<Login />} />
                   <Route path="/register" element={<Register />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/reset-password" element={<ResetPassword />} />
+                  <Route path="/auth/confirm" element={<EmailConfirm />} />
                   
                   {/* User Routes */}
                   <Route path="/profile" element={<Profile />} />

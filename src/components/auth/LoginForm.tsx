@@ -1,7 +1,6 @@
 
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '@/lib/auth';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -12,15 +11,17 @@ import { AlertCircle, Loader2 } from 'lucide-react';
 export function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberMe, setRememberMe] = useState(false);
   const { login, isLoading, error } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     try {
       await login(email, password);
-      navigate('/');
+      // Redirect is handled in the auth provider
     } catch (err) {
       // Error is handled by the auth context
       console.error('Login error:', err);
@@ -81,6 +82,8 @@ export function LoginForm() {
               id="remember-me"
               name="remember-me"
               type="checkbox"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
               className="h-4 w-4 rounded border-cyberdark-600 bg-cyberdark-700 text-cyberblue-500 focus:ring-cyberblue-500"
             />
             <Label htmlFor="remember-me" className="ml-2 block text-sm text-gray-300">

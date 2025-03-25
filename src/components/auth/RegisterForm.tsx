@@ -5,15 +5,15 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { AlertCircle, Loader2 } from 'lucide-react';
+import { AlertCircle, Loader2, CheckCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { toast } from '@/components/ui/use-toast';
 
 export function RegisterForm() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [isRegistered, setIsRegistered] = useState(false);
   
   const { register, isLoading, error } = useAuth();
   
@@ -21,26 +21,47 @@ export function RegisterForm() {
     e.preventDefault();
     
     if (password !== confirmPassword) {
-      toast({
-        variant: "destructive",
-        title: "Ошибка",
-        description: "Пароли не совпадают",
-      });
-      return;
+      return; // Password mismatch is handled by form validation
     }
     
     try {
       await register(username, email, password);
-      toast({
-        title: "Регистрация успешна",
-        description: "Для завершения регистрации проверьте электронную почту.",
-      });
-      // Не перенаправляем пока не подтвердят email
+      setIsRegistered(true);
     } catch (err) {
       // Error is handled by the auth context
       console.error('Registration error:', err);
     }
   };
+
+  if (isRegistered) {
+    return (
+      <div className="text-center py-4">
+        <div className="flex justify-center mb-4">
+          <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center">
+            <CheckCircle className="h-10 w-10 text-green-500" />
+          </div>
+        </div>
+        <h3 className="text-xl font-bold text-white mb-2">Проверьте вашу почту</h3>
+        <p className="text-gray-300 mb-6">
+          Мы отправили ссылку для подтверждения на {email}.<br />
+          Пожалуйста, перейдите по ссылке в письме для завершения регистрации.
+        </p>
+        <div className="text-sm text-gray-400 mb-4">
+          Не получили письмо? Проверьте папку "Спам" или
+          <Button
+            variant="link"
+            className="text-cyberblue-500 p-0 h-auto font-normal"
+            onClick={() => setIsRegistered(false)}
+          >
+            {' '}попробуйте снова
+          </Button>
+        </div>
+        <Link to="/login">
+          <Button variant="outline">Вернуться на страницу входа</Button>
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -66,6 +87,8 @@ export function RegisterForm() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="username"
+              minLength={3}
+              maxLength={30}
             />
           </div>
         </div>
@@ -103,8 +126,10 @@ export function RegisterForm() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
+              minLength={6}
             />
           </div>
+          <p className="mt-1 text-xs text-gray-400">Минимум 6 символов</p>
         </div>
 
         <div>
@@ -117,12 +142,17 @@ export function RegisterForm() {
               name="confirm-password"
               type="password"
               required
-              className="bg-cyberdark-700 border-cyberdark-600"
+              className={`bg-cyberdark-700 border-cyberdark-600 ${
+                confirmPassword && password !== confirmPassword ? 'border-red-500' : ''
+              }`}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="••••••••"
             />
           </div>
+          {confirmPassword && password !== confirmPassword && (
+            <p className="mt-1 text-xs text-red-500">Пароли не совпадают</p>
+          )}
         </div>
 
         <div className="flex items-center">
@@ -148,7 +178,7 @@ export function RegisterForm() {
         <div>
           <Button
             type="submit"
-            disabled={isLoading}
+            disabled={isLoading || (confirmPassword && password !== confirmPassword)}
             className="w-full bg-cyberblue-500 hover:bg-cyberblue-600"
           >
             {isLoading ? (

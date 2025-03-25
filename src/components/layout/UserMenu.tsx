@@ -12,11 +12,24 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { LogOut, User, Settings, Award, ChevronDown } from 'lucide-react';
+import { LogOut, User, Settings, Award, ChevronDown, Shield, Bell } from 'lucide-react';
+import { getAvatarFallbackText } from '@/lib/auth/utils';
 
 export default function UserMenu() {
-  const { user, logout } = useAuth();
+  const { user, logout, isLoading } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  
+  if (isLoading) {
+    return (
+      <div className="flex items-center space-x-2">
+        <Avatar className="h-8 w-8 rounded-full border border-cyberdark-600">
+          <AvatarFallback className="bg-cyberdark-700 text-white animate-pulse">
+            ...
+          </AvatarFallback>
+        </Avatar>
+      </div>
+    );
+  }
   
   if (!user) {
     return (
@@ -45,7 +58,7 @@ export default function UserMenu() {
           <Avatar className="h-8 w-8 rounded-full border border-cyberdark-600">
             <AvatarImage src={user.avatar} alt={user.username} />
             <AvatarFallback className="bg-cyberdark-700 text-white">
-              {user.username.substring(0, 2).toUpperCase()}
+              {getAvatarFallbackText(user.username)}
             </AvatarFallback>
           </Avatar>
           <div className="hidden md:flex flex-col items-start">
@@ -73,6 +86,20 @@ export default function UserMenu() {
             <span>Мой профиль</span>
           </Link>
         </DropdownMenuItem>
+        <DropdownMenuItem className="focus:bg-cyberdark-700" asChild>
+          <Link to="/notifications" className="flex cursor-pointer">
+            <Bell className="mr-2 h-4 w-4" />
+            <span>Уведомления</span>
+          </Link>
+        </DropdownMenuItem>
+        {user.role === 'admin' && (
+          <DropdownMenuItem className="focus:bg-cyberdark-700" asChild>
+            <Link to="/admin" className="flex cursor-pointer">
+              <Shield className="mr-2 h-4 w-4" />
+              <span>Админ панель</span>
+            </Link>
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem className="focus:bg-cyberdark-700" asChild>
           <Link to="/settings" className="flex cursor-pointer">
             <Settings className="mr-2 h-4 w-4" />
