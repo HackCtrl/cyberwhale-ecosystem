@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { 
@@ -22,8 +21,6 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Badge } from '@/components/ui/badge';
 import { toast } from '@/components/ui/use-toast';
 import { Challenge, ChallengeCategory } from '@/types';
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
 import ChatAssistant from '@/components/layout/ChatAssistant';
 
 // Mock challenge data
@@ -141,7 +138,6 @@ export default function ChallengePage() {
   if (!challenge) {
     return (
       <div className="min-h-screen bg-cyberdark-900 flex flex-col">
-        <Navbar />
         <div className="pt-20 flex-grow flex items-center justify-center">
           <div className="text-center">
             <h2 className="text-2xl font-bold text-white mb-4">Задание не найдено</h2>
@@ -154,7 +150,6 @@ export default function ChallengePage() {
             </Link>
           </div>
         </div>
-        <Footer />
       </div>
     );
   }
@@ -207,8 +202,6 @@ export default function ChallengePage() {
 
   return (
     <div className="min-h-screen bg-cyberdark-900 flex flex-col">
-      <Navbar />
-      
       <div className="pt-20 flex-grow">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Back button */}
@@ -570,8 +563,8 @@ export default function ChallengePage() {
         </div>
       </div>
       
-      <Footer />
       <ChatAssistant />
     </div>
   );
 }
+
