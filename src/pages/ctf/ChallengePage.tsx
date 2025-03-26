@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { 
@@ -171,7 +170,7 @@ export default function ChallengePage() {
     const correctFlags: Record<string, string> = {
       '1': 'flag{sql_injection_success}',
       '2': 'flag{hidden_in_plain_sight}',
-      '3': 'CW{Cyban_Secret}',
+      '3': 'CW{SecretFound}',
       '4': 'flag{binary_reversed}',
       '5': 'flag{packet_analysis_complete}',
       '6': 'flag{buffer_overflow_pwned}',
@@ -342,7 +341,7 @@ export default function ChallengePage() {
                               В зашифрованных сообщениях один из участников оставил подсказку: "Ключ — в нашей команде, точнее, в её имени. Помни, что алфавит цикличен."
                             </p>
                             <div className="bg-cyberdark-900 p-4 rounded-md mb-4 font-mono text-sm text-gray-300 overflow-x-auto">
-                              Khoor#Zruog#43#Fkdw#lv#khuh1#Fkhhuv2#CW&#123;Hvsdq_Vhfuhw&#125;
+                              Khoor#Zruog#43#Fkdw#lv#khuh1#Fkhhuv2#CW&#123;SecretFound&#125;
                             </div>
                             <p className="text-gray-300 mb-4">
                               Ваша задача: Расшифровать перехваченное сообщение, используя подсказку, и найти флаг в формате CW&#123;...&#125;.
