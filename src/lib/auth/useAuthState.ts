@@ -12,11 +12,21 @@ export const useAuthState = () => {
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [loadingTimedOut, setLoadingTimedOut] = useState<boolean>(false);
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
     console.log("Auth provider mounted");
+    
+    // Set a timeout to force exit loading state after 5 seconds
+    const loadingTimeout = setTimeout(() => {
+      if (isLoading) {
+        console.log("Loading timed out, forcing exit loading state");
+        setLoadingTimedOut(true);
+        setIsLoading(false);
+      }
+    }, 5000);
     
     // Set up the subscription first
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -27,6 +37,7 @@ export const useAuthState = () => {
         
         if (event === 'SIGNED_IN' && currentSession) {
           setIsLoading(true);
+          setLoadingTimedOut(false); // Reset timeout state on sign-in
           try {
             const userProfile = await handleUserLogin(currentSession.user);
             console.log('User profile after sign in:', userProfile);
@@ -52,6 +63,7 @@ export const useAuthState = () => {
           setUser(null);
           setSession(null);
           setIsLoading(false);
+          setLoadingTimedOut(false); // Reset timeout state on sign-out
         } else if (event === 'PASSWORD_RECOVERY') {
           navigate('/reset-password');
           setIsLoading(false);
@@ -95,6 +107,7 @@ export const useAuthState = () => {
     loadInitialSession();
     
     return () => {
+      clearTimeout(loadingTimeout);
       subscription.unsubscribe();
     };
   }, [navigate, location]);
@@ -107,6 +120,7 @@ export const useAuthState = () => {
     isLoading,
     setIsLoading,
     error,
-    setError
+    setError,
+    loadingTimedOut
   };
 };

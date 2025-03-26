@@ -4,7 +4,7 @@ import { useAuth } from '@/lib/auth';
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Loader2, Shield, Award, User, Upload, Camera } from 'lucide-react';
+import { Loader2, Shield, Award, User, Camera } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
@@ -44,25 +44,45 @@ export default function Profile() {
     setIsUploading(true);
     
     try {
-      // Create a storage bucket if it doesn't exist (this will be handled by RLS)
+      // Create a unique filename
       const fileName = `avatar-${user.id}-${Date.now()}`;
       const fileExt = file.name.split('.').pop();
       const filePath = `${fileName}.${fileExt}`;
       
+      console.log('Uploading avatar to path:', filePath);
+      
       // Upload the file
-      const { error: uploadError, data } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(filePath, file);
       
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error('Error uploading avatar:', uploadError);
+        throw uploadError;
+      }
       
       // Get the public URL
       const { data: { publicUrl } } = supabase.storage
         .from('avatars')
         .getPublicUrl(filePath);
       
+      console.log('Avatar uploaded, public URL:', publicUrl);
+      
       // Update the user profile with the new avatar URL
       await updateProfile({ avatar: publicUrl });
+      
+      // Update the avatar_url in the profiles table
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ 
+          avatar_url: publicUrl,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id);
+        
+      if (updateError) {
+        console.error('Error updating profile in database:', updateError);
+      }
       
       toast({
         title: "Успешно",

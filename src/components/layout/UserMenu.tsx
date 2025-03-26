@@ -19,24 +19,20 @@ export default function UserMenu() {
   const { user, logout, isLoading } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   
-  // Add a fallback timer to prevent infinite loading state
-  const [loadingTimeout, setLoadingTimeout] = useState(false);
+  // Brief loading state for UI transitions - max 3 seconds
+  const [showLoading, setShowLoading] = useState(true);
   
   React.useEffect(() => {
-    // Set a timeout to exit loading state after 3 seconds if it's still loading
-    if (isLoading) {
-      const timer = setTimeout(() => {
-        setLoadingTimeout(true);
-      }, 3000);
-      
-      return () => clearTimeout(timer);
-    } else {
-      setLoadingTimeout(false);
-    }
-  }, [isLoading]);
+    // Set a timeout to exit loading animation after 3 seconds
+    const timer = setTimeout(() => {
+      setShowLoading(false);
+    }, 3000);
+    
+    return () => clearTimeout(timer);
+  }, []);
   
-  // Show login/register buttons if not loading or loading timeout has occurred and no user
-  if ((!isLoading || loadingTimeout) && !user) {
+  // Show login/register buttons if not loading or loading has finished and no user
+  if ((!isLoading || !showLoading) && !user) {
     return (
       <div className="flex items-center space-x-2">
         <Link to="/login">
@@ -54,7 +50,7 @@ export default function UserMenu() {
   }
   
   // Only show loading state if we haven't timed out
-  if (isLoading && !loadingTimeout) {
+  if (isLoading && showLoading) {
     return (
       <div className="flex items-center space-x-2">
         <Avatar className="h-8 w-8 rounded-full border border-cyberdark-600">

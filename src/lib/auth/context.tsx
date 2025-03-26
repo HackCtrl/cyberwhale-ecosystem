@@ -8,13 +8,14 @@ interface AuthContextType {
   session: Session | null;
   isLoading: boolean;
   error: string | null;
-  login: (email: string, password: string) => Promise<any>;
-  register: (username: string, email: string, password: string) => Promise<any>;
+  loadingTimedOut?: boolean;
+  login: (email: string, password: string) => Promise<Session | null>;
+  register: (username: string, email: string, password: string) => Promise<Session | null>;
   logout: () => Promise<void>;
-  resetPassword: (email: string) => Promise<boolean>;
-  updatePassword: (password: string) => Promise<boolean>;
-  updateProfile: (updates: Partial<User>) => Promise<boolean>;
-  verifyOtp: (email: string, token: string) => Promise<any>;
+  resetPassword: (email: string) => Promise<void>;
+  updatePassword: (password: string) => Promise<void>;
+  updateProfile: (updates: Partial<User>) => Promise<void>;
+  verifyOtp: (email: string, token: string) => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextType>({
@@ -22,11 +23,12 @@ export const AuthContext = createContext<AuthContextType>({
   session: null,
   isLoading: false,
   error: null,
-  login: async () => ({}),
-  register: async () => ({}),
-  logout: async () => {},
-  resetPassword: async () => false,
-  updatePassword: async () => false,
-  updateProfile: async () => false,
-  verifyOtp: async () => ({}),
+  loadingTimedOut: false,
+  login: () => Promise.resolve(null),
+  register: () => Promise.resolve(null),
+  logout: () => Promise.resolve(),
+  resetPassword: () => Promise.resolve(),
+  updatePassword: () => Promise.resolve(),
+  updateProfile: () => Promise.resolve(),
+  verifyOtp: () => Promise.resolve(),
 });

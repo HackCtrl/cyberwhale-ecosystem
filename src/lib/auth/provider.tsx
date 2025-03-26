@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from './context';
@@ -28,7 +29,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     isLoading, 
     setIsLoading, 
     error, 
-    setError 
+    setError,
+    loadingTimedOut 
   } = useAuthState();
 
   const handleLogin = async (email: string, password: string) => {
@@ -76,6 +78,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       updatePassword: handleUpdatePassword,
       updateProfile: handleUpdateProfile,
       verifyOtp: handleVerifyOtp,
+      loadingTimedOut
     }}>
       {children}
     </AuthContext.Provider>
