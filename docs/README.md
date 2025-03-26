@@ -12,3 +12,9 @@ Welcome to the official documentation for the CyberWhale platform. This comprehe
 - [Development](./development/README.md)
 - [API Reference](./api/README.md)
 - [Deployment](./deployment/README.md)
+
+## Последние обновления
+
+- Добавлено новое задание по криптографии: "Утечка данных CyberWhale: Тайна зашифрованного чата"
+- Улучшена система подсказок в CTF заданиях
+- Добавлена детальная документация по архитектуре проекта

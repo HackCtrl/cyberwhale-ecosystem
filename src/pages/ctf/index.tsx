@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -48,12 +49,12 @@ const mockChallenges: Challenge[] = [
   },
   {
     id: '3',
-    title: 'Шифрование и дешифрование',
-    description: 'Расшифруйте сообщение, зашифрованное с помощью классического шифра Виженера.',
+    title: 'Утечка данных CyberWhale: Тайна зашифрованного чата',
+    description: 'Ваша команда по кибербезопасности расследует утечку данных из компании CyberWhale. Вам удалось перехватить логи чата, который, предположительно, содержит информацию об утечке. Сообщения в чате зашифрованы.',
     category: 'crypto',
-    difficulty: 'intermediate',
+    difficulty: 'beginner',
     points: 200,
-    tags: ['cryptography', 'vigenere'],
+    tags: ['cryptography', 'caesar-cipher'],
     solved: false,
     solvedBy: 87,
     createdAt: new Date('2023-07-05'),

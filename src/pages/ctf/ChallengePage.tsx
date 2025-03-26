@@ -28,7 +28,7 @@ const mockChallenges: Record<string, Challenge> = {
   '1': {
     id: '1',
     title: 'Уязвимый веб-сайт',
-    description: 'Найдите SQL-инъекцию на странице входа и получите доступ к учетной записи администратора.',
+    description: 'Найдите SQL-инъекцию на странице входа и получите доступ к учетной записи админист��атора.',
     category: 'web',
     difficulty: 'beginner',
     points: 100,
@@ -53,12 +53,12 @@ const mockChallenges: Record<string, Challenge> = {
   },
   '3': {
     id: '3',
-    title: 'Шифрование и дешифрование',
-    description: 'Расшифруйте сообщение, зашифрованное с помощью классического шифра Виженера.',
+    title: 'Утечка данных CyberWhale: Тайна зашифрованного чата',
+    description: 'Ваша команда по кибербезопасности расследует утечку данных из компании CyberWhale. Вам удалось перехватить логи чата, который, предположительно, содержит информацию об утечке. Сообщения в чате зашифрованы.',
     category: 'crypto',
-    difficulty: 'intermediate',
+    difficulty: 'beginner',
     points: 200,
-    tags: ['cryptography', 'vigenere'],
+    tags: ['cryptography', 'caesar-cipher'],
     solved: false,
     solvedBy: 87,
     createdAt: new Date('2023-07-05'),
@@ -131,6 +131,7 @@ export default function ChallengePage() {
   const [flag, setFlag] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [submitResult, setSubmitResult] = useState<'success' | 'error' | null>(null);
+  const [revealedHints, setRevealedHints] = useState<string[]>([]);
   
   // Get challenge data
   const challenge = id ? mockChallenges[id] : null;
@@ -169,7 +170,7 @@ export default function ChallengePage() {
     const correctFlags: Record<string, string> = {
       '1': 'flag{sql_injection_success}',
       '2': 'flag{hidden_in_plain_sight}',
-      '3': 'flag{vigenere_decoded}',
+      '3': 'CW{Cyban_Secret}',
       '4': 'flag{binary_reversed}',
       '5': 'flag{packet_analysis_complete}',
       '6': 'flag{buffer_overflow_pwned}',
@@ -198,6 +199,16 @@ export default function ChallengePage() {
   const resetSubmission = () => {
     setFlag('');
     setSubmitResult(null);
+  };
+  
+  const handleRevealHint = (hintId: string) => {
+    setRevealedHints(prev => [...prev, hintId]);
+    
+    toast({
+      title: "Подсказка открыта",
+      description: "С вашего счета списано 10 очков.",
+      variant: "default",
+    });
   };
 
   return (
@@ -327,12 +338,14 @@ export default function ChallengePage() {
                         {challenge.category === 'crypto' && (
                           <>
                             <p className="text-gray-300 mb-4">
-                              Расшифруйте следующее сообщение, которое было зашифровано с использованием шифра Виженера.
-                              Ключ для шифра содержится в тексте самого сообщения.
+                              В зашифрованных сообщениях один из участников оставил подсказку: "Ключ — в нашей команде, точнее, в её имени. Помни, что алфавит цикличен."
                             </p>
                             <div className="bg-cyberdark-900 p-4 rounded-md mb-4 font-mono text-sm text-gray-300 overflow-x-auto">
-                              LWPATZVEQPKQVZHFFIYLWTZXZRMWMTLSRBAGXPVGAJUEGEVSUMXCSIEIVSBVZMRXPDLTIBEMXVVPKWQJLWBZVBIHWGIMWQLPVMXXZIGAJTSPGFLXZEGTARRWUCGCYPWDCFPBPNBEMXPCLVTYAPRKSLRKQPLXRGPTARRITRVPHFUPJTZJPNISRCFLWFVBXPCLWDDTTVGTXWVVCFVZHVPPTARRWUTSPMPUFEUAKUPNVRCLVTZTIKEPWPNVTZEUPNFQVZHFBVBVT
+                              Khoor#Zruog#43#Fkdw#lv#khuh1#Fkhhuv2#CW{HvsdqbVhfuhw}
                             </div>
+                            <p className="text-gray-300 mb-4">
+                              Ваша задача: Расшифровать перехваченное сообщение, используя подсказку, и найти флаг в формате CW{"{...}"}.
+                            </p>
                           </>
                         )}
                         
@@ -375,21 +388,53 @@ export default function ChallengePage() {
                       <div className="bg-cyberdark-700 rounded-lg p-4 border border-cyberdark-600">
                         <div className="flex justify-between items-center mb-2">
                           <h3 className="font-medium text-white">Подсказка 1</h3>
-                          <Button size="sm" variant="outline">
-                            Открыть (-10 очков)
-                          </Button>
+                          {revealedHints.includes('hint1') ? (
+                            <Badge variant="outline" className="bg-cyberdark-600">
+                              Открыто
+                            </Badge>
+                          ) : (
+                            <Button size="sm" variant="outline" onClick={() => handleRevealHint('hint1')}>
+                              Открыть (-10 очков)
+                            </Button>
+                          )}
                         </div>
-                        <p className="text-gray-400 text-sm">Получите подсказку, которая направит вас в правильном направлении.</p>
+                        {revealedHints.includes('hint1') ? (
+                          <p className="text-gray-300 text-sm">
+                            {challenge.category === 'crypto' && (
+                              <>
+                                Название команды содержит сдвиг, который нужно применить к каждой букве зашифрованного сообщения. Попробуйте разные варианты шифра Цезаря.
+                              </>
+                            )}
+                          </p>
+                        ) : (
+                          <p className="text-gray-400 text-sm">Получите подсказку, которая направит вас в правильном направлении.</p>
+                        )}
                       </div>
                       
                       <div className="bg-cyberdark-700 rounded-lg p-4 border border-cyberdark-600">
                         <div className="flex justify-between items-center mb-2">
                           <h3 className="font-medium text-white">Подсказка 2</h3>
-                          <Button size="sm" variant="outline">
-                            Открыть (-25 очков)
-                          </Button>
+                          {revealedHints.includes('hint2') ? (
+                            <Badge variant="outline" className="bg-cyberdark-600">
+                              Открыто
+                            </Badge>
+                          ) : (
+                            <Button size="sm" variant="outline" onClick={() => handleRevealHint('hint2')}>
+                              Открыть (-25 очков)
+                            </Button>
+                          )}
                         </div>
-                        <p className="text-gray-400 text-sm">Более конкретная подсказка о том, как решить это задание.</p>
+                        {revealedHints.includes('hint2') ? (
+                          <p className="text-gray-300 text-sm">
+                            {challenge.category === 'crypto' && (
+                              <>
+                                "Cyber" в названии CyberWhale содержит 5 букв. Попробуйте сдвинуть каждую букву на 5 позиций назад в алфавите.
+                              </>
+                            )}
+                          </p>
+                        ) : (
+                          <p className="text-gray-400 text-sm">Более конкретная подсказка о том, как решить это задание.</p>
+                        )}
                       </div>
                       
                       <Alert className="bg-cyberdark-900 border-cyberdark-700">
@@ -492,12 +537,12 @@ export default function ChallengePage() {
                     
                     <div className="mb-4">
                       <p className="text-gray-300 text-sm mb-4">
-                        Введите найденный флаг в формате <code className="bg-cyberdark-700 px-1 py-0.5 rounded">flag&#123;...&#125;</code>
+                        Введите найденный флаг в формате <code className="bg-cyberdark-700 px-1 py-0.5 rounded">CW&#123;...&#125;</code>
                       </p>
                       <div className="flex">
                         <Input
                           className="bg-cyberdark-700 border-cyberdark-600 flex-1"
-                          placeholder="flag{...}"
+                          placeholder="CW{...}"
                           value={flag}
                           onChange={(e) => setFlag(e.target.value)}
                           disabled={submitting}
@@ -567,4 +612,3 @@ export default function ChallengePage() {
     </div>
   );
 }
-
