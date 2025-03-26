@@ -26,7 +26,9 @@ export function RegisterForm() {
     }
     
     try {
-      const { session } = await register(username, email, password);
+      // Fix: Don't try to destructure 'session' from the result, as the register 
+      // function already returns a Session object or null
+      const session = await register(username, email, password);
       
       // If session is available, user is signed in immediately (no email verification)
       if (session) {
