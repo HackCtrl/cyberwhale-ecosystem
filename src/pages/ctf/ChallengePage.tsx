@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { 
@@ -28,7 +29,7 @@ const mockChallenges: Record<string, Challenge> = {
   '1': {
     id: '1',
     title: 'Уязвимый веб-сайт',
-    description: 'Найдите SQL-инъекцию на странице входа и получите доступ к учетной записи админист��атора.',
+    description: 'Найдите SQL-инъекцию на странице входа и получите доступ к учетной записи администратора.',
     category: 'web',
     difficulty: 'beginner',
     points: 100,
@@ -341,10 +342,10 @@ export default function ChallengePage() {
                               В зашифрованных сообщениях один из участников оставил подсказку: "Ключ — в нашей команде, точнее, в её имени. Помни, что алфавит цикличен."
                             </p>
                             <div className="bg-cyberdark-900 p-4 rounded-md mb-4 font-mono text-sm text-gray-300 overflow-x-auto">
-                              Khoor#Zruog#43#Fkdw#lv#khuh1#Fkhhuv2#CW{HvsdqbVhfuhw}
+                              Khoor#Zruog#43#Fkdw#lv#khuh1#Fkhhuv2#CW&#123;Hvsdq_Vhfuhw&#125;
                             </div>
                             <p className="text-gray-300 mb-4">
-                              Ваша задача: Расшифровать перехваченное сообщение, используя подсказку, и найти флаг в формате CW{"{...}"}.
+                              Ваша задача: Расшифровать перехваченное сообщение, используя подсказку, и найти флаг в формате CW&#123;...&#125;.
                             </p>
                           </>
                         )}
