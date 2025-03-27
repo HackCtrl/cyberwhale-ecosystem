@@ -170,13 +170,13 @@ export default function ChallengePage() {
     const correctFlags: Record<string, string> = {
       '1': 'flag{sql_injection_success}',
       '2': 'flag{hidden_in_plain_sight}',
-      '3': 'CW{SecretFound}',
+      '3': 'CW{HvsdqbVhfuhw}',
       '4': 'flag{binary_reversed}',
       '5': 'flag{packet_analysis_complete}',
       '6': 'flag{buffer_overflow_pwned}',
     };
     
-    const isCorrect = flag.trim() === correctFlags[challenge.id];
+    const isCorrect = flag.trim() === correctFlags[challenge!.id];
     
     setSubmitResult(isCorrect ? 'success' : 'error');
     setSubmitting(false);
@@ -184,7 +184,7 @@ export default function ChallengePage() {
     if (isCorrect) {
       toast({
         title: "Правильный флаг!",
-        description: `Поздравляем! Вы получили ${challenge.points} очков.`,
+        description: `Поздравляем! Вы получили ${challenge!.points} очков.`,
         variant: "default",
       });
     } else {
@@ -231,30 +231,30 @@ export default function ChallengePage() {
                 <div className="p-6 border-b border-cyberdark-700">
                   <div className="flex items-center justify-between mb-4">
                     <Badge variant="outline" className="bg-cyberdark-700 text-gray-300">
-                      {categoryNames[challenge.category]}
+                      {categoryNames[challenge?.category as ChallengeCategory]}
                     </Badge>
-                    <div className={`text-xs font-medium px-2 py-1 rounded-full border ${difficultyColors[challenge.difficulty]}`}>
-                      {challenge.difficulty === 'beginner' && 'Начальный'}
-                      {challenge.difficulty === 'intermediate' && 'Средний'}
-                      {challenge.difficulty === 'advanced' && 'Продвинутый'}
-                      {challenge.difficulty === 'expert' && 'Эксперт'}
+                    <div className={`text-xs font-medium px-2 py-1 rounded-full border ${difficultyColors[challenge?.difficulty || 'beginner']}`}>
+                      {challenge?.difficulty === 'beginner' && 'Начальный'}
+                      {challenge?.difficulty === 'intermediate' && 'Средний'}
+                      {challenge?.difficulty === 'advanced' && 'Продвинутый'}
+                      {challenge?.difficulty === 'expert' && 'Эксперт'}
                     </div>
                   </div>
                   
-                  <h1 className="text-2xl font-bold text-white mb-2">{challenge.title}</h1>
+                  <h1 className="text-2xl font-bold text-white mb-2">{challenge?.title}</h1>
                   
                   <div className="flex flex-wrap items-center gap-4 text-sm text-gray-400">
                     <div className="flex items-center">
                       <Award className="w-4 h-4 mr-1" />
-                      <span>{challenge.points} очков</span>
+                      <span>{challenge?.points} очков</span>
                     </div>
                     <div className="flex items-center">
                       <Users className="w-4 h-4 mr-1" />
-                      <span>{challenge.solvedBy} решили</span>
+                      <span>{challenge?.solvedBy} решили</span>
                     </div>
                     <div className="flex items-center">
                       <Clock className="w-4 h-4 mr-1" />
-                      <span>Добавлено {challenge.createdAt.toLocaleDateString()}</span>
+                      <span>Добавлено {challenge?.createdAt.toLocaleDateString()}</span>
                     </div>
                   </div>
                 </div>
@@ -284,13 +284,13 @@ export default function ChallengePage() {
                   
                   <TabsContent value="description" className="p-6 m-0">
                     <div className="prose prose-invert max-w-none">
-                      <p className="text-gray-300 mb-4">{challenge.description}</p>
+                      <p className="text-gray-300 mb-4">{challenge?.description}</p>
                       
                       {/* Challenge details - these would be custom per challenge */}
                       <div className="mt-8">
                         <h3 className="text-lg font-semibold text-white mb-3">Детали задания</h3>
                         
-                        {challenge.category === 'web' && (
+                        {challenge?.category === 'web' && (
                           <>
                             <p className="text-gray-300 mb-4">
                               Вам предоставлен доступ к тестовому веб-сайту с уязвимостью SQL-инъекции. Ваша задача — 
@@ -316,7 +316,7 @@ export default function ChallengePage() {
                           </>
                         )}
                         
-                        {challenge.category === 'steganography' && (
+                        {challenge?.category === 'steganography' && (
                           <>
                             <p className="text-gray-300 mb-4">
                               В этом задании вам нужно найти скрытое сообщение в изображении ниже. Используйте методы 
@@ -335,13 +335,13 @@ export default function ChallengePage() {
                           </>
                         )}
                         
-                        {challenge.category === 'crypto' && (
+                        {challenge?.category === 'crypto' && (
                           <>
                             <p className="text-gray-300 mb-4">
                               В зашифрованных сообщениях один из участников оставил подсказку: "Ключ — в нашей команде, точнее, в её имени. Помни, что алфавит цикличен."
                             </p>
                             <div className="bg-cyberdark-900 p-4 rounded-md mb-4 font-mono text-sm text-gray-300 overflow-x-auto">
-                              Khoor#Zruog#43#Fkdw#lv#khuh1#Fkhhuv2#CW&#123;SecretFound&#125;
+                              Khoor#Zruog#43#Fkdw#lv#khuh1#Fkhhuv2#CW&#123;HvsdqbVhfuhw&#125;
                             </div>
                             <p className="text-gray-300 mb-4">
                               Ваша задача: Расшифровать перехваченное сообщение, используя подсказку, и найти флаг в формате CW&#123;...&#125;.
@@ -349,7 +349,7 @@ export default function ChallengePage() {
                           </>
                         )}
                         
-                        {challenge.category === 'reverse-engineering' && (
+                        {challenge?.category === 'reverse-engineering' && (
                           <>
                             <p className="text-gray-300 mb-4">
                               Вам дан исполняемый файл, который проверяет правильность введенного ключа. Ваша задача — 
@@ -373,7 +373,7 @@ export default function ChallengePage() {
                       </div>
                       
                       <div className="mt-6 flex flex-wrap gap-2">
-                        {challenge.tags.map((tag) => (
+                        {challenge?.tags.map((tag) => (
                           <div key={tag} className="inline-flex items-center rounded-full bg-cyberdark-700 px-2.5 py-0.5 text-xs font-medium text-gray-300">
                             <Tag className="mr-1 h-3 w-3" />
                             {tag}
@@ -400,7 +400,7 @@ export default function ChallengePage() {
                         </div>
                         {revealedHints.includes('hint1') ? (
                           <p className="text-gray-300 text-sm">
-                            {challenge.category === 'crypto' && (
+                            {challenge?.category === 'crypto' && (
                               <>
                                 Название команды содержит сдвиг, который нужно применить к каждой букве зашифрованного сообщения. Попробуйте разные варианты шифра Цезаря.
                               </>
@@ -426,7 +426,7 @@ export default function ChallengePage() {
                         </div>
                         {revealedHints.includes('hint2') ? (
                           <p className="text-gray-300 text-sm">
-                            {challenge.category === 'crypto' && (
+                            {challenge?.category === 'crypto' && (
                               <>
                                 "Cyber" в названии CyberWhale содержит 5 букв. Попробуйте сдвинуть каждую букву на 5 позиций назад в алфавите.
                               </>
@@ -509,7 +509,7 @@ export default function ChallengePage() {
                     </div>
                     <h4 className="text-lg font-medium text-white mb-2">Задание решено!</h4>
                     <p className="text-gray-300 mb-4">
-                      Поздравляем! Вы успешно решили это задание и получили {challenge.points} очков.
+                      Поздравляем! Вы успешно решили это задание и получили {challenge!.points} очков.
                     </p>
                     <Button 
                       variant="outline"
