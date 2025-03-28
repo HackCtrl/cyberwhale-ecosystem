@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft, 
   BookOpen, 
@@ -22,6 +22,7 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from '@/components/ui/use-toast';
 import { Challenge, ChallengeCategory } from '@/types';
 import ChatAssistant from '@/components/layout/ChatAssistant';
+import { useAuth } from '@/lib/auth';
 
 // Mock challenge data
 const mockChallenges: Record<string, Challenge> = {
@@ -132,9 +133,35 @@ export default function ChallengePage() {
   const [submitting, setSubmitting] = useState(false);
   const [submitResult, setSubmitResult] = useState<'success' | 'error' | null>(null);
   const [revealedHints, setRevealedHints] = useState<string[]>([]);
+  const { user, isLoading } = useAuth();
+  const navigate = useNavigate();
+  
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!isLoading && !user) {
+      navigate('/login?returnUrl=' + encodeURIComponent(window.location.pathname));
+    }
+  }, [user, isLoading, navigate]);
   
   // Get challenge data
   const challenge = id ? mockChallenges[id] : null;
+  
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-cyberdark-900 flex flex-col">
+        <div className="pt-20 flex-grow flex items-center justify-center">
+          <div className="text-center">
+            <Loader2 className="h-8 w-8 animate-spin text-cyberblue-500 mx-auto mb-4" />
+            <h2 className="text-2xl font-bold text-white">Загрузка...</h2>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
+  if (!user) {
+    return null; // Will redirect in useEffect
+  }
   
   if (!challenge) {
     return (
@@ -170,7 +197,7 @@ export default function ChallengePage() {
     const correctFlags: Record<string, string> = {
       '1': 'flag{sql_injection_success}',
       '2': 'flag{hidden_in_plain_sight}',
-      '3': 'CW{HvsdqbVhfuhw}',
+      '3': 'CW{SecretFound}',
       '4': 'flag{binary_reversed}',
       '5': 'flag{packet_analysis_complete}',
       '6': 'flag{buffer_overflow_pwned}',

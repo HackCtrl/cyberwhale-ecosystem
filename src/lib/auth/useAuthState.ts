@@ -14,29 +14,34 @@ export const useAuthState = () => {
   const [error, setError] = useState<string | null>(null);
   const [loadingTimedOut, setLoadingTimedOut] = useState<boolean>(false);
   const authInitialized = useRef<boolean>(false);
+  const userUpdateInProgress = useRef<boolean>(false);
   const navigate = useNavigate();
   const location = useLocation();
 
   useEffect(() => {
     console.log("Auth provider mounted");
     
-    // Set a shorter timeout to force exit loading state after 3 seconds
+    // Set a shorter timeout to force exit loading state after 2 seconds
     const loadingTimeout = setTimeout(() => {
       if (isLoading) {
         console.log("Loading timed out, forcing exit loading state");
         setLoadingTimedOut(true);
         setIsLoading(false);
       }
-    }, 3000);
+    }, 2000);
     
     // First set up the subscription
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, currentSession) => {
         console.log('Auth state changed:', event);
         
+        // Set session synchronously
         setSession(currentSession);
         
         if (event === 'SIGNED_IN' && currentSession) {
+          if (userUpdateInProgress.current) return;
+          userUpdateInProgress.current = true;
+          
           // Use setTimeout to prevent blocking the auth state change
           setTimeout(async () => {
             try {
@@ -58,18 +63,20 @@ export const useAuthState = () => {
               setError('Ошибка загрузки профиля');
             } finally {
               setIsLoading(false);
+              userUpdateInProgress.current = false;
             }
           }, 0);
         } else if (event === 'SIGNED_OUT') {
           setUser(null);
-          setSession(null);
           setIsLoading(false);
           setLoadingTimedOut(false); // Reset timeout state on sign-out
         } else if (event === 'PASSWORD_RECOVERY') {
           navigate('/reset-password');
           setIsLoading(false);
         } else if (event === 'USER_UPDATED') {
-          if (currentSession) {
+          if (currentSession && !userUpdateInProgress.current) {
+            userUpdateInProgress.current = true;
+            
             // Use setTimeout to prevent blocking the auth state change
             setTimeout(async () => {
               try {
@@ -79,6 +86,7 @@ export const useAuthState = () => {
                 console.error('Error updating user profile:', err);
               } finally {
                 setIsLoading(false);
+                userUpdateInProgress.current = false;
               }
             }, 0);
           }
@@ -93,9 +101,13 @@ export const useAuthState = () => {
           const { data: { session: currentSession } } = await supabase.auth.getSession();
           console.log('Initial session:', currentSession);
           
+          // Set session synchronously
           setSession(currentSession);
           
           if (currentSession) {
+            if (userUpdateInProgress.current) return;
+            userUpdateInProgress.current = true;
+            
             // Use setTimeout to prevent potential deadlocks
             setTimeout(async () => {
               try {
@@ -107,6 +119,7 @@ export const useAuthState = () => {
               } finally {
                 setIsLoading(false);
                 authInitialized.current = true;
+                userUpdateInProgress.current = false;
               }
             }, 0);
           } else {

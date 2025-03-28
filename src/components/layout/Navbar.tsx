@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   ChevronDown, 
   Menu, 
@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import UserMenu from './UserMenu';
 import SearchBox from '@/components/search/SearchBox';
+import { useAuth } from '@/lib/auth';
 
 type NavLink = {
   name: string;
@@ -21,6 +22,7 @@ type NavLink = {
   icon?: React.ReactNode;
   submenu?: NavLink[];
   current?: boolean;
+  requiresAuth?: boolean;
 };
 
 const navLinks: NavLink[] = [
@@ -28,31 +30,38 @@ const navLinks: NavLink[] = [
     name: 'Продукты',
     to: '/products',
     icon: <Shield className="w-4 h-4 mr-1" />,
+    requiresAuth: false,
   },
   {
     name: 'CTF Платформа',
     to: '/ctf',
     icon: <Shield className="w-4 h-4 mr-1" />,
+    requiresAuth: true,
   },
   {
     name: 'ИИ Ассистент',
     to: '/ai-assistant',
     icon: <Bot className="w-4 h-4 mr-1" />,
+    requiresAuth: true,
   },
   {
     name: 'Сообщество',
     to: '/community', // Keep this as internal link to /community
     icon: <Users className="w-4 h-4 mr-1" />,
+    requiresAuth: true,
   },
   {
     name: 'База знаний',
     to: '/knowledge',
     icon: <Database className="w-4 h-4 mr-1" />,
+    requiresAuth: false,
   },
 ];
 
 export default function Navbar() {
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isMobileSearchVisible, setIsMobileSearchVisible] = useState(false);
@@ -76,13 +85,23 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const handleNavLinkClick = (link: NavLink) => {
+    if (link.requiresAuth && !user) {
+      navigate('/login?returnUrl=' + encodeURIComponent(link.to));
+      setMobileMenuOpen(false);
+      return;
+    }
+  };
+
   const isExternalLink = (url: string) => url.startsWith('http');
 
   return (
     <nav
       className={cn(
         "fixed top-0 inset-x-0 z-50 transition-all duration-300",
-        isScrolled ? "bg-cyberdark-900/90 backdrop-blur-md border-b border-cyberdark-800" : "bg-transparent"
+        isScrolled || mobileMenuOpen
+          ? "bg-cyberdark-900/95 backdrop-blur-md border-b border-cyberdark-800" 
+          : "bg-gradient-to-b from-cyberdark-900/95 to-cyberdark-900/0 pt-1"
       )}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -95,6 +114,8 @@ export default function Navbar() {
 
           <div className="hidden md:flex items-center space-x-4">
             {updatedNavLinks.map((link) => {
+              const handleClick = () => handleNavLinkClick(link);
+              
               const LinkComponent = isExternalLink(link.to) ? (
                 <a
                   href={link.to}
@@ -112,13 +133,14 @@ export default function Navbar() {
                 </a>
               ) : (
                 <Link
-                  to={link.to}
+                  to={!link.requiresAuth || user ? link.to : '/login?returnUrl=' + encodeURIComponent(link.to)}
                   className={cn(
                     "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
                     link.current
                       ? "text-white bg-secondary/50"
                       : "text-gray-300 hover:text-white hover:bg-secondary/30"
                   )}
+                  onClick={handleClick}
                 >
                   {link.icon}
                   {link.name}
@@ -178,6 +200,8 @@ export default function Navbar() {
         <div className="md:hidden bg-cyberdark-900/95 backdrop-blur-md border-b border-cyberdark-800 animate-fade-in">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             {updatedNavLinks.map((link) => {
+              const handleClick = () => handleNavLinkClick(link);
+              
               const MobileLinkComponent = isExternalLink(link.to) ? (
                 <a
                   href={link.to}
@@ -198,14 +222,21 @@ export default function Navbar() {
                 </a>
               ) : (
                 <Link
-                  to={link.to}
+                  to={!link.requiresAuth || user ? link.to : '/login?returnUrl=' + encodeURIComponent(link.to)}
                   className={cn(
                     "block px-3 py-2 rounded-md text-base font-medium",
                     link.current
                       ? "text-white bg-secondary"
                       : "text-gray-300 hover:text-white hover:bg-secondary/50"
                   )}
-                  onClick={() => setMobileMenuOpen(false)}
+                  onClick={(e) => {
+                    if (link.requiresAuth && !user) {
+                      e.preventDefault();
+                      handleClick();
+                    } else {
+                      setMobileMenuOpen(false);
+                    }
+                  }}
                 >
                   <div className="flex items-center">
                     {link.icon}
