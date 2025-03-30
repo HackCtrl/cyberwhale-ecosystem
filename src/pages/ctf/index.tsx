@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -23,7 +22,6 @@ import ChatAssistant from '@/components/layout/ChatAssistant';
 import { toast } from '@/hooks/use-toast';
 import { mockChallenges } from '@/data/challenges';
 
-// Map categories to icons
 const categoryIcons: Record<ChallengeCategory, React.ReactNode> = {
   web: <Code className="w-5 h-5" />,
   crypto: <Shield className="w-5 h-5" />,
@@ -36,7 +34,6 @@ const categoryIcons: Record<ChallengeCategory, React.ReactNode> = {
   network: <Shield className="w-5 h-5" />,
 };
 
-// Map categories to display names
 const categoryNames: Record<ChallengeCategory, string> = {
   web: 'Веб-безопасность',
   crypto: 'Криптография',
@@ -49,7 +46,6 @@ const categoryNames: Record<ChallengeCategory, string> = {
   network: 'Сетевая безопасность',
 };
 
-// Map categories to descriptions
 const categoryDescriptions: Record<ChallengeCategory, string> = {
   web: 'Исследуйте уязвимости веб-приложений, включая SQL-инъекции, XSS и CSRF атаки, недостатки аутентификации и авторизации.',
   crypto: 'Решайте задачи на расшифровку сообщений, анализ криптографических алгоритмов и поиск уязвимостей в их реализации.',
@@ -62,9 +58,28 @@ const categoryDescriptions: Record<ChallengeCategory, string> = {
   network: 'Анализируйте сетевой трафик, протоколы и настройки для обнаружения и эксплуатации уязвимостей.',
 };
 
-// Function to get the number of challenges in each category
 const getCategoryChallengesCount = (category: ChallengeCategory) => {
   return mockChallenges.filter(challenge => challenge.category === category).length;
+};
+
+const handleStartChallenge = () => {
+  if (!user) {
+    toast({
+      title: "Требуется авторизация",
+      description: "Для начала выполнения заданий необходимо войти в систему",
+      variant: "destructive",
+    });
+    navigate('/login?returnUrl=/ctf');
+    return;
+  }
+  
+  toast({
+    title: "Начато новое задание",
+    description: "Удачи в решении!",
+    variant: "default",
+  });
+  
+  navigate(`/ctf/challenge/1`);
 };
 
 export default function CTFPlatform() {
@@ -79,7 +94,6 @@ export default function CTFPlatform() {
   }) as ChallengeCategory[];
 
   useEffect(() => {
-    // Если пользователь не авторизован и загрузка завершена, показать уведомление
     if (!isLoading && !user) {
       toast({
         title: "Гостевой режим",
@@ -108,7 +122,6 @@ export default function CTFPlatform() {
       <Navbar />
       
       <div className="pt-20 flex-grow">
-        {/* Hero section */}
         <div className="bg-cyberdark-800">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div className="md:flex md:items-center md:justify-between">
@@ -179,7 +192,6 @@ export default function CTFPlatform() {
             </p>
           </div>
 
-          {/* Category grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
             {categoriesToShow.map((category) => (
               <div 
@@ -218,7 +230,6 @@ export default function CTFPlatform() {
             ))}
           </div>
 
-          {/* Features section */}
           <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="bg-cyberdark-800 rounded-lg p-6 border border-cyberdark-700">
               <div className="bg-cyberdark-700 inline-flex items-center justify-center p-3 rounded-lg mb-4">
@@ -251,7 +262,6 @@ export default function CTFPlatform() {
             </div>
           </div>
 
-          {/* Upcoming competition */}
           <div className="mt-16 bg-gradient-to-r from-cyberdark-800 to-cyberdark-900 rounded-lg overflow-hidden border border-cyberdark-700">
             <div className="md:flex">
               <div className="p-8 md:w-2/3">

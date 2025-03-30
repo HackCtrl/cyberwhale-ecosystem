@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Link, useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -73,6 +72,14 @@ export default function CategoryChallenges() {
   if (!user) {
     return null; // Не показываем содержимое до перенаправления
   }
+
+  const handleChallengeComplete = () => {
+    toast({
+      title: "Задание выполнено!",
+      description: "Вы успешно решили задание и получили очки.",
+      variant: "default",
+    });
+  };
 
   // Фильтруем задания по выбранной категории
   const categoryChallenges = mockChallenges.filter(challenge => 
