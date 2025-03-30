@@ -100,8 +100,8 @@ export default function Navbar() {
       className={cn(
         "fixed top-0 inset-x-0 z-50 transition-all duration-300",
         isScrolled || mobileMenuOpen
-          ? "bg-cyberdark-900/95 backdrop-blur-md border-b border-cyberdark-800" 
-          : "bg-gradient-to-b from-cyberdark-900/95 to-cyberdark-900/0 pt-1"
+          ? "bg-cyberdark-900 shadow-lg border-b border-cyberdark-800" 
+          : "bg-cyberdark-900/90 backdrop-blur-md"
       )}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -197,7 +197,7 @@ export default function Navbar() {
       </div>
 
       {mobileMenuOpen && (
-        <div className="md:hidden bg-cyberdark-900/95 backdrop-blur-md border-b border-cyberdark-800 animate-fade-in">
+        <div className="md:hidden bg-cyberdark-900 border-b border-cyberdark-800 animate-fade-in">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             {updatedNavLinks.map((link) => {
               const handleClick = () => handleNavLinkClick(link);
