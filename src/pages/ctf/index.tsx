@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -62,26 +63,6 @@ const getCategoryChallengesCount = (category: ChallengeCategory) => {
   return mockChallenges.filter(challenge => challenge.category === category).length;
 };
 
-const handleStartChallenge = () => {
-  if (!user) {
-    toast({
-      title: "Требуется авторизация",
-      description: "Для начала выполнения заданий необходимо войти в систему",
-      variant: "destructive",
-    });
-    navigate('/login?returnUrl=/ctf');
-    return;
-  }
-  
-  toast({
-    title: "Начато новое задание",
-    description: "Удачи в решении!",
-    variant: "default",
-  });
-  
-  navigate(`/ctf/challenge/1`);
-};
-
 export default function CTFPlatform() {
   const { user, isLoading } = useAuth();
   const navigate = useNavigate();
@@ -93,12 +74,32 @@ export default function CTFPlatform() {
     return count > 0;
   }) as ChallengeCategory[];
 
+  const handleStartChallenge = () => {
+    if (!user) {
+      toast({
+        title: "Требуется авторизация",
+        description: "Для начала выполнения заданий необходимо войти в систему",
+        variant: "destructive",
+      });
+      navigate('/login?returnUrl=/ctf');
+      return;
+    }
+    
+    toast({
+      title: "Начато новое задание",
+      description: "Удачи в решении!",
+      variant: "default",
+    });
+    
+    navigate(`/ctf/challenge/1`);
+  };
+
   useEffect(() => {
     if (!isLoading && !user) {
       toast({
         title: "Гостевой режим",
         description: "Для решения заданий необходимо войти в систему",
-        variant: "warning",
+        variant: "default",
       });
     }
   }, [user, isLoading]);
@@ -288,7 +289,7 @@ export default function CTFPlatform() {
                     toast({
                       title: "Регистрация открыта",
                       description: "Вы успешно зарегистрированы на соревнование!",
-                      variant: "success",
+                      variant: "default",
                     });
                   }}
                 >
