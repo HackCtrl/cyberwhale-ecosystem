@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -303,8 +302,8 @@ export default function ChallengePage() {
                 <>
                   <p className="mt-4">В зашифрованных сообщениях один из участников оставил подсказку: "Ключ — в нашей команде, точнее, в её имени. Помни, что алфавит цикличен."</p>
                   <p className="mt-4">Перехваченное сообщение:<br />
-                  <code className="bg-cyberdark-800 px-2 py-1 rounded font-mono text-cyan-400">Khoor#Zruog#43#Fkdw#lv#khuh1#Fkhhuv2#CW{SecretFound}</code></p>
-                  <p className="mt-4">Цель: Расшифровать перехваченное сообщение, используя подсказку, и найти флаг в формате CW{'{...}'}.</p>
+                  <code className="bg-cyberdark-800 px-2 py-1 rounded font-mono text-cyan-400">{"Khoor#Zruog#43#Fkdw#lv#khuh1#Fkhhuv2#CW{SecretFound}"}</code></p>
+                  <p className="mt-4">Цель: Расшифровать перехваченное сообщение, используя подсказку, и найти флаг в формате CW{"{...}"}.</p>
                 </>
               )}
             </div>
@@ -383,12 +382,12 @@ export default function ChallengePage() {
                         <li>Проанализировать подсказку о ключе и "цикличности алфавита"</li>
                         <li>Определить метод шифрования на основе подсказок</li>
                         <li>Расшифровать перехваченное сообщение</li>
-                        <li>Найти флаг в формате CW{'{...}'}</li>
+                        <li>Найти флаг в формате CW{"{...}"}</li>
                       </ul>
                       
                       <div className="mt-4 p-4 bg-cyberdark-800 rounded-md">
                         <p className="text-sm text-gray-400 mb-2">Перехваченное сообщение:</p>
-                        <code className="font-mono text-cyan-400 break-all">Khoor#Zruog#43#Fkdw#lv#khuh1#Fkhhuv2#CW{SecretFound}</code>
+                        <code className="font-mono text-cyan-400 break-all">{"Khoor#Zruog#43#Fkdw#lv#khuh1#Fkhhuv2#CW{SecretFound}"}</code>
                       </div>
                     </>
                   )}
