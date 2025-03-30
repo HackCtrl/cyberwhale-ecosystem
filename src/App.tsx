@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -12,6 +11,7 @@ import './App.css';
 import HomePage from "./pages/Index";
 import CTFPlatform from "./pages/ctf/index";
 import ChallengePage from "./pages/ctf/ChallengePage";
+import CategoryChallenges from "./pages/ctf/CategoryChallenges";
 import KnowledgeBase from "./pages/knowledge/index";
 import ArticlePage from "./pages/knowledge/ArticlePage";
 import AIAssistant from "./pages/ai-assistant/index";
@@ -63,6 +63,7 @@ const App = () => {
                   {/* CTF Platform Routes */}
                   <Route path="/ctf" element={<CTFPlatform />} />
                   <Route path="/ctf/challenge/:id" element={<ChallengePage />} />
+                  <Route path="/ctf/category/:category" element={<CategoryChallenges />} />
                   
                   {/* Knowledge Base Routes */}
                   <Route path="/knowledge" element={<KnowledgeBase />} />

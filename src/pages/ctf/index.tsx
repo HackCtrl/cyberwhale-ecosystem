@@ -1,6 +1,6 @@
 
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { 
@@ -13,93 +13,15 @@ import {
   BookOpen, 
   Shield, 
   Clock, 
-  Users 
+  Users,
+  Link as LinkIcon
 } from 'lucide-react';
-import { ChallengeCategory, Challenge } from '@/types';
+import { useAuth } from '@/lib/auth';
+import { ChallengeCategory } from '@/types';
 import Navbar from '@/components/layout/Navbar';
 import ChatAssistant from '@/components/layout/ChatAssistant';
-
-// Mock CTF challenges data
-const mockChallenges: Challenge[] = [
-  {
-    id: '1',
-    title: 'Уязвимый веб-сайт',
-    description: 'Найдите SQL-инъекцию на странице входа и получите доступ к учетной записи администратора.',
-    category: 'web',
-    difficulty: 'beginner',
-    points: 100,
-    tags: ['sql-injection', 'authentication'],
-    solved: false,
-    solvedBy: 156,
-    createdAt: new Date('2023-05-15'),
-    updatedAt: new Date('2023-05-15'),
-  },
-  {
-    id: '2',
-    title: 'Скрытое сообщение',
-    description: 'Найдите скрытое сообщение в изображении, используя методы стеганографии.',
-    category: 'steganography',
-    difficulty: 'beginner',
-    points: 150,
-    tags: ['steganography', 'image'],
-    solved: false,
-    solvedBy: 124,
-    createdAt: new Date('2023-06-10'),
-    updatedAt: new Date('2023-06-10'),
-  },
-  {
-    id: '3',
-    title: 'Утечка данных CyberWhale: Тайна зашифрованного чата',
-    description: 'Ваша команда по кибербезопасности расследует утечку данных из компании CyberWhale. Вам удалось перехватить логи чата, который, предположительно, содержит информацию об утечке. Сообщения в чате зашифрованы.',
-    category: 'crypto',
-    difficulty: 'beginner',
-    points: 200,
-    tags: ['cryptography', 'caesar-cipher'],
-    solved: false,
-    solvedBy: 87,
-    createdAt: new Date('2023-07-05'),
-    updatedAt: new Date('2023-07-05'),
-  },
-  {
-    id: '4',
-    title: 'Обратная разработка',
-    description: 'Декомпилируйте и проанализируйте бинарный файл, чтобы найти ключ к продолжению задания.',
-    category: 'reverse-engineering',
-    difficulty: 'advanced',
-    points: 300,
-    tags: ['binary', 'decompilation'],
-    solved: false,
-    solvedBy: 45,
-    createdAt: new Date('2023-08-20'),
-    updatedAt: new Date('2023-08-20'),
-  },
-  {
-    id: '5',
-    title: 'Сетевая атака',
-    description: 'Проанализируйте сетевой трафик и найдите следы атаки в pcap-файле.',
-    category: 'network',
-    difficulty: 'intermediate',
-    points: 250,
-    tags: ['pcap', 'wireshark'],
-    solved: false,
-    solvedBy: 63,
-    createdAt: new Date('2023-09-10'),
-    updatedAt: new Date('2023-09-10'),
-  },
-  {
-    id: '6',
-    title: 'Переполнение буфера',
-    description: 'Используйте уязвимость переполнения буфера для выполнения произвольного кода.',
-    category: 'pwn',
-    difficulty: 'expert',
-    points: 400,
-    tags: ['buffer-overflow', 'exploitation'],
-    solved: false,
-    solvedBy: 32,
-    createdAt: new Date('2023-10-05'),
-    updatedAt: new Date('2023-10-05'),
-  },
-];
+import { toast } from '@/hooks/use-toast';
+import { mockChallenges } from '@/data/challenges';
 
 // Map categories to icons
 const categoryIcons: Record<ChallengeCategory, React.ReactNode> = {
@@ -116,7 +38,7 @@ const categoryIcons: Record<ChallengeCategory, React.ReactNode> = {
 
 // Map categories to display names
 const categoryNames: Record<ChallengeCategory, string> = {
-  web: 'Web',
+  web: 'Веб-безопасность',
   crypto: 'Криптография',
   osint: 'OSINT',
   steganography: 'Стеганография',
@@ -127,40 +49,59 @@ const categoryNames: Record<ChallengeCategory, string> = {
   network: 'Сетевая безопасность',
 };
 
-// Map difficulty to color classes
-const difficultyColors: Record<Challenge['difficulty'], string> = {
-  beginner: 'bg-green-500/20 text-green-500 border-green-500/30',
-  intermediate: 'bg-yellow-500/20 text-yellow-500 border-yellow-500/30',
-  advanced: 'bg-orange-500/20 text-orange-500 border-orange-500/30',
-  expert: 'bg-red-500/20 text-red-500 border-red-500/30',
+// Map categories to descriptions
+const categoryDescriptions: Record<ChallengeCategory, string> = {
+  web: 'Исследуйте уязвимости веб-приложений, включая SQL-инъекции, XSS и CSRF атаки, недостатки аутентификации и авторизации.',
+  crypto: 'Решайте задачи на расшифровку сообщений, анализ криптографических алгоритмов и поиск уязвимостей в их реализации.',
+  osint: 'Находите информацию из открытых источников для решения заданий, используя методы поиска и анализа данных.',
+  steganography: 'Извлекайте скрытую информацию из различных файлов, включая изображения, аудио и видео.',
+  'reverse-engineering': 'Анализируйте бинарные файлы и исходный код для понимания их функциональности и поиска уязвимостей.',
+  forensics: 'Проводите цифровую криминалистику, анализируя образы дисков, сетевой трафик и другие артефакты.',
+  pwn: 'Используйте уязвимости в исполняемых файлах для получения контроля над системой.',
+  programming: 'Создавайте скрипты и программы для автоматизации решения заданий и анализа данных.',
+  network: 'Анализируйте сетевой трафик, протоколы и настройки для обнаружения и эксплуатации уязвимостей.',
+};
+
+// Function to get the number of challenges in each category
+const getCategoryChallengesCount = (category: ChallengeCategory) => {
+  return mockChallenges.filter(challenge => challenge.category === category).length;
 };
 
 export default function CTFPlatform() {
+  const { user, isLoading } = useAuth();
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [filterCategory, setFilterCategory] = useState<ChallengeCategory | 'all'>('all');
-  const [filterDifficulty, setFilterDifficulty] = useState<Challenge['difficulty'] | 'all'>('all');
+  
+  const categoriesToShow = Object.keys(categoryNames).filter(category => {
+    const count = getCategoryChallengesCount(category as ChallengeCategory);
+    return count > 0;
+  }) as ChallengeCategory[];
 
-  // Filter challenges based on search and filters
-  const filteredChallenges = mockChallenges.filter(challenge => {
-    // Apply search query filter
-    const matchesSearch = 
-      searchQuery === '' ||
-      challenge.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      challenge.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      challenge.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+  useEffect(() => {
+    // Если пользователь не авторизован и загрузка завершена, показать уведомление
+    if (!isLoading && !user) {
+      toast({
+        title: "Гостевой режим",
+        description: "Для решения заданий необходимо войти в систему",
+        variant: "warning",
+      });
+    }
+  }, [user, isLoading]);
+
+  const handleCategoryClick = (category: ChallengeCategory) => {
+    if (!user && !isLoading) {
+      toast({
+        title: "Требуется авторизация",
+        description: "Для доступа к заданиям необходимо войти в систему",
+        variant: "destructive",
+      });
+      navigate('/login?returnUrl=/ctf/category/' + category);
+      return;
+    }
     
-    // Apply category filter
-    const matchesCategory = 
-      filterCategory === 'all' || 
-      challenge.category === filterCategory;
-    
-    // Apply difficulty filter
-    const matchesDifficulty = 
-      filterDifficulty === 'all' || 
-      challenge.difficulty === filterDifficulty;
-    
-    return matchesSearch && matchesCategory && matchesDifficulty;
-  });
+    navigate(`/ctf/category/${category}`);
+  };
 
   return (
     <div className="min-h-screen bg-cyberdark-900 flex flex-col">
@@ -181,12 +122,25 @@ export default function CTFPlatform() {
                   Решайте задачи, зарабатывайте очки и соревнуйтесь с другими участниками.
                 </p>
                 <div className="mt-6 flex">
-                  <Link to="/ctf/challenges">
-                    <Button className="bg-cyberblue-500 hover:bg-cyberblue-600">
-                      Перейти к заданиям
-                      <ArrowRight className="ml-2 w-4 h-4" />
-                    </Button>
-                  </Link>
+                  <Button 
+                    className="bg-cyberblue-500 hover:bg-cyberblue-600"
+                    onClick={() => {
+                      if (!user && !isLoading) {
+                        toast({
+                          title: "Требуется авторизация",
+                          description: "Для доступа к заданиям необходимо войти в систему",
+                          variant: "destructive",
+                        });
+                        navigate('/login?returnUrl=/ctf');
+                        return;
+                      }
+                      const firstCategory = categoriesToShow[0];
+                      navigate(`/ctf/category/${firstCategory}`);
+                    }}
+                  >
+                    Начать решать задания
+                    <ArrowRight className="ml-2 w-4 h-4" />
+                  </Button>
                 </div>
               </div>
               
@@ -195,7 +149,7 @@ export default function CTFPlatform() {
                   <h3 className="text-xl font-semibold text-white mb-4">Статистика платформы</h3>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-cyberdark-800 p-4 rounded-md">
-                      <div className="text-2xl font-bold text-white">25+</div>
+                      <div className="text-2xl font-bold text-white">{mockChallenges.length}+</div>
                       <div className="text-sm text-gray-400">Активных заданий</div>
                     </div>
                     <div className="bg-cyberdark-800 p-4 rounded-md">
@@ -203,11 +157,11 @@ export default function CTFPlatform() {
                       <div className="text-sm text-gray-400">Участников</div>
                     </div>
                     <div className="bg-cyberdark-800 p-4 rounded-md">
-                      <div className="text-2xl font-bold text-white">8</div>
+                      <div className="text-2xl font-bold text-white">{categoriesToShow.length}</div>
                       <div className="text-sm text-gray-400">Категорий</div>
                     </div>
                     <div className="bg-cyberdark-800 p-4 rounded-md">
-                      <div className="text-2xl font-bold text-white">3</div>
+                      <div className="text-2xl font-bold text-white">4</div>
                       <div className="text-sm text-gray-400">Уровня сложности</div>
                     </div>
                   </div>
@@ -219,112 +173,45 @@ export default function CTFPlatform() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="md:flex md:items-center md:justify-between mb-8">
-            <h2 className="text-2xl font-bold text-white">Capture The Flag</h2>
+            <h2 className="text-2xl font-bold text-white">Категории заданий</h2>
             <p className="mt-2 md:mt-0 text-gray-400">
-              Наша CTF платформа предлагает разнообразные задания по кибербезопасности, от начального до продвинутого уровня. 
-              Решайте задачи, зарабатывайте очки и соревнуйтесь с другими участниками.
+              Выберите категорию, чтобы перейти к соответствующим заданиям
             </p>
           </div>
 
-          {/* Search and filter */}
-          <div className="mb-8 space-y-4 sm:space-y-0 sm:flex sm:items-center sm:justify-between">
-            <div className="flex-1 relative sm:max-w-md">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
-              <Input
-                type="search"
-                placeholder="Поиск по заданиям..."
-                className="pl-10 w-full bg-cyberdark-800 border-cyberdark-700"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-            
-            <div className="flex space-x-2">
-              <div className="relative">
-                <select
-                  className="appearance-none bg-cyberdark-800 border border-cyberdark-700 text-white py-2 px-4 pr-8 rounded focus:outline-none focus:ring-1 focus:ring-cyberblue-500"
-                  value={filterCategory}
-                  onChange={(e) => setFilterCategory(e.target.value as ChallengeCategory | 'all')}
-                >
-                  <option value="all">Все категории</option>
-                  <option value="web">Web</option>
-                  <option value="crypto">Криптография</option>
-                  <option value="osint">OSINT</option>
-                  <option value="steganography">Стеганография</option>
-                  <option value="reverse-engineering">Реверс-инжиниринг</option>
-                  <option value="forensics">Форензика</option>
-                  <option value="pwn">PWN</option>
-                  <option value="programming">Программирование</option>
-                  <option value="network">Сетевая безопасность</option>
-                </select>
-                <Filter className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-              </div>
-              
-              <div className="relative">
-                <select
-                  className="appearance-none bg-cyberdark-800 border border-cyberdark-700 text-white py-2 px-4 pr-8 rounded focus:outline-none focus:ring-1 focus:ring-cyberblue-500"
-                  value={filterDifficulty}
-                  onChange={(e) => setFilterDifficulty(e.target.value as Challenge['difficulty'] | 'all')}
-                >
-                  <option value="all">Все уровни</option>
-                  <option value="beginner">Начальный</option>
-                  <option value="intermediate">Средний</option>
-                  <option value="advanced">Продвинутый</option>
-                  <option value="expert">Эксперт</option>
-                </select>
-                <Filter className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-              </div>
-            </div>
-          </div>
-
-          {/* Challenges grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredChallenges.map((challenge) => (
-              <div
-                key={challenge.id}
+          {/* Category grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+            {categoriesToShow.map((category) => (
+              <div 
+                key={category}
                 className="bg-cyberdark-800 rounded-lg overflow-hidden border border-cyberdark-700 hover:border-cyberblue-500/50 transition-all duration-300 hover:shadow-glow-sm"
               >
                 <div className="p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center space-x-2">
-                      <div className="bg-cyberdark-700 rounded-full p-2">
-                        {categoryIcons[challenge.category]}
-                      </div>
-                      <span className="text-sm font-medium text-gray-300">
-                        {categoryNames[challenge.category]}
-                      </span>
+                  <div className="flex items-center space-x-3 mb-4">
+                    <div className="bg-cyberdark-700 rounded-full p-2">
+                      {categoryIcons[category]}
                     </div>
-                    <div className={`text-xs font-medium px-2 py-1 rounded-full border ${difficultyColors[challenge.difficulty]}`}>
-                      {challenge.difficulty === 'beginner' && 'Начальный'}
-                      {challenge.difficulty === 'intermediate' && 'Средний'}
-                      {challenge.difficulty === 'advanced' && 'Продвинутый'}
-                      {challenge.difficulty === 'expert' && 'Эксперт'}
-                    </div>
+                    <h3 className="text-xl font-bold text-white">{categoryNames[category]}</h3>
                   </div>
                   
-                  <h3 className="text-xl font-bold text-white mb-2">{challenge.title}</h3>
-                  
-                  <p className="text-gray-300 mb-6 line-clamp-3">
-                    {challenge.description}
+                  <p className="text-gray-300 mb-6 min-h-[4rem]">
+                    {categoryDescriptions[category]}
                   </p>
                   
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
-                      <div className="flex items-center text-gray-400">
-                        <Trophy className="w-4 h-4 mr-1" />
-                        <span className="text-sm">{challenge.points} очков</span>
-                      </div>
-                      <div className="flex items-center text-gray-400">
-                        <Users className="w-4 h-4 mr-1" />
-                        <span className="text-sm">{challenge.solvedBy} решили</span>
+                    <div className="flex items-center space-x-3">
+                      <div className="bg-cyberdark-700 px-2 py-1 rounded text-sm text-gray-300">
+                        {getCategoryChallengesCount(category)} заданий
                       </div>
                     </div>
                     
-                    <Link to={`/ctf/challenge/${challenge.id}`}>
-                      <Button variant="outline" size="sm">
-                        Решить
-                      </Button>
-                    </Link>
+                    <Button 
+                      onClick={() => handleCategoryClick(category)}
+                      variant="outline"
+                    >
+                      Перейти к кейсам
+                      <ArrowRight className="ml-2 w-4 h-4" />
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -376,7 +263,25 @@ export default function CTFPlatform() {
                 <p className="text-gray-300 mb-6">
                   Примите участие в нашем ежемесячном CTF соревновании. Решайте уникальные задачи, соревнуйтесь с другими участниками и выигрывайте ценные призы. Подходит для всех уровней подготовки.
                 </p>
-                <Button className="bg-cyberblue-500 hover:bg-cyberblue-600">
+                <Button 
+                  className="bg-cyberblue-500 hover:bg-cyberblue-600" 
+                  onClick={() => {
+                    if (!user && !isLoading) {
+                      toast({
+                        title: "Требуется авторизация",
+                        description: "Для регистрации необходимо войти в систему",
+                        variant: "destructive",
+                      });
+                      navigate('/login?returnUrl=/ctf');
+                      return;
+                    }
+                    toast({
+                      title: "Регистрация открыта",
+                      description: "Вы успешно зарегистрированы на соревнование!",
+                      variant: "success",
+                    });
+                  }}
+                >
                   Зарегистрироваться
                 </Button>
               </div>
