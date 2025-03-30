@@ -1,266 +1,303 @@
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { 
-  Card, 
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle 
-} from '@/components/ui/card';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Separator } from '@/components/ui/separator';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Progress } from '@/components/ui/progress';
 import { 
-  ShieldAlert, 
-  Trophy, 
+  Filter, 
   Search, 
+  ArrowRight, 
+  Trophy, 
   Code, 
-  LockKeyhole, 
-  Eye, 
-  Network, 
-  Bomb,
-  Info 
+  Cpu, 
+  BookOpen, 
+  Shield, 
+  Clock, 
+  Users,
+  Link as LinkIcon
 } from 'lucide-react';
-import { mockChallenges } from '@/data/challenges';
-import { Challenge } from '@/types';
 import { useAuth } from '@/lib/auth';
-import { useToast } from '@/hooks/use-toast';
+import { ChallengeCategory } from '@/types';
+import Navbar from '@/components/layout/Navbar';
+import ChatAssistant from '@/components/layout/ChatAssistant';
+import { toast } from '@/hooks/use-toast';
+import { mockChallenges } from '@/data/challenges';
 
-// Group challenges by category
-const groupChallengesByCategory = (challenges: Challenge[]) => {
-  const grouped: Record<string, Challenge[]> = {};
-  
-  challenges.forEach(challenge => {
-    if (!grouped[challenge.category]) {
-      grouped[challenge.category] = [];
-    }
-    grouped[challenge.category].push(challenge);
-  });
-  
-  return grouped;
+// Map categories to icons
+const categoryIcons: Record<ChallengeCategory, React.ReactNode> = {
+  web: <Code className="w-5 h-5" />,
+  crypto: <Shield className="w-5 h-5" />,
+  osint: <Search className="w-5 h-5" />,
+  steganography: <Search className="w-5 h-5" />,
+  'reverse-engineering': <Cpu className="w-5 h-5" />,
+  forensics: <Search className="w-5 h-5" />,
+  pwn: <Shield className="w-5 h-5" />,
+  programming: <Code className="w-5 h-5" />,
+  network: <Shield className="w-5 h-5" />,
 };
 
-// Mock fetch challenges function (simulates API call)
-const fetchChallenges = (): Promise<Challenge[]> => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(mockChallenges);
-    }, 600);
-  });
+// Map categories to display names
+const categoryNames: Record<ChallengeCategory, string> = {
+  web: 'Веб-безопасность',
+  crypto: 'Криптография',
+  osint: 'OSINT',
+  steganography: 'Стеганография',
+  'reverse-engineering': 'Реверс-инжиниринг',
+  forensics: 'Форензика',
+  pwn: 'PWN',
+  programming: 'Программирование',
+  network: 'Сетевая безопасность',
+};
+
+// Map categories to descriptions
+const categoryDescriptions: Record<ChallengeCategory, string> = {
+  web: 'Исследуйте уязвимости веб-приложений, включая SQL-инъекции, XSS и CSRF атаки, недостатки аутентификации и авторизации.',
+  crypto: 'Решайте задачи на расшифровку сообщений, анализ криптографических алгоритмов и поиск уязвимостей в их реализации.',
+  osint: 'Находите информацию из открытых источников для решения заданий, используя методы поиска и анализа данных.',
+  steganography: 'Извлекайте скрытую информацию из различных файлов, включая изображения, аудио и видео.',
+  'reverse-engineering': 'Анализируйте бинарные файлы и исходный код для понимания их функциональности и поиска уязвимостей.',
+  forensics: 'Проводите цифровую криминалистику, анализируя образы дисков, сетевой трафик и другие артефакты.',
+  pwn: 'Используйте уязвимости в исполняемых файлах для получения контроля над системой.',
+  programming: 'Создавайте скрипты и программы для автоматизации решения заданий и анализа данных.',
+  network: 'Анализируйте сетевой трафик, протоколы и настройки для обнаружения и эксплуатации уязвимостей.',
+};
+
+// Function to get the number of challenges in each category
+const getCategoryChallengesCount = (category: ChallengeCategory) => {
+  return mockChallenges.filter(challenge => challenge.category === category).length;
 };
 
 export default function CTFPlatform() {
+  const { user, isLoading } = useAuth();
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState('');
+  const [filterCategory, setFilterCategory] = useState<ChallengeCategory | 'all'>('all');
   
-  // Redirect to login if not authenticated
+  const categoriesToShow = Object.keys(categoryNames).filter(category => {
+    const count = getCategoryChallengesCount(category as ChallengeCategory);
+    return count > 0;
+  }) as ChallengeCategory[];
+
   useEffect(() => {
-    if (!user) {
-      navigate('/login?returnUrl=' + encodeURIComponent('/ctf'));
+    // Если пользователь не авторизован и загрузка завершена, показать уведомление
+    if (!isLoading && !user) {
       toast({
-        title: "Авторизация требуется",
-        description: "Для доступа к CTF платформе необходимо авторизоваться.",
-        variant: "destructive"
+        title: "Гостевой режим",
+        description: "Для решения заданий необходимо войти в систему",
+        variant: "warning",
       });
     }
-  }, [user, navigate, toast]);
+  }, [user, isLoading]);
 
-  // Fetch challenges
-  const { data: challenges, isLoading, error } = useQuery({
-    queryKey: ['challenges'],
-    queryFn: fetchChallenges,
-    enabled: !!user, // Only fetch if user is authenticated
-  });
-  
-  if (!user) {
-    return null; // Don't render anything if not authenticated
-  }
-
-  // Filter challenges by search query
-  const filteredChallenges = challenges?.filter(challenge => 
-    challenge.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    challenge.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (challenge.tags && challenge.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())))
-  );
-  
-  // Group challenges by category
-  const groupedChallenges = filteredChallenges ? groupChallengesByCategory(filteredChallenges) : {};
-  
-  // Category names in Russian
-  const categoryNames: Record<string, string> = {
-    'web': 'Веб-безопасность',
-    'crypto': 'Криптография',
-    'steganography': 'Стеганография',
-    'reverse-engineering': 'Обратная разработка',
-    'network': 'Сетевая безопасность',
-    'pwn': 'Бинарная эксплуатация'
+  const handleCategoryClick = (category: ChallengeCategory) => {
+    if (!user && !isLoading) {
+      toast({
+        title: "Требуется авторизация",
+        description: "Для доступа к заданиям необходимо войти в систему",
+        variant: "destructive",
+      });
+      navigate('/login?returnUrl=/ctf/category/' + category);
+      return;
+    }
+    
+    navigate(`/ctf/category/${category}`);
   };
-  
-  // Category icons
-  const categoryIcons: Record<string, React.ReactNode> = {
-    'web': <Code className="w-5 h-5" />,
-    'crypto': <LockKeyhole className="w-5 h-5" />,
-    'steganography': <Eye className="w-5 h-5" />,
-    'reverse-engineering': <ShieldAlert className="w-5 h-5" />,
-    'network': <Network className="w-5 h-5" />,
-    'pwn': <Bomb className="w-5 h-5" />
-  };
-  
-  // Category descriptions
-  const categoryDescriptions: Record<string, string> = {
-    'web': 'Задания, связанные с веб-уязвимостями, SQL-инъекциями, XSS, CSRF и другими атаками на веб-приложения.',
-    'crypto': 'Задания по криптографии, шифрованию и дешифрованию данных, взлому криптографических алгоритмов.',
-    'steganography': 'Поиск скрытой информации в изображениях, аудио, видео и других файлах.',
-    'reverse-engineering': 'Анализ и исследование программного обеспечения для понимания его функциональности.',
-    'network': 'Задания, связанные с анализом сетевого трафика, протоколов и сетевых атак.',
-    'pwn': 'Эксплуатация уязвимостей в программном обеспечении для получения контроля над системой.'
-  };
-  
-  // Render loading state
-  if (isLoading) {
-    return (
-      <div className="container mx-auto px-4 py-24 animate-pulse">
-        <div className="h-12 bg-cyberdark-800 rounded w-1/3 mb-8"></div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="h-64 bg-cyberdark-800 rounded"></div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
-  // Render error state
-  if (error) {
-    return (
-      <div className="container mx-auto px-4 py-24">
-        <Alert variant="destructive">
-          <AlertDescription>
-            Произошла ошибка при загрузке заданий. Пожалуйста, попробуйте позже.
-          </AlertDescription>
-        </Alert>
-      </div>
-    );
-  }
 
   return (
-    <div className="container mx-auto px-4 py-24">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-3xl font-bold mb-2">CTF Платформа</h1>
-          <p className="text-gray-400">
-            Проверьте свои навыки в различных областях кибербезопасности
-          </p>
-        </div>
-        
-        <div className="relative w-full md:w-72">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-          <Input
-            placeholder="Поиск заданий..."
-            className="pl-10"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
-        </div>
-      </div>
+    <div className="min-h-screen bg-cyberdark-900 flex flex-col">
+      <Navbar />
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
-        {Object.keys(categoryNames).map((category) => (
-          <Card key={category} className="overflow-hidden hover:border-primary/50 transition-colors">
-            <CardHeader className="bg-cyberdark-800 pb-2">
-              <div className="flex items-center gap-2 mb-1">
-                <div className="bg-cyberdark-700 p-2 rounded-full">
-                  {categoryIcons[category]}
+      <div className="pt-20 flex-grow">
+        {/* Hero section */}
+        <div className="bg-cyberdark-800">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div className="md:flex md:items-center md:justify-between">
+              <div className="md:w-2/3">
+                <h1 className="text-3xl font-bold text-white sm:text-4xl">
+                  <span className="block text-cyberblue-400">CTF ПЛАТФОРМА</span>
+                  <span className="block mt-1">Проверьте свои навыки в реальных сценариях</span>
+                </h1>
+                <p className="mt-3 text-lg text-gray-300">
+                  Наша CTF платформа предлагает разнообразные задания по кибербезопасности, от начального до продвинутого уровня. 
+                  Решайте задачи, зарабатывайте очки и соревнуйтесь с другими участниками.
+                </p>
+                <div className="mt-6 flex">
+                  <Button 
+                    className="bg-cyberblue-500 hover:bg-cyberblue-600"
+                    onClick={() => {
+                      if (!user && !isLoading) {
+                        toast({
+                          title: "Требуется авторизация",
+                          description: "Для доступа к заданиям необходимо войти в систему",
+                          variant: "destructive",
+                        });
+                        navigate('/login?returnUrl=/ctf');
+                        return;
+                      }
+                      const firstCategory = categoriesToShow[0];
+                      navigate(`/ctf/category/${firstCategory}`);
+                    }}
+                  >
+                    Начать решать задания
+                    <ArrowRight className="ml-2 w-4 h-4" />
+                  </Button>
                 </div>
-                <CardTitle className="text-lg">{categoryNames[category]}</CardTitle>
-              </div>
-              <div className="flex items-center gap-2">
-                <Badge variant="outline" className="text-xs">
-                  {(groupedChallenges[category]?.length || 0)} кейсов
-                </Badge>
-                <Badge variant="secondary" className="text-xs bg-secondary/50">
-                  {['crypto', 'web'].includes(category) ? 'Популярное' : ''}
-                </Badge>
-              </div>
-            </CardHeader>
-            
-            <CardContent className="pt-4">
-              <p className="text-sm text-gray-400 line-clamp-3 mb-2">
-                {categoryDescriptions[category]}
-              </p>
-              
-              <div className="flex justify-between text-xs text-gray-400 mb-2">
-                <span>Сложность</span>
-                <span>
-                  {category === 'web' || category === 'crypto' || category === 'steganography' 
-                    ? 'Начальный' 
-                    : category === 'network' 
-                    ? 'Средний' 
-                    : 'Продвинутый'}
-                </span>
               </div>
               
-              <Progress 
-                value={
-                  category === 'web' || category === 'crypto' || category === 'steganography' 
-                    ? 25 
-                    : category === 'network' 
-                    ? 50 
-                    : 75
-                } 
-                className="h-1 mb-4" 
-              />
-            </CardContent>
-            
-            <CardFooter className="border-t border-cyberdark-700 pt-4">
-              <Button 
-                className="w-full" 
-                onClick={() => navigate(`/ctf/category/${category}`)}
-              >
-                Решать кейсы
-              </Button>
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
-      
-      <Separator className="my-10" />
-      
-      <div className="mb-10">
-        <div className="flex items-center gap-3 mb-6">
-          <Trophy className="w-6 h-6 text-yellow-500" />
-          <h2 className="text-2xl font-bold">Рейтинг участников</h2>
+              <div className="hidden md:block md:w-1/3 mt-8 md:mt-0">
+                <div className="bg-cyberdark-700 rounded-lg p-6 text-center border border-cyberdark-600">
+                  <h3 className="text-xl font-semibold text-white mb-4">Статистика платформы</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="bg-cyberdark-800 p-4 rounded-md">
+                      <div className="text-2xl font-bold text-white">{mockChallenges.length}+</div>
+                      <div className="text-sm text-gray-400">Активных заданий</div>
+                    </div>
+                    <div className="bg-cyberdark-800 p-4 rounded-md">
+                      <div className="text-2xl font-bold text-white">500+</div>
+                      <div className="text-sm text-gray-400">Участников</div>
+                    </div>
+                    <div className="bg-cyberdark-800 p-4 rounded-md">
+                      <div className="text-2xl font-bold text-white">{categoriesToShow.length}</div>
+                      <div className="text-sm text-gray-400">Категорий</div>
+                    </div>
+                    <div className="bg-cyberdark-800 p-4 rounded-md">
+                      <div className="text-2xl font-bold text-white">4</div>
+                      <div className="text-sm text-gray-400">Уровня сложности</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        
-        <div className="bg-cyberdark-800 rounded-lg p-6">
-          <div className="text-center py-8">
-            <Info className="w-12 h-12 text-gray-500 mx-auto mb-4" />
-            <p className="text-lg text-gray-400">Таблица лидеров будет доступна после запуска соревнований</p>
-            <Button 
-              className="mt-4" 
-              variant="outline"
-              onClick={() => {
-                toast({
-                  title: "Скоро!",
-                  description: "Соревнования начнутся в ближайшее время.",
-                  variant: "default"
-                });
-              }}
-            >
-              Подписаться на уведомления
-            </Button>
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="md:flex md:items-center md:justify-between mb-8">
+            <h2 className="text-2xl font-bold text-white">Категории заданий</h2>
+            <p className="mt-2 md:mt-0 text-gray-400">
+              Выберите категорию, чтобы перейти к соответствующим заданиям
+            </p>
+          </div>
+
+          {/* Category grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+            {categoriesToShow.map((category) => (
+              <div 
+                key={category}
+                className="bg-cyberdark-800 rounded-lg overflow-hidden border border-cyberdark-700 hover:border-cyberblue-500/50 transition-all duration-300 hover:shadow-glow-sm"
+              >
+                <div className="p-6">
+                  <div className="flex items-center space-x-3 mb-4">
+                    <div className="bg-cyberdark-700 rounded-full p-2">
+                      {categoryIcons[category]}
+                    </div>
+                    <h3 className="text-xl font-bold text-white">{categoryNames[category]}</h3>
+                  </div>
+                  
+                  <p className="text-gray-300 mb-6 min-h-[4rem]">
+                    {categoryDescriptions[category]}
+                  </p>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div className="bg-cyberdark-700 px-2 py-1 rounded text-sm text-gray-300">
+                        {getCategoryChallengesCount(category)} заданий
+                      </div>
+                    </div>
+                    
+                    <Button 
+                      onClick={() => handleCategoryClick(category)}
+                      variant="outline"
+                    >
+                      Перейти к кейсам
+                      <ArrowRight className="ml-2 w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Features section */}
+          <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="bg-cyberdark-800 rounded-lg p-6 border border-cyberdark-700">
+              <div className="bg-cyberdark-700 inline-flex items-center justify-center p-3 rounded-lg mb-4">
+                <Code className="h-6 w-6 text-cyberblue-400" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">Практические навыки</h3>
+              <p className="text-gray-300">
+                Развивайте практические навыки кибербезопасности в безопасной среде с реалистичными сценариями.
+              </p>
+            </div>
+            
+            <div className="bg-cyberdark-800 rounded-lg p-6 border border-cyberdark-700">
+              <div className="bg-cyberdark-700 inline-flex items-center justify-center p-3 rounded-lg mb-4">
+                <Trophy className="h-6 w-6 text-cyberblue-400" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">Соревнования</h3>
+              <p className="text-gray-300">
+                Участвуйте в регулярных соревнованиях, сравнивайте свои результаты с другими и выигрывайте призы.
+              </p>
+            </div>
+            
+            <div className="bg-cyberdark-800 rounded-lg p-6 border border-cyberdark-700">
+              <div className="bg-cyberdark-700 inline-flex items-center justify-center p-3 rounded-lg mb-4">
+                <BookOpen className="h-6 w-6 text-cyberblue-400" />
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">Обучение</h3>
+              <p className="text-gray-300">
+                Изучайте новые концепции и техники кибербезопасности через практические задания и подробные разборы.
+              </p>
+            </div>
+          </div>
+
+          {/* Upcoming competition */}
+          <div className="mt-16 bg-gradient-to-r from-cyberdark-800 to-cyberdark-900 rounded-lg overflow-hidden border border-cyberdark-700">
+            <div className="md:flex">
+              <div className="p-8 md:w-2/3">
+                <div className="flex items-center mb-4">
+                  <Clock className="h-5 w-5 text-cyberblue-400 mr-2" />
+                  <span className="text-sm font-medium text-cyberblue-400">Следующая неделя, 18:00 МСК</span>
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-3">CTF Соревнование</h3>
+                <p className="text-gray-300 mb-6">
+                  Примите участие в нашем ежемесячном CTF соревновании. Решайте уникальные задачи, соревнуйтесь с другими участниками и выигрывайте ценные призы. Подходит для всех уровней подготовки.
+                </p>
+                <Button 
+                  className="bg-cyberblue-500 hover:bg-cyberblue-600" 
+                  onClick={() => {
+                    if (!user && !isLoading) {
+                      toast({
+                        title: "Требуется авторизация",
+                        description: "Для регистрации необходимо войти в систему",
+                        variant: "destructive",
+                      });
+                      navigate('/login?returnUrl=/ctf');
+                      return;
+                    }
+                    toast({
+                      title: "Регистрация открыта",
+                      description: "Вы успешно зарегистрированы на соревнование!",
+                      variant: "success",
+                    });
+                  }}
+                >
+                  Зарегистрироваться
+                </Button>
+              </div>
+              <div className="md:w-1/3 bg-cyberdark-700 flex items-center justify-center p-8">
+                <div className="text-center">
+                  <Trophy className="h-16 w-16 text-yellow-500 mx-auto mb-4" />
+                  <h4 className="text-lg font-semibold text-white mb-2">1-е место</h4>
+                  <p className="text-gray-300">5000 очков + VIP доступ на 1 месяц</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+
+      <ChatAssistant />
     </div>
   );
 }
