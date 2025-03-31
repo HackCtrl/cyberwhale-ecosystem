@@ -545,9 +545,7 @@ export default function ChallengePage() {
         </div>
       </div>
 
-      <ChatAssistant context="ctf" />
+      <ChatAssistant />
     </div>
   );
 }
-
-export default ChallengePage;
