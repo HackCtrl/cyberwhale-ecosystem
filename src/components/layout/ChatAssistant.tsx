@@ -12,11 +12,7 @@ type Message = {
   timestamp: Date;
 };
 
-interface ChatAssistantProps {
-  context?: string; // Added context prop
-}
-
-export default function ChatAssistant({ context }: ChatAssistantProps) {
+export default function ChatAssistant() {
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [message, setMessage] = useState('');

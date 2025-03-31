@@ -44,11 +44,6 @@ export interface Challenge {
   solvedBy: number;
   createdAt: Date;
   updatedAt: Date;
-  timeLimit?: number; // Added timeLimit as optional property
-  files?: string[]; // Added files as optional property
-  hint?: string; // Added hint as optional property
-  flag?: string; // Added flag as optional property
-  technique?: string; // Added technique as optional property
 }
 
 export type ChallengeCategory = 

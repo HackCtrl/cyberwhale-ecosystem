@@ -1,3 +1,4 @@
+
 import { Challenge } from '@/types';
 
 // Mock CTF challenges data
@@ -79,18 +80,5 @@ export const mockChallenges: Challenge[] = [
     solvedBy: 32,
     createdAt: new Date('2023-10-05'),
     updatedAt: new Date('2023-10-05'),
-  },
-  {
-    id: '7',
-    title: 'Утечка данных CyberWhale: Зашифрованный архив',
-    description: 'Ваша команда получила доступ к зашифрованному архиву, который предположительно содержит важную информацию о деятельности компании CyberWhale. Вам нужно расшифровать архив и найти флаг.',
-    category: 'crypto',
-    difficulty: 'intermediate',
-    points: 250,
-    tags: ['cryptography', 'password-cracking', 'archive'],
-    solved: false,
-    solvedBy: 68,
-    createdAt: new Date('2023-11-15'),
-    updatedAt: new Date('2023-11-15'),
   },
 ];

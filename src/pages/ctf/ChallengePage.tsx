@@ -13,358 +13,460 @@ import {
   Flag,
   Users,
   ShieldAlert,
-  Lightbulb,
-  Download
+  Lightbulb
 } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
 import ChatAssistant from '@/components/layout/ChatAssistant';
 import { useAuth } from '@/lib/auth';
 import { toast } from '@/hooks/use-toast';
 import { mockChallenges } from '@/data/challenges';
-import { downloadChallengeFile } from '@/utils/challengeFiles';
 
-// Your ChallengePage component implementation here
-const ChallengePage = () => {
-  // Use React router hooks
+// Подсказки для заданий
+const challengeHints: Record<string, string[]> = {
+  '1': [
+    'Проверьте поля формы входа на наличие уязвимостей SQL-инъекции',
+    'Попробуйте использовать одинарные кавычки и логические операторы в поле username',
+    'Классическая инъекция: admin\' OR \'1\'=\'1'
+  ],
+  '2': [
+    'Изучите метаданные изображения с помощью специальных инструментов',
+    'Проверьте наличие скрытой информации в младших битах изображения (LSB стеганография)',
+    'Попробуйте изменить контрастность или цветовые каналы изображения'
+  ],
+  '3': [
+    'Обратите внимание на подсказку о "названии команды" (CyberWhale) и цикличности алфавита',
+    'Подсчитайте сумму позиций букв в названии CyberWhale в английском алфавите',
+    'Помните, что шифр Цезаря использует циклический сдвиг букв алфавита'
+  ],
+  '4': [
+    'Используйте декомпилятор для анализа бинарного файла',
+    'Обратите внимание на строковые константы в коде',
+    'Проверьте функции проверки ввода пользователя'
+  ],
+  '5': [
+    'Используйте Wireshark для анализа pcap-файла',
+    'Обратите внимание на необычные HTTP-запросы',
+    'Проверьте заголовки пакетов на наличие скрытой информации'
+  ],
+  '6': [
+    'Проанализируйте входные данные, которые приводят к переполнению буфера',
+    'Найдите адрес возврата функции в памяти',
+    'Подготовьте payload с шеллкодом для выполнения'
+  ]
+};
+
+// Флаги для заданий (в реальном приложении они должны храниться на сервере)
+const challengeFlags: Record<string, string> = {
+  '1': 'CW{SQLi_M4st3r}',
+  '2': 'CW{H1dd3n_1n_pl41n_s1ght}',
+  '3': 'CW{SecretFound}',
+  '4': 'CW{R3v3rs1ng_Ch4mp}',
+  '5': 'CW{P4ck3t_4n4lyst}',
+  '6': 'CW{Buff3r_0v3rfl0w_pr0}',
+};
+
+export default function ChallengePage() {
   const { id } = useParams<{ id: string }>();
+  const { user, isLoading } = useAuth();
   const navigate = useNavigate();
-  
-  // Get auth state
-  const { user } = useAuth();
-  
-  // Component state
   const [flagInput, setFlagInput] = useState('');
-  const [notes, setNotes] = useState('');
-  const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
-  const [showHint, setShowHint] = useState(false);
-  const [challenge, setChallenge] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [submitted, setSubmitted] = useState(false);
+  const [showHints, setShowHints] = useState(false);
+  const [currentHint, setCurrentHint] = useState(0);
+  const [submitting, setSubmitting] = useState(false);
+  const [solved, setSolved] = useState(false);
+  const [startTime, setStartTime] = useState<Date | null>(null);
+  const [elapsedTime, setElapsedTime] = useState<number>(0);
+  const [timerInterval, setTimerInterval] = useState<NodeJS.Timeout | null>(null);
+
+  // Найти текущее задание
+  const challenge = mockChallenges.find(c => c.id === id);
   
-  // Load challenge data
+  // Доступные подсказки для текущего задания
+  const hints = id ? challengeHints[id] || [] : [];
+
   useEffect(() => {
-    // Simulate loading challenge from API
-    setTimeout(() => {
-      if (id) {
-        const foundChallenge = mockChallenges.find(c => c.id.toString() === id);
-        if (foundChallenge) {
-          setChallenge(foundChallenge);
-          // If the challenge has a time limit, set up the timer
-          if (foundChallenge.timeLimit) {
-            setTimeRemaining(foundChallenge.timeLimit * 60); // Convert to seconds
-          }
-        } else {
-          // Challenge not found
-          toast({
-            title: "Challenge not found",
-            description: "The challenge you're looking for doesn't exist.",
-            variant: "destructive",
-          });
-          navigate('/ctf');
-        }
-      }
-      setIsLoading(false);
-    }, 500);
-  }, [id, navigate]);
-  
-  // Timer effect
+    // Если пользователь не авторизован и загрузка завершена, перенаправляем на страницу входа
+    if (!isLoading && !user) {
+      toast({
+        title: "Требуется авторизация",
+        description: "Для доступа к заданиям необходимо войти в систему",
+        variant: "destructive",
+      });
+      navigate('/login?returnUrl=/ctf/challenge/' + id);
+    }
+  }, [user, isLoading, navigate, id]);
+
   useEffect(() => {
-    let timer: NodeJS.Timeout;
-    
-    if (timeRemaining !== null && timeRemaining > 0) {
-      timer = setInterval(() => {
-        setTimeRemaining(prev => {
-          if (prev !== null && prev > 0) {
-            return prev - 1;
-          }
-          return 0;
-        });
+    // Запускаем таймер при открытии страницы
+    if (user && !startTime && !solved) {
+      const now = new Date();
+      setStartTime(now);
+      
+      const interval = setInterval(() => {
+        const currentTime = new Date();
+        const elapsed = Math.floor((currentTime.getTime() - now.getTime()) / 1000);
+        setElapsedTime(elapsed);
       }, 1000);
+      
+      setTimerInterval(interval);
     }
     
     return () => {
-      if (timer) clearInterval(timer);
+      if (timerInterval) {
+        clearInterval(timerInterval);
+      }
     };
-  }, [timeRemaining]);
-  
-  // Format time remaining
+  }, [user, startTime, solved, timerInterval]);
+
+  // Форматирование времени в формат MM:SS
   const formatTime = (seconds: number) => {
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    const secs = seconds % 60;
-    
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
-  
-  // Handle flag submission
+
   const handleSubmitFlag = () => {
     if (!flagInput.trim()) {
       toast({
-        title: "Flag is required",
-        description: "Please enter a flag before submitting.",
+        title: "Пустое поле",
+        description: "Введите флаг перед отправкой",
         variant: "destructive",
       });
       return;
     }
     
-    // Validate flag
-    if (challenge && challenge.flag === flagInput.trim()) {
-      // Correct flag
-      toast({
-        title: "Correct flag!",
-        description: `Congratulations! You've solved the ${challenge.title} challenge.`,
-        variant: "default",
-      });
-      setSubmitted(true);
-    } else {
-      // Incorrect flag
-      toast({
-        title: "Incorrect flag",
-        description: "The submitted flag is not correct. Try again!",
-        variant: "destructive",
-      });
-    }
-  };
-  
-  // Handle showing hint
-  const handleShowHint = () => {
-    setShowHint(true);
-    toast({
-      title: "Hint revealed",
-      description: "You've revealed a hint for this challenge.",
-      variant: "default",
-    });
-  };
-  
-  // Handle file download
-  const handleDownloadFile = (fileName: string) => {
-    if (id) {
-      const success = downloadChallengeFile(id, fileName);
-      if (success) {
+    setSubmitting(true);
+    
+    // Имитация отправки на сервер
+    setTimeout(() => {
+      const correctFlag = id ? challengeFlags[id] : '';
+      
+      if (flagInput.trim() === correctFlag) {
+        // Останавливаем таймер
+        if (timerInterval) {
+          clearInterval(timerInterval);
+        }
+        
+        setSolved(true);
         toast({
-          title: "File download initiated",
-          description: `Downloading ${fileName}...`,
+          title: "Поздравляем!",
+          description: "Вы успешно решили задание!",
           variant: "default",
         });
       } else {
         toast({
-          title: "Download failed",
-          description: "Unable to download the requested file.",
+          title: "Неверный флаг",
+          description: "Попробуйте еще раз",
           variant: "destructive",
         });
       }
+      
+      setSubmitting(false);
+    }, 1000);
+  };
+
+  const handleNextHint = () => {
+    if (currentHint < hints.length - 1) {
+      setCurrentHint(prev => prev + 1);
+      
+      toast({
+        title: "Новая подсказка",
+        description: "Подсказка разблокирована!",
+      });
+    } else {
+      toast({
+        title: "Подсказки исчерпаны",
+        description: "Больше подсказок нет, попробуйте решить задание",
+        variant: "default",
+      });
     }
   };
-  
+
   if (isLoading) {
     return (
-      <div className="container mx-auto py-8 px-4">
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-pulse flex flex-col items-center">
-            <div className="h-12 w-64 bg-gray-700 rounded mb-4"></div>
-            <div className="h-6 w-32 bg-gray-700 rounded"></div>
-          </div>
+      <div className="min-h-screen bg-cyberdark-900 flex flex-col">
+        <Navbar />
+        <div className="pt-20 flex-grow flex items-center justify-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyberblue-500"></div>
         </div>
       </div>
     );
   }
-  
+
+  if (!user) {
+    return null; // Не показываем содержимое до перенаправления
+  }
+
   if (!challenge) {
     return (
-      <div className="container mx-auto py-8 px-4">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold mb-4">Challenge not found</h1>
-          <p className="mb-4">The challenge you're looking for doesn't exist.</p>
-          <Button asChild>
-            <Link to="/ctf">Back to Challenges</Link>
-          </Button>
+      <div className="min-h-screen bg-cyberdark-900 flex flex-col">
+        <Navbar />
+        <div className="pt-20 flex-grow">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center">
+            <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
+            <h1 className="text-3xl font-bold text-white mb-4">Задание не найдено</h1>
+            <p className="text-gray-300 mb-8">Запрашиваемое задание не существует или было удалено</p>
+            <Link to="/ctf">
+              <Button>
+                <ArrowLeft className="mr-2 w-4 h-4" />
+                Вернуться на CTF платформу
+              </Button>
+            </Link>
+          </div>
         </div>
       </div>
     );
   }
-  
+
   return (
-    <div className="container mx-auto py-8 px-4">
-      {/* Back button */}
-      <div className="mb-6">
-        <Button variant="outline" size="sm" asChild>
-          <Link to="/ctf" className="flex items-center">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Challenges
-          </Link>
-        </Button>
-      </div>
+    <div className="min-h-screen bg-cyberdark-900 flex flex-col">
+      <Navbar />
       
-      {/* Challenge header */}
-      <div className="mb-8">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
-          <div>
-            <h1 className="text-3xl font-bold">{challenge.title}</h1>
-            <div className="flex items-center space-x-4 mt-2">
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                {challenge.category}
-              </span>
-              <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
-                {challenge.difficulty}
-              </span>
-              <span className="inline-flex items-center">
-                <Trophy className="h-4 w-4 mr-1 text-yellow-500" />
-                <span className="text-sm">{challenge.points} pts</span>
-              </span>
-            </div>
+      <div className="pt-20 flex-grow">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          {/* Навигация */}
+          <div className="mb-6">
+            <Link to={`/ctf/category/${challenge.category}`} className="text-cyberblue-400 hover:text-cyberblue-300 flex items-center">
+              <ArrowLeft className="mr-2 w-4 h-4" />
+              Назад к кейсам
+            </Link>
           </div>
           
-          {timeRemaining !== null && (
-            <div className="mt-4 md:mt-0 flex items-center bg-red-900/20 px-4 py-2 rounded-md">
-              <Clock className="h-5 w-5 mr-2 text-red-500" />
-              <span className="text-lg font-mono">{formatTime(timeRemaining)}</span>
+          {/* Header */}
+          <div className="bg-cyberdark-800 rounded-lg p-6 border border-cyberdark-700 mb-6">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
+              <div>
+                <div className="flex items-center space-x-2 mb-2">
+                  <div className="bg-cyberdark-700 text-cyberblue-400 text-xs font-medium px-2.5 py-0.5 rounded">
+                    Кейс #{challenge.id}
+                  </div>
+                  <div className="bg-cyberdark-700 text-gray-300 text-xs font-medium px-2.5 py-0.5 rounded">
+                    {challenge.category === 'web' && 'Веб-безопасность'}
+                    {challenge.category === 'crypto' && 'Криптография'}
+                    {challenge.category === 'osint' && 'OSINT'}
+                    {challenge.category === 'steganography' && 'Стеганография'}
+                    {challenge.category === 'reverse-engineering' && 'Реверс-инжиниринг'}
+                    {challenge.category === 'forensics' && 'Форензика'}
+                    {challenge.category === 'pwn' && 'PWN'}
+                    {challenge.category === 'programming' && 'Программирование'}
+                    {challenge.category === 'network' && 'Сетевая безопасность'}
+                  </div>
+                </div>
+                <h1 className="text-2xl font-bold text-white">{challenge.title}</h1>
+              </div>
+              
+              <div className="mt-4 md:mt-0 flex flex-col items-end">
+                <div className="flex items-center space-x-2 mb-2">
+                  <div className="flex items-center text-gray-400">
+                    <Users className="w-4 h-4 mr-1" />
+                    <span className="text-sm">{challenge.solvedBy} решили</span>
+                  </div>
+                  <div className="flex items-center text-yellow-500">
+                    <Trophy className="w-4 h-4 mr-1" />
+                    <span className="text-sm">{challenge.points} очков</span>
+                  </div>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <div className={`text-xs font-medium px-2 py-1 rounded-full border
+                    ${challenge.difficulty === 'beginner' ? 'bg-green-500/20 text-green-500 border-green-500/30' : ''}
+                    ${challenge.difficulty === 'intermediate' ? 'bg-yellow-500/20 text-yellow-500 border-yellow-500/30' : ''}
+                    ${challenge.difficulty === 'advanced' ? 'bg-orange-500/20 text-orange-500 border-orange-500/30' : ''}
+                    ${challenge.difficulty === 'expert' ? 'bg-red-500/20 text-red-500 border-red-500/30' : ''}
+                  `}>
+                    {challenge.difficulty === 'beginner' && 'Начальный'}
+                    {challenge.difficulty === 'intermediate' && 'Средний'}
+                    {challenge.difficulty === 'advanced' && 'Продвинутый'}
+                    {challenge.difficulty === 'expert' && 'Эксперт'}
+                  </div>
+                  
+                  <div className="bg-cyberdark-700 text-gray-300 text-xs font-medium px-2.5 py-0.5 rounded flex items-center">
+                    <Clock className="w-3 h-3 mr-1" />
+                    {formatTime(elapsedTime)}
+                  </div>
+                </div>
+              </div>
             </div>
-          )}
-        </div>
-      </div>
-      
-      {/* Challenge content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left column - Challenge details */}
-        <div className="lg:col-span-2">
-          <div className="bg-gray-800 rounded-lg p-6 mb-6">
-            <h2 className="text-xl font-semibold mb-4">Description</h2>
-            <p className="text-gray-300 whitespace-pre-line mb-6">{challenge.description}</p>
             
-            {/* Available files */}
-            {challenge.files && challenge.files.length > 0 && (
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold mb-2">Files</h3>
-                <div className="space-y-2">
-                  {challenge.files.map((file: string, index: number) => (
-                    <Button
-                      key={index}
-                      variant="outline"
-                      className="flex items-center w-full justify-start"
-                      onClick={() => handleDownloadFile(file)}
-                    >
-                      <Download className="h-4 w-4 mr-2" />
-                      {file}
-                    </Button>
-                  ))}
+            <div className="mb-6">
+              {challenge.tags.map((tag) => (
+                <span key={tag} className="inline-block bg-cyberdark-700 text-gray-300 text-xs px-2.5 py-0.5 rounded mr-2 mb-2">
+                  #{tag}
+                </span>
+              ))}
+            </div>
+            
+            <div className="bg-cyberdark-700 p-4 rounded-md mb-6 text-gray-300">
+              <p>{challenge.description}</p>
+              
+              {challenge.id === '3' && (
+                <>
+                  <p className="mt-4">В зашифрованных сообщениях один из участников оставил подсказку: "Ключ — в нашей команде, точнее, в её имени. Помни, что алфавит цикличен."</p>
+                  <p className="mt-4">Перехваченное сообщение:<br />
+                  <code className="bg-cyberdark-800 px-2 py-1 rounded font-mono text-cyan-400">{"Khoor#Zruog#43#Fkdw#lv#khuh1#Fkhhuv2#CW{HvsdqbVhfuhw}"}</code></p>
+                  <p className="mt-4">Цель: Расшифровать перехваченное сообщение, используя подсказку, и найти флаг в формате CW{"{...}"}.</p>
+                </>
+              )}
+            </div>
+            
+            {solved && (
+              <div className="bg-green-900/20 border border-green-700 rounded-md p-4 mb-6 flex items-start">
+                <CheckCircle className="text-green-500 w-5 h-5 mt-0.5 mr-3 flex-shrink-0" />
+                <div>
+                  <h3 className="text-green-500 font-semibold mb-1">Задание выполнено!</h3>
+                  <p className="text-gray-300">Поздравляем! Вы успешно решили задание и получили {challenge.points} очков.</p>
+                  <p className="text-gray-400 text-sm mt-2">Время решения: {formatTime(elapsedTime)}</p>
                 </div>
               </div>
             )}
             
-            {/* Hints */}
-            {challenge.hint && (
-              <div className="mb-6">
-                <h3 className="text-lg font-semibold mb-2">Hint</h3>
-                {showHint ? (
-                  <div className="bg-yellow-900/20 p-4 rounded-md">
-                    <p className="text-yellow-300">{challenge.hint}</p>
-                  </div>
-                ) : (
-                  <Button 
-                    variant="outline" 
-                    className="flex items-center"
-                    onClick={handleShowHint}
-                  >
-                    <Lightbulb className="h-4 w-4 mr-2" />
-                    Reveal Hint
-                  </Button>
-                )}
-              </div>
-            )}
-            
-            {/* Flag submission */}
-            <div className="mt-8">
-              <h3 className="text-lg font-semibold mb-4">Submit Flag</h3>
-              <div className="flex flex-col md:flex-row md:items-center gap-4">
-                <Input
-                  placeholder="Enter flag (e.g., CW{...})"
-                  value={flagInput}
-                  onChange={(e) => setFlagInput(e.target.value)}
-                  disabled={submitted}
-                  className="flex-grow"
-                />
+            {!solved && (
+              <div className="flex flex-col md:flex-row md:items-center space-y-4 md:space-y-0 md:space-x-4">
+                <div className="flex-1 relative">
+                  <Input
+                    type="text"
+                    placeholder="Введите флаг (например, CW{'{fl4g_h3r3}'})"
+                    className="bg-cyberdark-700 border-cyberdark-600 pl-10"
+                    value={flagInput}
+                    onChange={(e) => setFlagInput(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        handleSubmitFlag();
+                      }
+                    }}
+                  />
+                  <Flag className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+                </div>
                 <Button 
-                  onClick={handleSubmitFlag} 
-                  disabled={submitted}
-                  className={submitted ? "bg-green-600 hover:bg-green-700" : ""}
+                  disabled={submitting}
+                  onClick={handleSubmitFlag}
                 >
-                  {submitted ? (
+                  {submitting ? (
                     <>
-                      <CheckCircle className="h-4 w-4 mr-2" />
-                      Solved!
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Проверка...
                     </>
                   ) : (
-                    <>
-                      <Flag className="h-4 w-4 mr-2" />
-                      Submit Flag
-                    </>
+                    "Отправить флаг"
                   )}
                 </Button>
               </div>
-              {submitted && (
-                <div className="mt-4 p-4 bg-green-900/20 rounded-md">
-                  <p className="text-green-400 flex items-center">
-                    <CheckCircle className="h-5 w-5 mr-2" />
-                    Congratulations! You've solved this challenge.
-                  </p>
+            )}
+          </div>
+          
+          {/* Содержимое задания и подсказки */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="md:col-span-2">
+              <div className="bg-cyberdark-800 rounded-lg p-6 border border-cyberdark-700 mb-6">
+                <h2 className="text-xl font-bold text-white mb-4 flex items-center">
+                  <ShieldAlert className="w-5 h-5 mr-2 text-cyberblue-400" />
+                  Задание
+                </h2>
+                
+                <div className="bg-cyberdark-700 p-4 rounded-md text-gray-300">
+                  <p className="mb-4">Это задание требует применения знаний в области {
+                    challenge.category === 'web' ? 'веб-безопасности' :
+                    challenge.category === 'crypto' ? 'криптографии' :
+                    challenge.category === 'osint' ? 'OSINT' :
+                    challenge.category === 'steganography' ? 'стеганографии' :
+                    challenge.category === 'reverse-engineering' ? 'реверс-инжиниринга' :
+                    challenge.category === 'forensics' ? 'форензики' :
+                    challenge.category === 'pwn' ? 'PWN' :
+                    challenge.category === 'programming' ? 'программирования' :
+                    'сетевой безопасности'
+                  }.</p>
+                  
+                  {challenge.id === '3' && (
+                    <>
+                      <p>Для решения этого задания вам потребуется:</p>
+                      <ul className="list-disc pl-5 mt-2 space-y-1">
+                        <li>Проанализировать подсказку о ключе и "цикличности алфавита"</li>
+                        <li>Определить метод шифрования на основе подсказок</li>
+                        <li>Расшифровать перехваченное сообщение</li>
+                        <li>Найти флаг в формате CW{"{...}"}</li>
+                      </ul>
+                      
+                      <div className="mt-4 p-4 bg-cyberdark-800 rounded-md">
+                        <p className="text-sm text-gray-400 mb-2">Перехваченное сообщение:</p>
+                        <code className="font-mono text-cyan-400 break-all">{"Khoor#Zruog#43#Fkdw#lv#khuh1#Fkhhuv2#CW{HvsdqbVhfuhw}"}</code>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+              
+              {/* Дополнительные материалы (если есть) */}
+              {challenge.id === '3' && (
+                <div className="bg-cyberdark-800 rounded-lg p-6 border border-cyberdark-700">
+                  <h2 className="text-xl font-bold text-white mb-4">Дополнительная информация</h2>
+                  
+                  <div className="bg-cyberdark-700 p-4 rounded-md text-gray-300">
+                    <p>В криптографии существует множество классических шифров замены, включая:</p>
+                    <ul className="list-disc pl-5 mt-2 space-y-1">
+                      <li>Шифр Цезаря - сдвиг каждой буквы на фиксированное число позиций</li>
+                      <li>Шифр Виженера - использование ключевого слова для определения сдвига каждой буквы</li>
+                      <li>Шифр замены - замена каждой буквы на другую по заданной таблице</li>
+                    </ul>
+                    
+                    <p className="mt-4">Помните, что "алфавит цикличен" означает, что после последней буквы алфавита (Z) идет первая (A).</p>
+                  </div>
                 </div>
               )}
             </div>
-          </div>
-        </div>
-        
-        {/* Right column - Notes and info */}
-        <div className="lg:col-span-1">
-          {/* Challenge stats */}
-          <div className="bg-gray-800 rounded-lg p-6 mb-6">
-            <h2 className="text-xl font-semibold mb-4">Challenge Info</h2>
-            <div className="space-y-4">
-              <div className="flex items-center">
-                <Users className="h-5 w-5 mr-3 text-blue-400" />
-                <div>
-                  <p className="text-sm text-gray-400">Solves</p>
-                  <p className="font-medium">{challenge.solves || 0} teams</p>
-                </div>
-              </div>
-              <div className="flex items-center">
-                <ShieldAlert className="h-5 w-5 mr-3 text-purple-400" />
-                <div>
-                  <p className="text-sm text-gray-400">Technique</p>
-                  <p className="font-medium">{challenge.technique || "Various"}</p>
-                </div>
-              </div>
-              <div className="flex items-center">
-                <AlertCircle className="h-5 w-5 mr-3 text-red-400" />
-                <div>
-                  <p className="text-sm text-gray-400">Difficulty</p>
-                  <p className="font-medium">{challenge.difficulty}</p>
-                </div>
+            
+            {/* Подсказки */}
+            <div className="md:col-span-1">
+              <div className="bg-cyberdark-800 rounded-lg p-6 border border-cyberdark-700 sticky top-24">
+                <h2 className="text-xl font-bold text-white mb-4 flex items-center">
+                  <Lightbulb className="w-5 h-5 mr-2 text-yellow-500" />
+                  Подсказки
+                </h2>
+                
+                {!showHints ? (
+                  <div className="text-center py-6">
+                    <p className="text-gray-400 mb-4">Подсказки могут помочь вам в решении задания, но использование подсказок уменьшает количество получаемых очков.</p>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setShowHints(true)}
+                    >
+                      Показать подсказки
+                    </Button>
+                  </div>
+                ) : (
+                  <div>
+                    {hints.slice(0, currentHint + 1).map((hint, index) => (
+                      <div 
+                        key={index}
+                        className="bg-cyberdark-700 p-3 rounded-md mb-3 text-gray-300 text-sm"
+                      >
+                        <p className="text-xs text-gray-400 mb-1">Подсказка {index + 1}</p>
+                        <p>{hint}</p>
+                      </div>
+                    ))}
+                    
+                    {currentHint < hints.length - 1 && (
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="w-full"
+                        onClick={handleNextHint}
+                      >
+                        Следующая подсказка
+                      </Button>
+                    )}
+                    
+                    {currentHint === hints.length - 1 && hints.length > 0 && (
+                      <p className="text-xs text-gray-400 text-center mt-2">Больше подсказок нет</p>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </div>
-          
-          {/* Personal notes */}
-          <div className="bg-gray-800 rounded-lg p-6">
-            <h2 className="text-xl font-semibold mb-4">Your Notes</h2>
-            <Textarea
-              placeholder="Take notes on your progress here..."
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              className="min-h-[200px]"
-            />
-            <p className="text-xs text-gray-400 mt-2">
-              Notes are saved locally and are only visible to you.
-            </p>
-          </div>
         </div>
       </div>
-      
-      {/* AI Assistant */}
-      <div className="mt-8">
-        <ChatAssistant context={`challenge-${challenge.id}`} />
-      </div>
+
+      <ChatAssistant />
     </div>
   );
-};
-
-export default ChallengePage;
+}
