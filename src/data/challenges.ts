@@ -81,4 +81,17 @@ export const mockChallenges: Challenge[] = [
     createdAt: new Date('2023-10-05'),
     updatedAt: new Date('2023-10-05'),
   },
+  {
+    id: '7',
+    title: 'Утечка данных CyberWhale: Зашифрованный архив',
+    description: 'Ваша команда получила доступ к зашифрованному архиву, который предположительно содержит важную информацию о деятельности компании CyberWhale. Архив был найден на компрометированном сервере, и его содержимое защищено паролем.',
+    category: 'crypto',
+    difficulty: 'intermediate',
+    points: 250,
+    tags: ['cryptography', 'password-cracking', 'archive'],
+    solved: false,
+    solvedBy: 42,
+    createdAt: new Date('2023-11-15'),
+    updatedAt: new Date('2023-11-15'),
+  },
 ];

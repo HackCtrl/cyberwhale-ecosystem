@@ -44,6 +44,9 @@ export interface Challenge {
   solvedBy: number;
   createdAt: Date;
   updatedAt: Date;
+  timeLimit?: number; // Optional time limit in seconds
+  downloadUrl?: string; // Optional URL for downloadable content
+  fileType?: 'archive' | 'image' | 'text' | 'binary' | 'other'; // Optional file type
 }
 
 export type ChallengeCategory = 

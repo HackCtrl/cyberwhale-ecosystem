@@ -13,7 +13,8 @@ import {
   Flag,
   Users,
   ShieldAlert,
-  Lightbulb
+  Lightbulb,
+  Download
 } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
 import ChatAssistant from '@/components/layout/ChatAssistant';
@@ -52,6 +53,11 @@ const challengeHints: Record<string, string[]> = {
     'Проанализируйте входные данные, которые приводят к переполнению буфера',
     'Найдите адрес возврата функции в памяти',
     'Подготовьте payload с шеллкодом для выполнения'
+  ],
+  '7': [
+    'Внимательно изучите подсказку в файле hint.txt о комбинации названия компании и цифры',
+    'Для вычисления ASCII-значений букв можно использовать таблицу ASCII или функции языков программирования',
+    'После распаковки архива, обратите внимание на формат зашифрованных данных - это может быть Base64 с AES-шифрованием'
   ]
 };
 
@@ -63,6 +69,7 @@ const challengeFlags: Record<string, string> = {
   '4': 'CW{R3v3rs1ng_Ch4mp}',
   '5': 'CW{P4ck3t_4n4lyst}',
   '6': 'CW{Buff3r_0v3rfl0w_pr0}',
+  '7': 'CW{HiddenInPlainSight}',
 };
 
 export default function ChallengePage() {
@@ -307,6 +314,36 @@ export default function ChallengePage() {
                   <p className="mt-4">Цель: Расшифровать перехваченное сообщение, используя подсказку, и найти флаг в формате CW{"{...}"}.</p>
                 </>
               )}
+              
+              {challenge.id === '7' && (
+                <>
+                  <p className="mt-4">Анализируя метаданные архива, вы обнаружили следующее:</p>
+                  <ol className="list-decimal pl-5 mt-2 space-y-1">
+                    <li>Архив содержит один файл с названием secret.txt.</li>
+                    <li>Пароль для распаковки архива был сгенерирован на основе фразы, связанной с компанией CyberWhale.</li>
+                    <li>Вместе с архивом был найден текстовый файл hint.txt, содержащий подсказку.</li>
+                  </ol>
+                  
+                  <div className="mt-4 p-4 bg-cyberdark-800 rounded-md">
+                    <p className="font-medium mb-2">Содержимое файла hint.txt:</p>
+                    <p>Пароль представляет собой комбинацию названия компании и цифры.</p>
+                    <p>Цифра представляет собой сумму значений в формате ASCII первых трех букв названия компании.</p>
+                  </div>
+                  
+                  <div className="mt-4">
+                    <a 
+                      href="https://cloud.mail.ru/public/DMbD/FVSq8QsaK" 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="inline-flex items-center px-4 py-2 bg-cyberblue-600 text-white rounded-md hover:bg-cyberblue-700 transition-colors"
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      Скачать архив
+                    </a>
+                    <p className="text-sm text-gray-400 mt-2">Архив содержит зашифрованный файл secret.txt</p>
+                  </div>
+                </>
+              )}
             </div>
             
             {solved && (
@@ -392,23 +429,65 @@ export default function ChallengePage() {
                       </div>
                     </>
                   )}
+                  
+                  {challenge.id === '7' && (
+                    <>
+                      <p>Для решения этого задания вам потребуется:</p>
+                      <ul className="list-disc pl-5 mt-2 space-y-1">
+                        <li>Скачать и проанализировать зашифрованный архив</li>
+                        <li>Расшифровать пароль архива, используя подсказку</li>
+                        <li>Извлечь содержимое архива</li>
+                        <li>Расшифровать содержимое файла secret.txt</li>
+                        <li>Найти флаг в формате CW{"{...}"}</li>
+                      </ul>
+                      
+                      <div className="mt-4 p-4 bg-cyberdark-800 rounded-md">
+                        <p className="text-sm text-gray-400 mb-2">Цель:</p>
+                        <p>Расшифруйте архив, извлеките содержимое файла secret.txt и найдите флаг в формате CW{"{...}"}.</p>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
               
               {/* Дополнительные материалы (если есть) */}
-              {challenge.id === '3' && (
+              {(challenge.id === '3' || challenge.id === '7') && (
                 <div className="bg-cyberdark-800 rounded-lg p-6 border border-cyberdark-700">
                   <h2 className="text-xl font-bold text-white mb-4">Дополнительная информация</h2>
                   
                   <div className="bg-cyberdark-700 p-4 rounded-md text-gray-300">
-                    <p>В криптографии существует множество классических шифров замены, включая:</p>
-                    <ul className="list-disc pl-5 mt-2 space-y-1">
-                      <li>Шифр Цезаря - сдвиг каждой буквы на фиксированное число позиций</li>
-                      <li>Шифр Виженера - использование ключевого слова для определения сдвига каждой буквы</li>
-                      <li>Шифр замены - замена каждой буквы на другую по заданной таблице</li>
-                    </ul>
+                    {challenge.id === '3' && (
+                      <>
+                        <p>В криптографии существует множество классических шифров замены, включая:</p>
+                        <ul className="list-disc pl-5 mt-2 space-y-1">
+                          <li>Шифр Цезаря - сдвиг каждой буквы на фиксированное число позиций</li>
+                          <li>Шифр Виженера - использование ключевого слова для определения сдвига каждой буквы</li>
+                          <li>Шифр замены - замена каждой буквы на другую по заданной таблице</li>
+                        </ul>
+                        
+                        <p className="mt-4">Помните, что "алфавит цикличен" означает, что после последней буквы алфавита (Z) идет первая (A).</p>
+                      </>
+                    )}
                     
-                    <p className="mt-4">Помните, что "алфавит цикличен" означает, что после последней буквы алфавита (Z) идет первая (A).</p>
+                    {challenge.id === '7' && (
+                      <>
+                        <p>При работе с зашифрованными архивами и файлами полезно знать:</p>
+                        <ul className="list-disc pl-5 mt-2 space-y-1">
+                          <li>ASCII (American Standard Code for Information Interchange) - таблица, которая сопоставляет каждому символу числовое значение</li>
+                          <li>Базовые символы ASCII имеют значения:
+                            <ul className="list-disc pl-5 mt-1">
+                              <li>A-Z: 65-90</li>
+                              <li>a-z: 97-122</li>
+                              <li>0-9: 48-57</li>
+                            </ul>
+                          </li>
+                          <li>Base64 - формат кодирования бинарных данных для передачи в текстовом виде</li>
+                          <li>AES (Advanced Encryption Standard) - популярный алгоритм симметричного шифрования</li>
+                        </ul>
+                        
+                        <p className="mt-4">Для проверки ASCII-значений символов можно использовать онлайн-инструменты или функции языков программирования, например, в Python: <code className="bg-cyberdark-800 px-2 py-1 rounded">ord('C')</code> вернет 67.</p>
+                      </>
+                    )}
                   </div>
                 </div>
               )}
@@ -466,7 +545,9 @@ export default function ChallengePage() {
         </div>
       </div>
 
-      <ChatAssistant />
+      <ChatAssistant context="ctf" />
     </div>
   );
 }
+
+export default ChallengePage;
