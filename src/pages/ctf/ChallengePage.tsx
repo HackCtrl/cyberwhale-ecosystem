@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -22,7 +21,6 @@ import { useAuth } from '@/lib/auth';
 import { toast } from '@/hooks/use-toast';
 import { mockChallenges } from '@/data/challenges';
 
-// Подсказки для заданий
 const challengeHints: Record<string, string[]> = {
   '1': [
     'Проверьте поля формы входа на наличие уязвимостей SQL-инъекции',
@@ -60,13 +58,12 @@ const challengeHints: Record<string, string[]> = {
     'После распаковки архива, обратите внимание на формат зашифрованных данных - это может быть Base64 с AES-шифрованием'
   ],
   '8': [
-    'Обратите внимание на названия файлов и их содержимое - они могут содержать подсказки',
-    'Вам понадобится применить несколько методов расшифровки последовательно (Цезарь, AES, стеганография)',
-    'Ищите ключи шифрования внутри файлов, они могут быть скрыты в метаданных или комментариях'
+    'Внимательно изучите содержимое файлов, они могут содержать подсказки',
+    'Применяйте различные методы анализа к файлам в архиве',
+    'Обратите внимание на все возможные места, где может быть скрыта информация'
   ]
 };
 
-// Флаги для заданий (в реальном приложении они должны храниться на сервере)
 const challengeFlags: Record<string, string> = {
   '1': 'CW{SQLi_M4st3r}',
   '2': 'CW{H1dd3n_1n_pl41n_s1ght}',
@@ -91,14 +88,11 @@ export default function ChallengePage() {
   const [elapsedTime, setElapsedTime] = useState<number>(0);
   const [timerInterval, setTimerInterval] = useState<NodeJS.Timeout | null>(null);
 
-  // Найти текущее задание
   const challenge = mockChallenges.find(c => c.id === id);
   
-  // Доступные подсказки для текущего задания
   const hints = id ? challengeHints[id] || [] : [];
 
   useEffect(() => {
-    // Если пользователь не авторизован и загрузка завершена, перенаправляем на страницу входа
     if (!isLoading && !user) {
       toast({
         title: "Требуется авторизация",
@@ -110,7 +104,6 @@ export default function ChallengePage() {
   }, [user, isLoading, navigate, id]);
 
   useEffect(() => {
-    // Запускаем таймер при открытии страницы
     if (user && !startTime && !solved) {
       const now = new Date();
       setStartTime(now);
@@ -131,7 +124,6 @@ export default function ChallengePage() {
     };
   }, [user, startTime, solved, timerInterval]);
 
-  // Форматирование времени в формат MM:SS
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
@@ -150,12 +142,10 @@ export default function ChallengePage() {
     
     setSubmitting(true);
     
-    // Имитация отправки на сервер
     setTimeout(() => {
       const correctFlag = id ? challengeFlags[id] : '';
       
       if (flagInput.trim() === correctFlag) {
-        // Останавливаем таймер
         if (timerInterval) {
           clearInterval(timerInterval);
         }
@@ -207,7 +197,7 @@ export default function ChallengePage() {
   }
 
   if (!user) {
-    return null; // ... keep existing code (not showing content before redirect)
+    return null;
   }
 
   if (!challenge) {
@@ -237,7 +227,6 @@ export default function ChallengePage() {
       
       <div className="pt-20 flex-grow">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          {/* Навигация */}
           <div className="mb-6">
             <Link to={`/ctf/category/${challenge.category}`} className="text-cyberblue-400 hover:text-cyberblue-300 flex items-center">
               <ArrowLeft className="mr-2 w-4 h-4" />
@@ -245,7 +234,6 @@ export default function ChallengePage() {
             </Link>
           </div>
           
-          {/* Header */}
           <div className="bg-cyberdark-800 rounded-lg p-6 border border-cyberdark-700 mb-6">
             <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4">
               <div>
@@ -353,20 +341,12 @@ export default function ChallengePage() {
               
               {challenge.id === '8' && (
                 <>
-                  <p className="mt-4">Анализ архива показал, что он содержит несколько файлов с разными типами шифрования:</p>
+                  <p className="mt-4">Ваша команда обнаружила подозрительный архив на сервере конкурента:</p>
                   <ol className="list-decimal pl-5 mt-2 space-y-1">
-                    <li>Зашифрованный текстовый файл с использованием шифра Цезаря.</li>
-                    <li>Файл, зашифрованный с помощью AES с ключом, который нужно найти в первом файле.</li>
-                    <li>Изображение со скрытыми данными (стеганография).</li>
+                    <li>В архиве содержатся файлы с важной информацией</li>
+                    <li>Информация защищена различными методами шифрования</li>
+                    <li>Ваша задача - извлечь скрытую информацию и найти флаг</li>
                   </ol>
-                  
-                  <div className="mt-4 p-4 bg-cyberdark-800 rounded-md">
-                    <p className="font-medium mb-2">Последовательность действий:</p>
-                    <p>1. Расшифруйте первый файл, используя классический шифр.</p>
-                    <p>2. Найдите ключ для следующего уровня шифрования.</p>
-                    <p>3. Используйте найденный ключ для расшифровки второго файла.</p>
-                    <p>4. Примените методы стеганографии к полученному изображению.</p>
-                  </div>
                   
                   <div className="mt-4">
                     <a 
@@ -429,7 +409,6 @@ export default function ChallengePage() {
             )}
           </div>
           
-          {/* Содержимое задания и подсказки */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="md:col-span-2">
               <div className="bg-cyberdark-800 rounded-lg p-6 border border-cyberdark-700 mb-6">
@@ -481,7 +460,7 @@ export default function ChallengePage() {
                       
                       <div className="mt-4 p-4 bg-cyberdark-800 rounded-md">
                         <p className="text-sm text-gray-400 mb-2">Цель:</p>
-                        <p>Расшифруйте архив, извлеките содержимое файла secret.txt и найдите флаг в формате CW{"{...}"}.</p>
+                        <p>Расшифруйте архив, извлеките содержимое ф��йла secret.txt и найдите флаг в формате CW{"{...}"}.</p>
                       </div>
                     </>
                   )}
@@ -491,23 +470,20 @@ export default function ChallengePage() {
                       <p>Для решения этого многоуровневого задания вам потребуется:</p>
                       <ul className="list-disc pl-5 mt-2 space-y-1">
                         <li>Скачать и распаковать предоставленный архив</li>
-                        <li>Определить, какой классический шифр использован в первом файле</li>
-                        <li>Расшифровать первый файл для получения ключа AES</li>
-                        <li>Использовать ключ для расшифровки второго файла</li>
-                        <li>Применить методы стеганографического анализа к полученному изображению</li>
-                        <li>Обнаружить скрытый в изображении флаг</li>
+                        <li>Проанализировать файлы, содержащиеся в архиве</li>
+                        <li>Применить различные методы анализа для извлечения скрытой информации</li>
+                        <li>Найти и отправить флаг в формате CW{"{...}"}</li>
                       </ul>
                       
                       <div className="mt-4 p-4 bg-cyberdark-800 rounded-md">
                         <p className="text-sm text-gray-400 mb-2">Цель:</p>
-                        <p>Пройдите все уровни шифрования, найдите и отправьте флаг в формате CW{"{...}"}.</p>
+                        <p>Найдите и отправьте флаг в формате CW{"{...}"}.</p>
                       </div>
                     </>
                   )}
                 </div>
               </div>
               
-              {/* Дополнительные материалы (если есть) */}
               {(challenge.id === '3' || challenge.id === '7' || challenge.id === '8') && (
                 <div className="bg-cyberdark-800 rounded-lg p-6 border border-cyberdark-700">
                   <h2 className="text-xl font-bold text-white mb-4">Дополнительная информация</h2>
@@ -550,15 +526,10 @@ export default function ChallengePage() {
                       <>
                         <p>Для успешного решения этого комплексного задания полезно знать:</p>
                         <ul className="list-disc pl-5 mt-2 space-y-1">
-                          <li>Шифр Цезаря - один из самых простых и известных методов шифрования, в котором каждая буква заменяется на другую, отстоящую от нее в алфавите на определенное число позиций</li>
-                          <li>AES (Advanced Encryption Standard) - современный симметричный алгоритм шифрования, требующий ключа для шифрования и расшифрования</li>
-                          <li>Стеганография - техника скрытия данных внутри других файлов, часто используемая для:
-                            <ul className="list-disc pl-5 mt-1">
-                              <li>Скрытия данных в изображениях (LSB - наименее значимый бит)</li>
-                              <li>Внедрения информации в метаданные файлов</li>
-                              <li>Добавления данных в конец файлов (EOF steganography)</li>
-                            </ul>
-                          </li>
+                          <li>Различные форматы файлов и методы их анализа</li>
+                          <li>Основные алгоритмы шифрования и их особенности</li>
+                          <li>Методы стеганографии и сокрытия информации в файлах</li>
+                          <li>Инструменты для анализа и обработки файлов различных типов</li>
                         </ul>
                         
                         <p className="mt-4">Для анализа файлов вы можете использовать различные инструменты:</p>
@@ -574,7 +545,6 @@ export default function ChallengePage() {
               )}
             </div>
             
-            {/* Подсказки */}
             <div className="md:col-span-1">
               <div className="bg-cyberdark-800 rounded-lg p-6 border border-cyberdark-700 sticky top-24">
                 <h2 className="text-xl font-bold text-white mb-4 flex items-center">
