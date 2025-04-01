@@ -58,6 +58,11 @@ const challengeHints: Record<string, string[]> = {
     'Внимательно изучите подсказку в файле hint.txt о комбинации названия компании и цифры',
     'Для вычисления ASCII-значений букв можно использовать таблицу ASCII или функции языков программирования',
     'После распаковки архива, обратите внимание на формат зашифрованных данных - это может быть Base64 с AES-шифрованием'
+  ],
+  '8': [
+    'Обратите внимание на названия файлов и их содержимое - они могут содержать подсказки',
+    'Вам понадобится применить несколько методов расшифровки последовательно (Цезарь, AES, стеганография)',
+    'Ищите ключи шифрования внутри файлов, они могут быть скрыты в метаданных или комментариях'
   ]
 };
 
@@ -70,6 +75,7 @@ const challengeFlags: Record<string, string> = {
   '5': 'CW{P4ck3t_4n4lyst}',
   '6': 'CW{Buff3r_0v3rfl0w_pr0}',
   '7': 'CW{HiddenInPlainSight}',
+  '8': 'CW{Caesar_AES_Stego}',
 };
 
 export default function ChallengePage() {
@@ -201,7 +207,7 @@ export default function ChallengePage() {
   }
 
   if (!user) {
-    return null; // Не показываем содержимое до перенаправления
+    return null; // ... keep existing code (not showing content before redirect)
   }
 
   if (!challenge) {
@@ -344,6 +350,38 @@ export default function ChallengePage() {
                   </div>
                 </>
               )}
+              
+              {challenge.id === '8' && (
+                <>
+                  <p className="mt-4">Анализ архива показал, что он содержит несколько файлов с разными типами шифрования:</p>
+                  <ol className="list-decimal pl-5 mt-2 space-y-1">
+                    <li>Зашифрованный текстовый файл с использованием шифра Цезаря.</li>
+                    <li>Файл, зашифрованный с помощью AES с ключом, который нужно найти в первом файле.</li>
+                    <li>Изображение со скрытыми данными (стеганография).</li>
+                  </ol>
+                  
+                  <div className="mt-4 p-4 bg-cyberdark-800 rounded-md">
+                    <p className="font-medium mb-2">Последовательность действий:</p>
+                    <p>1. Расшифруйте первый файл, используя классический шифр.</p>
+                    <p>2. Найдите ключ для следующего уровня шифрования.</p>
+                    <p>3. Используйте найденный ключ для расшифровки второго файла.</p>
+                    <p>4. Примените методы стеганографии к полученному изображению.</p>
+                  </div>
+                  
+                  <div className="mt-4">
+                    <a 
+                      href="https://cloud.mail.ru/public/cFib/6dkAnZzfo" 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="inline-flex items-center px-4 py-2 bg-cyberblue-600 text-white rounded-md hover:bg-cyberblue-700 transition-colors"
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      Скачать архив
+                    </a>
+                    <p className="text-sm text-gray-400 mt-2">Архив содержит необходимые файлы для решения задания</p>
+                  </div>
+                </>
+              )}
             </div>
             
             {solved && (
@@ -447,11 +485,30 @@ export default function ChallengePage() {
                       </div>
                     </>
                   )}
+                  
+                  {challenge.id === '8' && (
+                    <>
+                      <p>Для решения этого многоуровневого задания вам потребуется:</p>
+                      <ul className="list-disc pl-5 mt-2 space-y-1">
+                        <li>Скачать и распаковать предоставленный архив</li>
+                        <li>Определить, какой классический шифр использован в первом файле</li>
+                        <li>Расшифровать первый файл для получения ключа AES</li>
+                        <li>Использовать ключ для расшифровки второго файла</li>
+                        <li>Применить методы стеганографического анализа к полученному изображению</li>
+                        <li>Обнаружить скрытый в изображении флаг</li>
+                      </ul>
+                      
+                      <div className="mt-4 p-4 bg-cyberdark-800 rounded-md">
+                        <p className="text-sm text-gray-400 mb-2">Цель:</p>
+                        <p>Пройдите все уровни шифрования, найдите и отправьте флаг в формате CW{"{...}"}.</p>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
               
               {/* Дополнительные материалы (если есть) */}
-              {(challenge.id === '3' || challenge.id === '7') && (
+              {(challenge.id === '3' || challenge.id === '7' || challenge.id === '8') && (
                 <div className="bg-cyberdark-800 rounded-lg p-6 border border-cyberdark-700">
                   <h2 className="text-xl font-bold text-white mb-4">Дополнительная информация</h2>
                   
@@ -486,6 +543,30 @@ export default function ChallengePage() {
                         </ul>
                         
                         <p className="mt-4">Для проверки ASCII-значений символов можно использовать онлайн-инструменты или функции языков программирования, например, в Python: <code className="bg-cyberdark-800 px-2 py-1 rounded">ord('C')</code> вернет 67.</p>
+                      </>
+                    )}
+                    
+                    {challenge.id === '8' && (
+                      <>
+                        <p>Для успешного решения этого комплексного задания полезно знать:</p>
+                        <ul className="list-disc pl-5 mt-2 space-y-1">
+                          <li>Шифр Цезаря - один из самых простых и известных методов шифрования, в котором каждая буква заменяется на другую, отстоящую от нее в алфавите на определенное число позиций</li>
+                          <li>AES (Advanced Encryption Standard) - современный симметричный алгоритм шифрования, требующий ключа для шифрования и расшифрования</li>
+                          <li>Стеганография - техника скрытия данных внутри других файлов, часто используемая для:
+                            <ul className="list-disc pl-5 mt-1">
+                              <li>Скрытия данных в изображениях (LSB - наименее значимый бит)</li>
+                              <li>Внедрения информации в метаданные файлов</li>
+                              <li>Добавления данных в конец файлов (EOF steganography)</li>
+                            </ul>
+                          </li>
+                        </ul>
+                        
+                        <p className="mt-4">Для анализа файлов вы можете использовать различные инструменты:</p>
+                        <ul className="list-disc pl-5 mt-2 space-y-1">
+                          <li>CyberChef - универсальный онлайн-инструмент для криптографических операций</li>
+                          <li>StegSolve или Steghide - для анализа стеганографии в изображениях</li>
+                          <li>hexdump или xxd - для изучения бинарного содержимого файлов</li>
+                        </ul>
                       </>
                     )}
                   </div>
