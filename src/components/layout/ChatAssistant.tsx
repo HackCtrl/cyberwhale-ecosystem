@@ -27,6 +27,7 @@ export default function ChatAssistant() {
     },
   ]);
   const [isLoading, setIsLoading] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -63,7 +64,7 @@ export default function ChatAssistant() {
       const { data, error } = await supabase.functions.invoke('chat-assistant', {
         body: {
           message: message.trim(),
-          history: messages.slice(-10) // Отправляем последние 10 сообщений для контекста
+          history: messages.slice(-5) // Отправляем последние 5 сообщений для контекста
         }
       });
 
@@ -71,15 +72,20 @@ export default function ChatAssistant() {
         throw new Error(error.message);
       }
 
+      if (!data || !data.botResponse) {
+        throw new Error("Получен пустой ответ от сервера");
+      }
+
       // Добавляем ответ бота
       const botMessage: Message = {
         id: Date.now().toString(),
-        text: data.botResponse || "Извините, я не смог сгенерировать ответ. Пожалуйста, попробуйте еще раз.",
+        text: data.botResponse,
         isBot: true,
         timestamp: new Date(),
       };
       
       setMessages(prev => [...prev, botMessage]);
+      setRetryCount(0); // Сбрасываем счетчик попыток при успешном ответе
     } catch (error) {
       console.error("Error sending message:", error);
       toast.error("Произошла ошибка при отправке сообщения");
@@ -93,6 +99,20 @@ export default function ChatAssistant() {
       };
       
       setMessages(prev => [...prev, errorMessage]);
+      setRetryCount(prev => prev + 1);
+      
+      // Если слишком много ошибок подряд, предлагаем альтернативный вариант
+      if (retryCount >= 2) {
+        setTimeout(() => {
+          const helpMessage: Message = {
+            id: Date.now().toString(),
+            text: "Похоже, возникли проблемы с подключением к AI. Вы можете попробовать перезагрузить страницу или воспользоваться основными функциями без ИИ.",
+            isBot: true,
+            timestamp: new Date(),
+          };
+          setMessages(prev => [...prev, helpMessage]);
+        }, 1000);
+      }
     } finally {
       setIsLoading(false);
     }
