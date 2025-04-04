@@ -2,7 +2,8 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 
-const HUGGING_FACE_API_KEY = Deno.env.get('HUGGING_FACE_API_KEY') || '';
+// Using your provided token
+const HUGGING_FACE_API_KEY = Deno.env.get('HUGGING_FACE_API_KEY') || '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';
 const MODEL_URL = "https://api-inference.huggingface.co/models/HuggingFaceH4/zephyr-7b-beta";
 
 const corsHeaders = {
@@ -34,6 +35,9 @@ serve(async (req) => {
       }
     };
 
+    console.log(`Sending request to Hugging Face API with message: ${message}`);
+    console.log(`History context: ${JSON.stringify(payload.inputs.past_user_inputs)}`);
+
     // Отправляем запрос к Hugging Face API
     const response = await fetch(MODEL_URL, {
       method: "POST",
@@ -46,6 +50,7 @@ serve(async (req) => {
 
     // Обрабатываем ответ
     const result = await response.json();
+    console.log(`Response from Hugging Face API: ${JSON.stringify(result)}`);
 
     // Проверяем, что получили корректный ответ
     if (result.error) {
@@ -53,6 +58,7 @@ serve(async (req) => {
     }
 
     const botResponse = result.generated_text || "Извините, я не смог сгенерировать ответ. Пожалуйста, попробуйте еще раз.";
+    console.log(`Bot response: ${botResponse}`);
 
     // Возвращаем результат
     return new Response(
