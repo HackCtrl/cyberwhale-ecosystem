@@ -100,8 +100,8 @@ export default function Navbar() {
       className={cn(
         "fixed top-0 inset-x-0 z-50 transition-all duration-300",
         isScrolled || mobileMenuOpen
-          ? "bg-cyberdark-900/95 backdrop-blur-md border-b border-cyberdark-800" 
-          : "bg-gradient-to-b from-cyberdark-900/95 to-cyberdark-900/0 pt-1"
+          ? "bg-cyberblue-900/95 backdrop-blur-md border-b border-cyberblue-800/50 shadow-md" 
+          : "bg-gradient-to-b from-cyberdark-900/95 to-cyberdark-900/75 border-b border-cyberdark-800/30"
       )}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -124,8 +124,8 @@ export default function Navbar() {
                   className={cn(
                     "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
                     link.current
-                      ? "text-white bg-secondary/50"
-                      : "text-gray-300 hover:text-white hover:bg-secondary/30"
+                      ? "text-white bg-cyberblue-700/50"
+                      : "text-gray-300 hover:text-white hover:bg-cyberblue-800/40"
                   )}
                 >
                   {link.icon}
@@ -137,8 +137,8 @@ export default function Navbar() {
                   className={cn(
                     "flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors",
                     link.current
-                      ? "text-white bg-secondary/50"
-                      : "text-gray-300 hover:text-white hover:bg-secondary/30"
+                      ? "text-white bg-cyberblue-700/50"
+                      : "text-gray-300 hover:text-white hover:bg-cyberblue-800/40"
                   )}
                   onClick={handleClick}
                 >
@@ -154,7 +154,7 @@ export default function Navbar() {
                 <div key={link.to} className="relative group">
                   {LinkComponent}
                   {link.submenu && (
-                    <div className="absolute left-0 mt-1 w-48 rounded-md shadow-lg bg-secondary py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 transform origin-top-right">
+                    <div className="absolute left-0 mt-1 w-48 rounded-md shadow-lg bg-cyberblue-900 py-1 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-150 transform origin-top-right">
                       {link.submenu.map((sublink) => (
                         <Link
                           key={sublink.to}
@@ -162,8 +162,8 @@ export default function Navbar() {
                           className={cn(
                             "block px-4 py-2 text-sm",
                             sublink.current
-                              ? "text-white bg-primary/20"
-                              : "text-gray-300 hover:text-white hover:bg-secondary/50"
+                              ? "text-white bg-cyberblue-700/50"
+                              : "text-gray-300 hover:text-white hover:bg-cyberblue-800/40"
                           )}
                         >
                           {sublink.name}
@@ -184,7 +184,7 @@ export default function Navbar() {
           <div className="flex items-center md:hidden">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-md text-gray-400 hover:text-white hover:bg-cyberdark-800"
+              className="p-2 rounded-md text-gray-400 hover:text-white hover:bg-cyberblue-800/40"
             >
               {mobileMenuOpen ? (
                 <X className="h-6 w-6" aria-hidden="true" />
@@ -197,7 +197,7 @@ export default function Navbar() {
       </div>
 
       {mobileMenuOpen && (
-        <div className="md:hidden bg-cyberdark-900/95 backdrop-blur-md border-b border-cyberdark-800 animate-fade-in">
+        <div className="md:hidden bg-cyberblue-900/95 backdrop-blur-md border-b border-cyberblue-800/50 animate-fade-in">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
             {updatedNavLinks.map((link) => {
               const handleClick = () => handleNavLinkClick(link);
@@ -210,8 +210,8 @@ export default function Navbar() {
                   className={cn(
                     "block px-3 py-2 rounded-md text-base font-medium",
                     link.current
-                      ? "text-white bg-secondary"
-                      : "text-gray-300 hover:text-white hover:bg-secondary/50"
+                      ? "text-white bg-cyberblue-700/50"
+                      : "text-gray-300 hover:text-white hover:bg-cyberblue-800/40"
                   )}
                   onClick={() => setMobileMenuOpen(false)}
                 >
@@ -226,8 +226,8 @@ export default function Navbar() {
                   className={cn(
                     "block px-3 py-2 rounded-md text-base font-medium",
                     link.current
-                      ? "text-white bg-secondary"
-                      : "text-gray-300 hover:text-white hover:bg-secondary/50"
+                      ? "text-white bg-cyberblue-700/50"
+                      : "text-gray-300 hover:text-white hover:bg-cyberblue-800/40"
                   )}
                   onClick={(e) => {
                     if (link.requiresAuth && !user) {
@@ -257,8 +257,8 @@ export default function Navbar() {
                           className={cn(
                             "block px-3 py-2 rounded-md text-sm font-medium",
                             sublink.current
-                              ? "text-white bg-secondary/70"
-                              : "text-gray-300 hover:text-white hover:bg-secondary/30"
+                              ? "text-white bg-cyberblue-700/70"
+                              : "text-gray-300 hover:text-white hover:bg-cyberblue-800/30"
                           )}
                           onClick={() => setMobileMenuOpen(false)}
                         >
@@ -271,7 +271,7 @@ export default function Navbar() {
               );
             })}
           </div>
-          <div className="pt-4 pb-3 border-t border-cyberdark-800">
+          <div className="pt-4 pb-3 border-t border-cyberblue-800/50">
             <div className="px-4 py-2">
               <SearchBox className="w-full mb-3" />
               <UserMenu />
