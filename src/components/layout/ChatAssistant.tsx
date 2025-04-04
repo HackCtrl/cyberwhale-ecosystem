@@ -4,6 +4,8 @@ import { Bot, X, Send, Minimize2, Maximize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 type Message = {
   id: string;
@@ -24,6 +26,7 @@ export default function ChatAssistant() {
       timestamp: new Date(),
     },
   ]);
+  const [isLoading, setIsLoading] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -39,11 +42,11 @@ export default function ChatAssistant() {
     }
   }, [messages, isOpen]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!message.trim()) return;
+    if (!message.trim() || isLoading) return;
 
-    // Add user message
+    // Добавляем сообщение пользователя
     const userMessage: Message = {
       id: Date.now().toString(),
       text: message,
@@ -53,28 +56,46 @@ export default function ChatAssistant() {
     
     setMessages(prev => [...prev, userMessage]);
     setMessage('');
+    setIsLoading(true);
 
-    // Simulate bot response
-    setTimeout(() => {
-      const botResponses = [
-        "Отличный вопрос! В кибербезопасности очень важно начинать с основ. Я рекомендую изучить наш раздел по веб-уязвимостям.",
-        "Для начинающих в CTF рекомендую начать с простых задач в разделе Web. Там вы найдете задания для новичков.",
-        "Криптография - увлекательное направление! Вы можете найти материалы в нашей базе знаний и практические задания на платформе CTF.",
-        "Обязательно ознакомьтесь с нашими лабораторными работами для практики. Теория важна, но практика — ключ к успеху в кибербезопасности.",
-        "В нашем сообществе много опытных специалистов. Не стесняйтесь задавать вопросы и делиться своим опытом!"
-      ];
-      
-      const randomResponse = botResponses[Math.floor(Math.random() * botResponses.length)];
-      
+    try {
+      // Отправляем запрос к нашей Edge Function
+      const { data, error } = await supabase.functions.invoke('chat-assistant', {
+        body: {
+          message: message.trim(),
+          history: messages.slice(-10) // Отправляем последние 10 сообщений для контекста
+        }
+      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      // Добавляем ответ бота
       const botMessage: Message = {
         id: Date.now().toString(),
-        text: randomResponse,
+        text: data.botResponse || "Извините, я не смог сгенерировать ответ. Пожалуйста, попробуйте еще раз.",
         isBot: true,
         timestamp: new Date(),
       };
       
       setMessages(prev => [...prev, botMessage]);
-    }, 1000);
+    } catch (error) {
+      console.error("Error sending message:", error);
+      toast.error("Произошла ошибка при отправке сообщения");
+      
+      // Добавляем сообщение об ошибке от бота
+      const errorMessage: Message = {
+        id: Date.now().toString(),
+        text: "Извините, произошла ошибка при обработке вашего запроса. Пожалуйста, попробуйте позже.",
+        isBot: true,
+        timestamp: new Date(),
+      };
+      
+      setMessages(prev => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const toggleChat = () => {
@@ -165,6 +186,15 @@ export default function ChatAssistant() {
                     </div>
                   </div>
                 ))}
+                {isLoading && (
+                  <div className="mb-4 max-w-[80%] mr-auto">
+                    <div className="bg-cyberdark-800 rounded-lg p-3 flex items-center space-x-2">
+                      <div className="h-2 w-2 bg-gray-500 rounded-full animate-pulse"></div>
+                      <div className="h-2 w-2 bg-gray-500 rounded-full animate-pulse delay-75"></div>
+                      <div className="h-2 w-2 bg-gray-500 rounded-full animate-pulse delay-150"></div>
+                    </div>
+                  </div>
+                )}
                 <div ref={messagesEndRef} />
               </div>
 
@@ -178,12 +208,13 @@ export default function ChatAssistant() {
                     className="bg-cyberdark-800 border-cyberdark-700 flex-1"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
+                    disabled={isLoading}
                   />
                   <Button 
                     type="submit" 
                     size="icon" 
                     className="ml-2 bg-cyberblue-500 hover:bg-cyberblue-600"
-                    disabled={!message.trim()}
+                    disabled={!message.trim() || isLoading}
                   >
                     <Send className="w-4 h-4" />
                   </Button>
