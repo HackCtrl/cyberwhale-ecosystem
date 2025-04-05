@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { X, Send, Minimize2, Maximize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -126,12 +127,12 @@ export default function ChatAssistant() {
       {!isOpen && (
         <button
           onClick={toggleChat}
-          className="w-16 h-16 flex items-center justify-center transition-all duration-300 ocean-wave-animation hover:scale-105"
+          className="flex items-center justify-center transition-all duration-300 hover:scale-105"
         >
           <img 
-            src="/whale-icon.png" 
+            src="/lovable-uploads/08311bae-6df1-434a-8b5f-9aa9bbae6c7f.png" 
             alt="CyberWhale AI" 
-            className="w-10 h-10 object-contain hover:opacity-90 transition-opacity"
+            className="w-16 h-16 object-contain ocean-wave-animation hover:opacity-85 transition-opacity"
           />
         </button>
       )}
@@ -147,13 +148,13 @@ export default function ChatAssistant() {
             <div className="flex items-center">
               <div className="mr-2 ocean-wave-animation-small">
                 <img 
-                  src="/whale-icon.png" 
+                  src="/lovable-uploads/08311bae-6df1-434a-8b5f-9aa9bbae6c7f.png" 
                   alt="CyberWhale AI" 
                   className="w-8 h-8 object-contain"
                 />
               </div>
               <div>
-                <h3 className="text-white font-medium">CyberWhale ИИ</h3>
+                <h3 className="text-white font-medium tracking-tight">CyberWhale</h3>
                 <div className="text-xs text-gray-400">Уровень 1 • 0 очков</div>
               </div>
             </div>
