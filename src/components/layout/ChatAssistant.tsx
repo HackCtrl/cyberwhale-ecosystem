@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Bot, X, Send, Minimize2, Maximize2 } from 'lucide-react';
+import { X, Send, Minimize2, Maximize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
@@ -135,7 +135,11 @@ export default function ChatAssistant() {
           onClick={toggleChat}
           className="w-14 h-14 rounded-full bg-cyberblue-500 hover:bg-cyberblue-600 text-white shadow-glow flex items-center justify-center transition-all duration-300 animate-pulse-light"
         >
-          <Bot className="w-6 h-6" />
+          <img 
+            src="/whale-icon.png" 
+            alt="CyberWhale AI" 
+            className="w-6 h-6 object-contain"
+          />
         </button>
       )}
 
@@ -151,7 +155,11 @@ export default function ChatAssistant() {
           <div className="bg-cyberdark-800 p-3 flex items-center justify-between border-b border-cyberdark-700">
             <div className="flex items-center">
               <div className="w-8 h-8 bg-cyberblue-500 rounded-full flex items-center justify-center mr-2">
-                <Bot className="w-4 h-4 text-white" />
+                <img 
+                  src="/whale-icon.png" 
+                  alt="CyberWhale AI" 
+                  className="w-4 h-4 object-contain"
+                />
               </div>
               <div>
                 <h3 className="text-white font-medium">CyberWhale ИИ</h3>
