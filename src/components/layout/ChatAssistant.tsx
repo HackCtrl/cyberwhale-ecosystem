@@ -133,13 +133,15 @@ export default function ChatAssistant() {
       {!isOpen && (
         <button
           onClick={toggleChat}
-          className="w-14 h-14 rounded-full bg-cyberblue-500 hover:bg-cyberblue-600 text-white shadow-glow flex items-center justify-center transition-all duration-300 animate-pulse-light"
+          className="w-14 h-14 rounded-full bg-cyberblue-500 hover:bg-cyberblue-600 text-white flex items-center justify-center transition-all duration-300 ocean-wave-animation"
         >
-          <img 
-            src="/whale-icon.png" 
-            alt="CyberWhale AI" 
-            className="w-6 h-6 object-contain"
-          />
+          <div className="flex items-center justify-center">
+            <img 
+              src="/whale-icon.png" 
+              alt="CyberWhale AI" 
+              className="w-6 h-6 object-contain"
+            />
+          </div>
         </button>
       )}
 
@@ -154,7 +156,7 @@ export default function ChatAssistant() {
           {/* Header */}
           <div className="bg-cyberdark-800 p-3 flex items-center justify-between border-b border-cyberdark-700">
             <div className="flex items-center">
-              <div className="w-8 h-8 bg-cyberblue-500 rounded-full flex items-center justify-center mr-2">
+              <div className="w-8 h-8 bg-cyberblue-500 rounded-full flex items-center justify-center mr-2 ocean-wave-animation-small">
                 <img 
                   src="/whale-icon.png" 
                   alt="CyberWhale AI" 
