@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { X, Send, Minimize2, Maximize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -47,7 +46,6 @@ export default function ChatAssistant() {
     e.preventDefault();
     if (!message.trim() || isLoading) return;
 
-    // Добавляем сообщение пользователя
     const userMessage: Message = {
       id: Date.now().toString(),
       text: message,
@@ -60,11 +58,10 @@ export default function ChatAssistant() {
     setIsLoading(true);
 
     try {
-      // Отправляем запрос к нашей Edge Function
       const { data, error } = await supabase.functions.invoke('chat-assistant', {
         body: {
           message: message.trim(),
-          history: messages.slice(-5) // Отправляем последние 5 сообщений для контекста
+          history: messages.slice(-5)
         }
       });
 
@@ -76,7 +73,6 @@ export default function ChatAssistant() {
         throw new Error("Получен пустой ответ от сервера");
       }
 
-      // Добавляем ответ бота
       const botMessage: Message = {
         id: Date.now().toString(),
         text: data.botResponse,
@@ -85,12 +81,11 @@ export default function ChatAssistant() {
       };
       
       setMessages(prev => [...prev, botMessage]);
-      setRetryCount(0); // Сбрасываем счетчик попыток при успешном ответе
+      setRetryCount(0);
     } catch (error) {
       console.error("Error sending message:", error);
       toast.error("Произошла ошибка при отправке сообщения");
       
-      // Добавляем сообщение об ошибке от бота
       const errorMessage: Message = {
         id: Date.now().toString(),
         text: "Извините, произошла ошибка при обработке вашего запроса. Пожалуйста, попробуйте позже.",
@@ -101,7 +96,6 @@ export default function ChatAssistant() {
       setMessages(prev => [...prev, errorMessage]);
       setRetryCount(prev => prev + 1);
       
-      // Если слишком много ошибок подряд, предлагаем альтернативный вариант
       if (retryCount >= 2) {
         setTimeout(() => {
           const helpMessage: Message = {
@@ -129,23 +123,19 @@ export default function ChatAssistant() {
 
   return (
     <div className="fixed bottom-4 right-4 z-50">
-      {/* Floating chat button */}
       {!isOpen && (
         <button
           onClick={toggleChat}
-          className="w-14 h-14 rounded-full bg-cyberblue-500 hover:bg-cyberblue-600 text-white flex items-center justify-center transition-all duration-300 ocean-wave-animation"
+          className="w-16 h-16 flex items-center justify-center transition-all duration-300 ocean-wave-animation hover:scale-105"
         >
-          <div className="flex items-center justify-center">
-            <img 
-              src="/whale-icon.png" 
-              alt="CyberWhale AI" 
-              className="w-6 h-6 object-contain"
-            />
-          </div>
+          <img 
+            src="/whale-icon.png" 
+            alt="CyberWhale AI" 
+            className="w-10 h-10 object-contain hover:opacity-90 transition-opacity"
+          />
         </button>
       )}
 
-      {/* Chat window */}
       {isOpen && (
         <div 
           className={cn(
@@ -153,14 +143,13 @@ export default function ChatAssistant() {
             isMinimized ? "w-72 h-16" : "w-80 sm:w-96 h-[500px]"
           )}
         >
-          {/* Header */}
           <div className="bg-cyberdark-800 p-3 flex items-center justify-between border-b border-cyberdark-700">
             <div className="flex items-center">
-              <div className="w-8 h-8 bg-cyberblue-500 rounded-full flex items-center justify-center mr-2 ocean-wave-animation-small">
+              <div className="mr-2 ocean-wave-animation-small">
                 <img 
                   src="/whale-icon.png" 
                   alt="CyberWhale AI" 
-                  className="w-4 h-4 object-contain"
+                  className="w-8 h-8 object-contain"
                 />
               </div>
               <div>
@@ -186,7 +175,6 @@ export default function ChatAssistant() {
 
           {!isMinimized && (
             <>
-              {/* Messages container */}
               <div className="flex-1 p-4 overflow-y-auto">
                 {messages.map((msg) => (
                   <div 
@@ -228,7 +216,6 @@ export default function ChatAssistant() {
                 <div ref={messagesEndRef} />
               </div>
 
-              {/* Message input */}
               <div className="p-3 border-t border-cyberdark-700">
                 <form onSubmit={handleSubmit} className="flex">
                   <Input
