@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -36,11 +35,9 @@ import Footer from "./components/layout/Footer";
 const queryClient = new QueryClient();
 
 const App = () => {
-  // Добавляем эффект для отладки загрузки приложения
   useEffect(() => {
     console.log("App component mounted");
     
-    // Устанавливаем базовые стили для body
     document.body.style.backgroundColor = "#111827";
     document.body.style.color = "#e5e7eb";
     
@@ -50,60 +47,58 @@ const App = () => {
   }, []);
 
   return (
-    <div className="app-container">
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <AuthProvider>
-            <LanguageProvider>
-              <TooltipProvider>
-                <Toaster />
-                <Sonner />
-                <Navbar />
-                <div className="content-wrapper">
-                  <Routes>
-                    <Route path="/" element={<HomePage />} />
-                    
-                    {/* CTF Platform Routes */}
-                    <Route path="/ctf" element={<CTFPlatform />} />
-                    <Route path="/ctf/challenge/:id" element={<ChallengePage />} />
-                    <Route path="/ctf/category/:category" element={<CategoryChallenges />} />
-                    
-                    {/* Knowledge Base Routes */}
-                    <Route path="/knowledge" element={<KnowledgeBase />} />
-                    <Route path="/knowledge/article/:id" element={<ArticlePage />} />
-                    
-                    {/* AI Assistant Routes */}
-                    <Route path="/ai-assistant" element={<AIAssistant />} />
-                    
-                    {/* Community Routes */}
-                    <Route path="/community" element={<Community />} />
-                    
-                    {/* Products Routes */}
-                    <Route path="/products" element={<Products />} />
-                    
-                    {/* Auth Routes */}
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
-                    <Route path="/forgot-password" element={<ForgotPassword />} />
-                    <Route path="/reset-password" element={<ResetPassword />} />
-                    <Route path="/auth/confirm" element={<EmailConfirm />} />
-                    <Route path="/verify-otp" element={<VerifyOTP />} />
-                    
-                    {/* User Routes */}
-                    <Route path="/profile" element={<Profile />} />
-                    <Route path="/settings" element={<Settings />} />
-                    
-                    {/* Not Found Route */}
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </div>
-                <Footer />
-              </TooltipProvider>
-            </LanguageProvider>
-          </AuthProvider>
-        </BrowserRouter>
-      </QueryClientProvider>
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <AuthProvider>
+          <LanguageProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <Navbar />
+              <div className="content-wrapper">
+                <Routes>
+                  <Route path="/" element={<HomePage />} />
+                  
+                  {/* CTF Platform Routes */}
+                  <Route path="/ctf" element={<CTFPlatform />} />
+                  <Route path="/ctf/challenge/:id" element={<ChallengePage />} />
+                  <Route path="/ctf/category/:category" element={<CategoryChallenges />} />
+                  
+                  {/* Knowledge Base Routes */}
+                  <Route path="/knowledge" element={<KnowledgeBase />} />
+                  <Route path="/knowledge/article/:id" element={<ArticlePage />} />
+                  
+                  {/* AI Assistant Routes */}
+                  <Route path="/ai-assistant" element={<AIAssistant />} />
+                  
+                  {/* Community Routes */}
+                  <Route path="/community" element={<Community />} />
+                  
+                  {/* Products Routes */}
+                  <Route path="/products" element={<Products />} />
+                  
+                  {/* Auth Routes */}
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/reset-password" element={<ResetPassword />} />
+                  <Route path="/auth/confirm" element={<EmailConfirm />} />
+                  <Route path="/verify-otp" element={<VerifyOTP />} />
+                  
+                  {/* User Routes */}
+                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/settings" element={<Settings />} />
+                  
+                  {/* Not Found Route */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </div>
+              <Footer />
+            </TooltipProvider>
+          </LanguageProvider>
+        </AuthProvider>
+      </BrowserRouter>
+    </QueryClientProvider>
   );
 };
 

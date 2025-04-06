@@ -21,7 +21,11 @@ export default function LanguageSwitch({ className }: LanguageSwitchProps) {
       onClick={toggleLanguage} 
       variant="ghost" 
       size="sm" 
-      className={cn("flex items-center gap-1.5 text-gray-300 hover:text-white", className)}
+      className={cn(
+        "flex items-center gap-1.5 text-gray-300 hover:text-white language-btn", 
+        className
+      )}
+      title={t('language.select')}
     >
       <Globe className="h-4 w-4" />
       <span>{t('language.switch')}</span>
