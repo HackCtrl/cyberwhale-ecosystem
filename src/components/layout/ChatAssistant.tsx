@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { X, Send, Minimize2, Maximize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -5,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { useLanguage } from '@/lib/i18n/context';
 
 type Message = {
   id: string;
@@ -14,22 +16,26 @@ type Message = {
 };
 
 export default function ChatAssistant() {
+  const { t, language } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      text: 'Привет! Я CyberWhale, ваш ИИ-наставник по кибербезопасности. Давайте начнем наше увлекательное путешествие! 🖊️',
-      isBot: true,
-      timestamp: new Date(),
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Обновляем приветственное сообщение при смене языка
+  useEffect(() => {
+    setMessages([{
+      id: '1',
+      text: t('chat.welcome'),
+      isBot: true,
+      timestamp: new Date(),
+    }]);
+  }, [language, t]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -61,7 +67,8 @@ export default function ChatAssistant() {
       const { data, error } = await supabase.functions.invoke('chat-assistant', {
         body: {
           message: message.trim(),
-          history: messages.slice(-5)
+          history: messages.slice(-5),
+          language: language // Передаем текущий язык в Edge Function
         }
       });
 
@@ -88,7 +95,7 @@ export default function ChatAssistant() {
       
       const errorMessage: Message = {
         id: Date.now().toString(),
-        text: "Извините, произошла ошибка при обработке вашего запроса. Пожалуйста, попробуйте позже.",
+        text: t('chat.error'),
         isBot: true,
         timestamp: new Date(),
       };
@@ -100,7 +107,7 @@ export default function ChatAssistant() {
         setTimeout(() => {
           const helpMessage: Message = {
             id: Date.now().toString(),
-            text: "Похоже, возникли проблемы с подключением к AI. Вы можете попробовать перезагрузить страницу или воспользоваться основными функциями без ИИ.",
+            text: t('chat.connection_error'),
             isBot: true,
             timestamp: new Date(),
           };
@@ -153,8 +160,8 @@ export default function ChatAssistant() {
                 />
               </div>
               <div>
-                <h3 className="text-white font-medium">CyberWhale ИИ</h3>
-                <div className="text-xs text-gray-400">Уровень 1 • 0 очков</div>
+                <h3 className="text-white font-medium">{t('chat.title')}</h3>
+                <div className="text-xs text-gray-400">{t('chat.level')}</div>
               </div>
             </div>
             <div className="flex items-center space-x-1">
@@ -221,7 +228,7 @@ export default function ChatAssistant() {
                   <Input
                     ref={inputRef}
                     type="text"
-                    placeholder="Задайте вопрос..."
+                    placeholder={t('chat.placeholder')}
                     className="bg-cyberdark-800 border-cyberdark-700 flex-1"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}

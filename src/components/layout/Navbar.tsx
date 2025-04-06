@@ -15,9 +15,12 @@ import { cn } from '@/lib/utils';
 import UserMenu from './UserMenu';
 import SearchBox from '@/components/search/SearchBox';
 import { useAuth } from '@/lib/auth';
+import { useLanguage } from '@/lib/i18n/context';
+import LanguageSwitch from './LanguageSwitch';
 
 type NavLink = {
   name: string;
+  translationKey: string;
   to: string;
   icon?: React.ReactNode;
   submenu?: NavLink[];
@@ -25,46 +28,52 @@ type NavLink = {
   requiresAuth?: boolean;
 };
 
-const navLinks: NavLink[] = [
-  {
-    name: 'Продукты',
-    to: '/products',
-    icon: <Shield className="w-4 h-4 mr-1" />,
-    requiresAuth: false,
-  },
-  {
-    name: 'CTF Платформа',
-    to: '/ctf',
-    icon: <Shield className="w-4 h-4 mr-1" />,
-    requiresAuth: true,
-  },
-  {
-    name: 'ИИ Ассистент',
-    to: '/ai-assistant',
-    icon: <Bot className="w-4 h-4 mr-1" />,
-    requiresAuth: true,
-  },
-  {
-    name: 'Сообщество',
-    to: '/community', // Keep this as internal link to /community
-    icon: <Users className="w-4 h-4 mr-1" />,
-    requiresAuth: true,
-  },
-  {
-    name: 'База знаний',
-    to: '/knowledge',
-    icon: <Database className="w-4 h-4 mr-1" />,
-    requiresAuth: false,
-  },
-];
-
 export default function Navbar() {
   const location = useLocation();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isMobileSearchVisible, setIsMobileSearchVisible] = useState(false);
+
+  const navLinks: NavLink[] = [
+    {
+      name: t('nav.products'),
+      translationKey: 'nav.products',
+      to: '/products',
+      icon: <Shield className="w-4 h-4 mr-1" />,
+      requiresAuth: false,
+    },
+    {
+      name: t('nav.ctf'),
+      translationKey: 'nav.ctf',
+      to: '/ctf',
+      icon: <Shield className="w-4 h-4 mr-1" />,
+      requiresAuth: true,
+    },
+    {
+      name: t('nav.ai_assistant'),
+      translationKey: 'nav.ai_assistant',
+      to: '/ai-assistant',
+      icon: <Bot className="w-4 h-4 mr-1" />,
+      requiresAuth: true,
+    },
+    {
+      name: t('nav.community'),
+      translationKey: 'nav.community',
+      to: '/community',
+      icon: <Users className="w-4 h-4 mr-1" />,
+      requiresAuth: true,
+    },
+    {
+      name: t('nav.knowledge'),
+      translationKey: 'nav.knowledge',
+      to: '/knowledge',
+      icon: <Database className="w-4 h-4 mr-1" />,
+      requiresAuth: false,
+    },
+  ];
 
   const updatedNavLinks = navLinks.map(link => ({
     ...link,
@@ -178,6 +187,7 @@ export default function Navbar() {
 
           <div className="hidden md:flex items-center space-x-4">
             <SearchBox className="w-60" />
+            <LanguageSwitch />
             <UserMenu />
           </div>
 
@@ -274,7 +284,10 @@ export default function Navbar() {
           <div className="pt-4 pb-3 border-t border-cyberblue-800/50">
             <div className="px-4 py-2">
               <SearchBox className="w-full mb-3" />
-              <UserMenu />
+              <div className="flex items-center justify-between">
+                <LanguageSwitch />
+                <UserMenu />
+              </div>
             </div>
           </div>
         </div>
