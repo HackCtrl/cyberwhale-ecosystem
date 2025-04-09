@@ -13,22 +13,26 @@ import {
   Users,
   ShieldAlert,
   Lightbulb,
-  Download
+  Download,
+  Terminal,
+  Code
 } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
 import ChatAssistant from '@/components/layout/ChatAssistant';
 import { useAuth } from '@/lib/auth';
+import { useLanguage } from '@/lib/i18n/context';
 import { toast } from '@/hooks/use-toast';
 import { mockChallenges } from '@/data/challenges';
 
 const challengeHints: Record<string, string[]> = {
   '1': [
-    'Проверьте поля формы входа на наличие уязвимостей SQL-инъекции',
-    'Попробуйте использовать одинарные кавычки и логические операторы в поле username',
-    'Классическая инъекция: admin\' OR \'1\'=\'1'
+    'Изучите, как формируется и проверяется JWT токен в приложении',
+    'Обратите внимание на секрет, используемый для подписи токенов',
+    'Попробуйте перехватить и декодировать существующий токен'
   ],
   '2': [
     'Изучите метаданные изображения с помощью специальных инструментов',
+    'Проверьте наличие скрытой информации в младших битах изображения (LSB стеганография)',
     'Проверьте наличие скрытой информации в младших битах изображения (LSB стеганография)',
     'Попробуйте изменить контрастность или цветовые каналы изображения'
   ],
@@ -65,7 +69,7 @@ const challengeHints: Record<string, string[]> = {
 };
 
 const challengeFlags: Record<string, string> = {
-  '1': 'CW{SQLi_M4st3r}',
+  '1': 'CTF{JWT_s3cr3t_t00_w34k}',
   '2': 'CW{H1dd3n_1n_pl41n_s1ght}',
   '3': 'CW{SecretFound}',
   '4': 'CW{R3v3rs1ng_Ch4mp}',
@@ -78,6 +82,7 @@ const challengeFlags: Record<string, string> = {
 export default function ChallengePage() {
   const { id } = useParams<{ id: string }>();
   const { user, isLoading } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [flagInput, setFlagInput] = useState('');
   const [showHints, setShowHints] = useState(false);
@@ -230,7 +235,7 @@ export default function ChallengePage() {
           <div className="mb-6">
             <Link to={`/ctf/category/${challenge.category}`} className="text-cyberblue-400 hover:text-cyberblue-300 flex items-center">
               <ArrowLeft className="mr-2 w-4 h-4" />
-              Назад к кейсам
+              {t('ctf.backToCases')}
             </Link>
           </div>
           
@@ -239,18 +244,18 @@ export default function ChallengePage() {
               <div>
                 <div className="flex items-center space-x-2 mb-2">
                   <div className="bg-cyberdark-700 text-cyberblue-400 text-xs font-medium px-2.5 py-0.5 rounded">
-                    Кейс #{challenge.id}
+                    {t('ctf.case')} #{challenge.id}
                   </div>
                   <div className="bg-cyberdark-700 text-gray-300 text-xs font-medium px-2.5 py-0.5 rounded">
-                    {challenge.category === 'web' && 'Веб-безопасность'}
-                    {challenge.category === 'crypto' && 'Криптография'}
-                    {challenge.category === 'osint' && 'OSINT'}
-                    {challenge.category === 'steganography' && 'Стеганография'}
-                    {challenge.category === 'reverse-engineering' && 'Реверс-инжиниринг'}
-                    {challenge.category === 'forensics' && 'Форензика'}
-                    {challenge.category === 'pwn' && 'PWN'}
-                    {challenge.category === 'programming' && 'Программирование'}
-                    {challenge.category === 'network' && 'Сетевая безопасность'}
+                    {challenge.category === 'web' && t('ctf.categories.web')}
+                    {challenge.category === 'crypto' && t('ctf.categories.crypto')}
+                    {challenge.category === 'osint' && t('ctf.categories.osint')}
+                    {challenge.category === 'steganography' && t('ctf.categories.steganography')}
+                    {challenge.category === 'reverse-engineering' && t('ctf.categories.reverseEngineering')}
+                    {challenge.category === 'forensics' && t('ctf.categories.forensics')}
+                    {challenge.category === 'pwn' && t('ctf.categories.pwn')}
+                    {challenge.category === 'programming' && t('ctf.categories.programming')}
+                    {challenge.category === 'network' && t('ctf.categories.network')}
                   </div>
                 </div>
                 <h1 className="text-2xl font-bold text-white">{challenge.title}</h1>
@@ -300,6 +305,106 @@ export default function ChallengePage() {
             <div className="bg-cyberdark-700 p-4 rounded-md mb-6 text-gray-300">
               <p>{challenge.description}</p>
               
+              {challenge.id === '1' && (
+                <>
+                  <div className="mt-4">
+                    <div className="bg-cyberdark-800 p-4 rounded-md">
+                      <p className="text-sm font-medium text-gray-400 mb-2">{t('ctf.flagFormat')}:</p>
+                      <code className="bg-cyberdark-900 px-2 py-1 rounded font-mono text-cyan-400">CTF{'{...}'}</code>
+                    </div>
+                    
+                    <div className="mt-4 bg-cyberdark-800 p-4 rounded-md">
+                      <p className="font-medium mb-2">{t('ctf.difficulty')}:</p>
+                      <div className="bg-yellow-500/20 text-yellow-500 border border-yellow-500/30 text-xs font-medium px-2.5 py-0.5 rounded-full inline-flex">
+                        {t('ctf.difficultyLevels.intermediate')}
+                      </div>
+                    </div>
+                    
+                    <div className="mt-4 bg-cyberdark-800 p-4 rounded-md">
+                      <p className="font-medium mb-2">{t('ctf.skills')}:</p>
+                      <ul className="list-disc pl-5 space-y-1">
+                        <li>{t('ctf.web.skillWebAnalysis')}</li>
+                        <li>{t('ctf.web.skillJwt')}</li>
+                        <li>{t('ctf.web.skillCryptoExploit')}</li>
+                        <li>{t('ctf.web.skillPythonAutomation')}</li>
+                      </ul>
+                    </div>
+                    
+                    <div className="mt-4">
+                      <a 
+                        href="https://cloud.mail.ru/public/ip9t/ajXd2ZLbp" 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="inline-flex items-center px-4 py-2 bg-cyberblue-600 text-white rounded-md hover:bg-cyberblue-700 transition-colors"
+                      >
+                        <Download className="w-4 h-4 mr-2" />
+                        {t('ctf.downloadFiles')}
+                      </a>
+                      <p className="text-sm text-gray-400 mt-2">{t('ctf.downloadArchiveHint')}</p>
+                    </div>
+                    
+                    <div className="mt-6 bg-cyberdark-800 p-4 rounded-md">
+                      <p className="font-medium mb-4">{t('ctf.deploymentInstructions')}:</p>
+                      
+                      <h3 className="text-lg font-medium text-white mt-4 mb-2">1. {t('ctf.web.prepSystem')} (Kali Linux / Ubuntu):</h3>
+                      <p className="mb-2">{t('ctf.web.ensureInstalled')} Docker {t('ctf.web.and')} Python3:</p>
+                      <div className="bg-cyberdark-900 p-3 rounded-md mb-4">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-xs text-gray-400">bash</span>
+                          <button className="text-xs text-gray-400 hover:text-white" onClick={() => navigator.clipboard.writeText('sudo apt update && sudo apt install -y docker.io python3 python3-pip')}>
+                            Copy
+                          </button>
+                        </div>
+                        <pre className="text-cyan-400 font-mono text-sm overflow-x-auto"><code>sudo apt update && sudo apt install -y docker.io python3 python3-pip</code></pre>
+                      </div>
+                      
+                      <h3 className="text-lg font-medium text-white mt-4 mb-2">2. {t('ctf.web.launchCTF')}:</h3>
+                      <ol className="list-decimal pl-5 space-y-3">
+                        <li>
+                          <p className="mb-2">{t('ctf.web.extractArchive')} (phantom_vault.zip):</p>
+                          <div className="bg-cyberdark-900 p-3 rounded-md mb-2">
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-xs text-gray-400">bash</span>
+                              <button className="text-xs text-gray-400 hover:text-white" onClick={() => navigator.clipboard.writeText('unzip phantom_vault.zip -d ~/phantom_vault && cd ~/phantom_vault')}>
+                                Copy
+                              </button>
+                            </div>
+                            <pre className="text-cyan-400 font-mono text-sm overflow-x-auto"><code>unzip phantom_vault.zip -d ~/phantom_vault && cd ~/phantom_vault</code></pre>
+                          </div>
+                        </li>
+                        
+                        <li>
+                          <p className="mb-2">{t('ctf.web.launchDocker')}:</p>
+                          <div className="bg-cyberdark-900 p-3 rounded-md mb-2">
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-xs text-gray-400">bash</span>
+                              <button className="text-xs text-gray-400 hover:text-white" onClick={() => navigator.clipboard.writeText('docker-compose up -d --build')}>
+                                Copy
+                              </button>
+                            </div>
+                            <pre className="text-cyan-400 font-mono text-sm overflow-x-auto"><code>docker-compose up -d --build</code></pre>
+                          </div>
+                        </li>
+                        
+                        <li>
+                          <p className="mb-2">{t('ctf.web.checkServer')}:</p>
+                          <p>{t('ctf.web.openBrowser')}:</p>
+                          <div className="bg-cyberdark-900 p-3 rounded-md mb-2">
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-xs text-gray-400">url</span>
+                              <button className="text-xs text-gray-400 hover:text-white" onClick={() => navigator.clipboard.writeText('http://localhost:5000')}>
+                                Copy
+                              </button>
+                            </div>
+                            <pre className="text-cyan-400 font-mono text-sm overflow-x-auto"><code>http://localhost:5000</code></pre>
+                          </div>
+                        </li>
+                      </ol>
+                    </div>
+                  </div>
+                </>
+              )}
+
               {challenge.id === '3' && (
                 <>
                   <p className="mt-4">В зашифрованных сообщениях один из участников оставил подсказку: "Ключ — в нашей команде, точнее, в её имени. Помни, что алфавит цикличен."</p>
@@ -374,9 +479,9 @@ export default function ChallengePage() {
               <div className="bg-green-900/20 border border-green-700 rounded-md p-4 mb-6 flex items-start">
                 <CheckCircle className="text-green-500 w-5 h-5 mt-0.5 mr-3 flex-shrink-0" />
                 <div>
-                  <h3 className="text-green-500 font-semibold mb-1">Задание выполнено!</h3>
-                  <p className="text-gray-300">Поздравляем! Вы успешно решили задание и получили {challenge.points} очков.</p>
-                  <p className="text-gray-400 text-sm mt-2">Время решения: {formatTime(elapsedTime)}</p>
+                  <h3 className="text-green-500 font-semibold mb-1">{t('ctf.challengeCompleted')}</h3>
+                  <p className="text-gray-300">{t('ctf.congratulations', { points: challenge.points })}</p>
+                  <p className="text-gray-400 text-sm mt-2">{t('ctf.solutionTime')}: {formatTime(elapsedTime)}</p>
                 </div>
               </div>
             )}
@@ -386,7 +491,7 @@ export default function ChallengePage() {
                 <div className="flex-1 relative">
                   <Input
                     type="text"
-                    placeholder="Введите флаг (например, CW{'{fl4g_h3r3}'})"
+                    placeholder={t('ctf.enterFlag', { example: 'CTF{fl4g_h3r3}' })}
                     className="bg-cyberdark-700 border-cyberdark-600 pl-10"
                     value={flagInput}
                     onChange={(e) => setFlagInput(e.target.value)}
@@ -405,10 +510,10 @@ export default function ChallengePage() {
                   {submitting ? (
                     <>
                       <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      Проверка...
+                      {t('ctf.checking')}
                     </>
                   ) : (
-                    "Отправить флаг"
+                    t('ctf.submitFlag')
                   )}
                 </Button>
               </div>
@@ -420,25 +525,40 @@ export default function ChallengePage() {
               <div className="bg-cyberdark-800 rounded-lg p-6 border border-cyberdark-700 mb-6">
                 <h2 className="text-xl font-bold text-white mb-4 flex items-center">
                   <ShieldAlert className="w-5 h-5 mr-2 text-cyberblue-400" />
-                  Задание
+                  {t('ctf.challenge')}
                 </h2>
                 
                 <div className="bg-cyberdark-700 p-4 rounded-md text-gray-300">
-                  <p className="mb-4">Это задание требует применения знаний в области {
-                    challenge.category === 'web' ? 'веб-безопасности' :
-                    challenge.category === 'crypto' ? 'криптографии' :
-                    challenge.category === 'osint' ? 'OSINT' :
-                    challenge.category === 'steganography' ? 'стеганографии' :
-                    challenge.category === 'reverse-engineering' ? 'реверс-инжиниринга' :
-                    challenge.category === 'forensics' ? 'форензики' :
-                    challenge.category === 'pwn' ? 'PWN' :
-                    challenge.category === 'programming' ? 'программирования' :
-                    'сетевой безопасности'
-                  }.</p>
+                  {challenge.id === '1' && (
+                    <>
+                      <p className="mb-4">{t('ctf.web.phantomChallenge')}</p>
+                      
+                      <p className="mb-2">{t('ctf.web.yourTask')}:</p>
+                      <ul className="list-disc pl-5 mt-2 space-y-1">
+                        <li>{t('ctf.web.task1')}</li>
+                        <li>{t('ctf.web.task2')}</li>
+                        <li>{t('ctf.web.task3')}</li>
+                        <li>{t('ctf.web.task4')}</li>
+                      </ul>
+                      
+                      <div className="mt-4 p-4 bg-cyberdark-800 rounded-md">
+                        <p className="text-sm text-gray-400 mb-2">{t('ctf.web.appFeatures')}:</p>
+                        <ul className="list-disc pl-5 space-y-1 text-sm">
+                          <li>{t('ctf.web.feature1')}</li>
+                          <li>{t('ctf.web.feature2')}</li>
+                          <li>{t('ctf.web.feature3')}</li>
+                        </ul>
+                      </div>
+                      
+                      <p className="mt-4">{t('ctf.web.findVulnerability')}</p>
+                    </>
+                  )}
                   
                   {challenge.id === '3' && (
                     <>
-                      <p>Для решения этого задания вам потребуется:</p>
+                      <p className="mb-4">Это задание требует применения знаний в области криптографии.</p>
+                      
+                      <p className="mb-2">Для решения этого задания вам потребуется:</p>
                       <ul className="list-disc pl-5 mt-2 space-y-1">
                         <li>Проанализировать подсказку о ключе и "цикличности алфавита"</li>
                         <li>Определить метод шифрования на основе подсказок</li>
@@ -455,7 +575,9 @@ export default function ChallengePage() {
                   
                   {challenge.id === '7' && (
                     <>
-                      <p>Для решения этого задания вам потребуется:</p>
+                      <p className="mb-4">Это задание требует применения знаний в области криптографии и анализа архивов.</p>
+                      
+                      <p className="mb-2">Для решения этого задания вам потребуется:</p>
                       <ul className="list-disc pl-5 mt-2 space-y-1">
                         <li>Скачать и проанализировать зашифрованный архив</li>
                         <li>Расшифровать пароль архива, используя подсказку</li>
@@ -466,14 +588,16 @@ export default function ChallengePage() {
                       
                       <div className="mt-4 p-4 bg-cyberdark-800 rounded-md">
                         <p className="text-sm text-gray-400 mb-2">Цель:</p>
-                        <p>Расшифруйте архив, извлеките содержимое ф��йла secret.txt и найдите флаг в формате CW{"{...}"}.</p>
+                        <p>Расшифруйте архив, извлеките содержимое файла secret.txt и найдите флаг в формате CW{"{...}"}.</p>
                       </div>
                     </>
                   )}
                   
                   {challenge.id === '8' && (
                     <>
-                      <p>Для решения этого комплексного задания вам потребуется:</p>
+                      <p className="mb-4">Это задание требует комплексного применения знаний в различных областях кибербезопасности.</p>
+                      
+                      <p className="mb-2">Для решения этого комплексного задания вам потребуется:</p>
                       <ul className="list-disc pl-5 mt-2 space-y-1">
                         <li>Проанализировать текстовый файл с обрывками заметок</li>
                         <li>Расшифровать зашифрованное изображение</li>
@@ -491,121 +615,21 @@ export default function ChallengePage() {
                 </div>
               </div>
               
-              {(challenge.id === '3' || challenge.id === '7' || challenge.id === '8') && (
+              {challenge.id === '1' && (
                 <div className="bg-cyberdark-800 rounded-lg p-6 border border-cyberdark-700">
-                  <h2 className="text-xl font-bold text-white mb-4">Дополнительная информация</h2>
+                  <h2 className="text-xl font-bold text-white mb-4 flex items-center">
+                    <Code className="w-5 h-5 mr-2 text-cyberblue-400" />
+                    {t('ctf.additionalResources')}
+                  </h2>
                   
                   <div className="bg-cyberdark-700 p-4 rounded-md text-gray-300">
-                    {challenge.id === '3' && (
-                      <>
-                        <p>В криптографии существует множество классических шифров замены, включая:</p>
-                        <ul className="list-disc pl-5 mt-2 space-y-1">
-                          <li>Шифр Цезаря - сдвиг каждой буквы на фиксированное число позиций</li>
-                          <li>Шифр Виженера - использование ключевого слова для определения сдвига каждой буквы</li>
-                          <li>Шифр замены - замена каждой буквы на другую по заданной таблице</li>
-                        </ul>
-                        
-                        <p className="mt-4">Помните, что "алфавит цикличен" означает, что после последней буквы алфавита (Z) идет первая (A).</p>
-                      </>
-                    )}
+                    <p className="mb-3">{t('ctf.web.jwtResources')}</p>
                     
-                    {challenge.id === '7' && (
-                      <>
-                        <p>При работе с зашифрованными архивами и файлами полезно знать:</p>
-                        <ul className="list-disc pl-5 mt-2 space-y-1">
-                          <li>ASCII (American Standard Code for Information Interchange) - таблица, которая сопоставляет каждому символу числовое значение</li>
-                          <li>Базовые символы ASCII имеют значения:
-                            <ul className="list-disc pl-5 mt-1">
-                              <li>A-Z: 65-90</li>
-                              <li>a-z: 97-122</li>
-                              <li>0-9: 48-57</li>
-                            </ul>
-                          </li>
-                          <li>Base64 - формат кодирования бинарных данных для передачи в текстовом виде</li>
-                          <li>AES (Advanced Encryption Standard) - популярный алгоритм симметричного шифрования</li>
-                        </ul>
-                        
-                        <p className="mt-4">Для проверки ASCII-значений символов можно использовать онлайн-инструменты или функции языков программирования, например, в Python: <code className="bg-cyberdark-800 px-2 py-1 rounded">ord('C')</code> вернет 67.</p>
-                      </>
-                    )}
-                    
-                    {challenge.id === '8' && (
-                      <>
-                        <p>Для успешного решения этого комплексного задания полезно знать:</p>
-                        <ul className="list-disc pl-5 mt-2 space-y-1">
-                          <li>Алгоритм шифрования AES (Advanced Encryption Standard)</li>
-                          <li>Шифр Цезаря и принципы его работы</li>
-                          <li>Методы стеганографии и инструменты для работы с ними</li>
-                          <li>Base64 кодирование и декодирование</li>
-                          <li>Wireshark и методы анализа сетевого трафика</li>
-                        </ul>
-                        
-                        <p className="mt-4">Полезные инструменты для решения задания:</p>
-                        <ul className="list-disc pl-5 mt-2 space-y-1">
-                          <li>CyberChef - универсальный онлайн-инструмент для криптографических операций</li>
-                          <li>StegSolve или Steghide - для анализа стеганографии в изображениях</li>
-                          <li>Wireshark - для анализа сетевого трафика</li>
-                          <li>Командная строка для работы с файлами и выполнения скриптов</li>
-                        </ul>
-                      </>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-            
-            <div className="md:col-span-1">
-              <div className="bg-cyberdark-800 rounded-lg p-6 border border-cyberdark-700 sticky top-24">
-                <h2 className="text-xl font-bold text-white mb-4 flex items-center">
-                  <Lightbulb className="w-5 h-5 mr-2 text-yellow-500" />
-                  Подсказки
-                </h2>
-                
-                {!showHints ? (
-                  <div className="text-center py-6">
-                    <p className="text-gray-400 mb-4">Подсказки могут помочь вам в решении задания, но использование подсказок уменьшает количество получаемых очков.</p>
-                    <Button 
-                      variant="outline" 
-                      onClick={() => setShowHints(true)}
-                    >
-                      Показать подсказки
-                    </Button>
-                  </div>
-                ) : (
-                  <div>
-                    {hints.slice(0, currentHint + 1).map((hint, index) => (
-                      <div 
-                        key={index}
-                        className="bg-cyberdark-700 p-3 rounded-md mb-3 text-gray-300 text-sm"
-                      >
-                        <p className="text-xs text-gray-400 mb-1">Подсказка {index + 1}</p>
-                        <p>{hint}</p>
-                      </div>
-                    ))}
-                    
-                    {currentHint < hints.length - 1 && (
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        className="w-full"
-                        onClick={handleNextHint}
-                      >
-                        Следующая подсказка
-                      </Button>
-                    )}
-                    
-                    {currentHint === hints.length - 1 && hints.length > 0 && (
-                      <p className="text-xs text-gray-400 text-center mt-2">Больше подсказок нет</p>
-                    )}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <ChatAssistant />
-    </div>
-  );
-}
+                    <ul className="list-disc pl-5 space-y-2">
+                      <li>
+                        <a href="https://jwt.io/" target="_blank" rel="noopener noreferrer" className="text-cyberblue-400 hover:underline hover:text-cyberblue-300">
+                          JWT.io - {t('ctf.web.jwtDecoderDebugger')}
+                        </a>
+                      </li>
+                      <li>
+                        <a href="https://github.com/ticarpi/jwt_tool" target="_blank" rel="noopener noreferrer" className="text-cyberblue-400 hover:underline hover:text-cyberblue-300
