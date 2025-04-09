@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -482,7 +481,7 @@ export default function ChallengePage() {
                 <CheckCircle className="text-green-500 w-5 h-5 mt-0.5 mr-3 flex-shrink-0" />
                 <div>
                   <h3 className="text-green-500 font-semibold mb-1">{t('ctf.challengeCompleted')}</h3>
-                  <p className="text-gray-300">{t('ctf.congratulations', { points: challenge.points })}</p>
+                  <p className="text-gray-300">{t('ctf.congratulations')}</p>
                   <p className="text-gray-400 text-sm mt-2">{t('ctf.solutionTime')}: {formatTime(elapsedTime)}</p>
                 </div>
               </div>
@@ -493,7 +492,7 @@ export default function ChallengePage() {
                 <div className="flex-1 relative">
                   <Input
                     type="text"
-                    placeholder={t('ctf.enterFlag', { example: 'CTF{fl4g_h3r3}' })}
+                    placeholder={t('ctf.enterFlag')}
                     className="bg-cyberdark-700 border-cyberdark-600 pl-10"
                     value={flagInput}
                     onChange={(e) => setFlagInput(e.target.value)}
@@ -635,77 +634,4 @@ export default function ChallengePage() {
                       </li>
                       <li>
                         <a href="https://github.com/ticarpi/jwt_tool" target="_blank" rel="noopener noreferrer" className="text-cyberblue-400 hover:underline hover:text-cyberblue-300">
-                          jwt_tool - {t('ctf.web.jwtExploitationTool')}
-                        </a>
-                      </li>
-                      <li>
-                        <a href="https://book.hacktricks.xyz/pentesting-web/hacking-jwt-json-web-tokens" target="_blank" rel="noopener noreferrer" className="text-cyberblue-400 hover:underline hover:text-cyberblue-300">
-                          HackTricks - {t('ctf.web.jwtVulnerabilities')}
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              )}
-            </div>
-            
-            <div>
-              <div className="bg-cyberdark-800 rounded-lg p-6 border border-cyberdark-700 mb-6">
-                <h2 className="text-xl font-bold text-white mb-4 flex items-center">
-                  <Lightbulb className="w-5 h-5 mr-2 text-cyberblue-400" />
-                  {t('ctf.hints')}
-                </h2>
-                
-                <div className="bg-cyberdark-700 p-4 rounded-md text-gray-300">
-                  {hints.length > 0 ? (
-                    <>
-                      <p className="mb-3">{t('ctf.availableHints', { count: currentHint + 1, total: hints.length })}:</p>
-                      
-                      {hints.slice(0, currentHint + 1).map((hint, index) => (
-                        <div key={index} className="mb-3 p-3 bg-cyberdark-800 rounded-md">
-                          <p className="text-sm text-gray-400 mb-1">{t('ctf.hint')} #{index + 1}:</p>
-                          <p>{hint}</p>
-                        </div>
-                      ))}
-                      
-                      {currentHint < hints.length - 1 && (
-                        <Button 
-                          onClick={handleNextHint}
-                          variant="secondary" 
-                          className="w-full mt-4"
-                        >
-                          {t('ctf.unlockNextHint')}
-                        </Button>
-                      )}
-                    </>
-                  ) : (
-                    <p className="text-center">{t('ctf.noHintsAvailable')}</p>
-                  )}
-                </div>
-              </div>
-              
-              <div className="bg-cyberdark-800 rounded-lg p-6 border border-cyberdark-700">
-                <h2 className="text-xl font-bold text-white mb-4 flex items-center">
-                  <Terminal className="w-5 h-5 mr-2 text-cyberblue-400" />
-                  {t('ctf.assistance')}
-                </h2>
-                
-                <div className="bg-cyberdark-700 p-4 rounded-md text-gray-300">
-                  <p className="mb-3">{t('ctf.needHelp')}</p>
-                  
-                  <Button 
-                    onClick={() => window.open('/ai-assistant', '_blank')} 
-                    className="w-full"
-                  >
-                    <Bot className="mr-2 w-4 h-4" />
-                    {t('ctf.askAi')}
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+                          jwt_tool - {t('ctf.web.jwtExplo
