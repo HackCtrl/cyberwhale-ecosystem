@@ -6,7 +6,6 @@ import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { useLanguage } from '@/lib/i18n/context';
 
 type Message = {
   id: string;
@@ -16,26 +15,22 @@ type Message = {
 };
 
 export default function ChatAssistant() {
-  const { t, language } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [message, setMessage] = useState('');
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: '1',
+      text: 'Привет! Я CyberWhale, ваш ИИ-наставник по кибербезопасности. Давайте начнем наше увлекательное путешествие! 🖊️',
+      isBot: true,
+      timestamp: new Date(),
+    },
+  ]);
   const [isLoading, setIsLoading] = useState(false);
   const [retryCount, setRetryCount] = useState(0);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-
-  // Обновляем приветственное сообщение при смене языка
-  useEffect(() => {
-    setMessages([{
-      id: '1',
-      text: t('chat.welcome'),
-      isBot: true,
-      timestamp: new Date(),
-    }]);
-  }, [language, t]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -67,8 +62,7 @@ export default function ChatAssistant() {
       const { data, error } = await supabase.functions.invoke('chat-assistant', {
         body: {
           message: message.trim(),
-          history: messages.slice(-5),
-          language: language // Передаем текущий язык в Edge Function
+          history: messages.slice(-5)
         }
       });
 
@@ -95,7 +89,7 @@ export default function ChatAssistant() {
       
       const errorMessage: Message = {
         id: Date.now().toString(),
-        text: t('chat.error'),
+        text: "Извините, произошла ошибка при обработке вашего запроса. Пожалуйста, попробуйте позже.",
         isBot: true,
         timestamp: new Date(),
       };
@@ -107,7 +101,7 @@ export default function ChatAssistant() {
         setTimeout(() => {
           const helpMessage: Message = {
             id: Date.now().toString(),
-            text: t('chat.connection_error'),
+            text: "Похоже, возникли проблемы с подключением к AI. Вы можете попробовать перезагрузить страницу или воспользоваться основными функциями без ИИ.",
             isBot: true,
             timestamp: new Date(),
           };
@@ -133,12 +127,12 @@ export default function ChatAssistant() {
       {!isOpen && (
         <button
           onClick={toggleChat}
-          className="w-16 h-16 flex items-center justify-center transition-all duration-300 ocean-wave-animation hover:scale-105"
+          className="flex items-center justify-center transition-all duration-300 hover:scale-105"
         >
           <img 
-            src="/whale-icon.png" 
+            src="/lovable-uploads/08311bae-6df1-434a-8b5f-9aa9bbae6c7f.png" 
             alt="CyberWhale AI" 
-            className="w-10 h-10 object-contain hover:opacity-90 transition-opacity"
+            className="w-16 h-16 object-contain ocean-wave-animation hover:opacity-85 transition-opacity"
           />
         </button>
       )}
@@ -154,14 +148,14 @@ export default function ChatAssistant() {
             <div className="flex items-center">
               <div className="mr-2 ocean-wave-animation-small">
                 <img 
-                  src="/whale-icon.png" 
+                  src="/lovable-uploads/08311bae-6df1-434a-8b5f-9aa9bbae6c7f.png" 
                   alt="CyberWhale AI" 
                   className="w-8 h-8 object-contain"
                 />
               </div>
               <div>
-                <h3 className="text-white font-medium">{t('chat.title')}</h3>
-                <div className="text-xs text-gray-400">{t('chat.level')}</div>
+                <h3 className="text-white font-medium tracking-tight">CyberWhale</h3>
+                <div className="text-xs text-gray-400">Уровень 1 • 0 очков</div>
               </div>
             </div>
             <div className="flex items-center space-x-1">
@@ -228,7 +222,7 @@ export default function ChatAssistant() {
                   <Input
                     ref={inputRef}
                     type="text"
-                    placeholder={t('chat.placeholder')}
+                    placeholder="Задайте вопрос..."
                     className="bg-cyberdark-800 border-cyberdark-700 flex-1"
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}

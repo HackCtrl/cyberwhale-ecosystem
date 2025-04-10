@@ -1,5 +1,3 @@
-
-
 /* Основные стили приложения */
 .app-container {
   width: 100%;
@@ -78,22 +76,21 @@
 @keyframes ocean-wave {
   0% {
     box-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
+    transform: scale(1);
   }
   50% {
     box-shadow: 0 0 20px rgba(59, 130, 246, 0.8);
+    transform: scale(1.02);
   }
   100% {
     box-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
+    transform: scale(1);
   }
 }
 
 .ocean-wave-animation {
   animation: ocean-wave 4s ease-in-out infinite;
   transition: all 0.3s ease;
-}
-
-.ocean-wave-animation:hover {
-  box-shadow: 0 0 25px rgba(59, 130, 246, 0.9);
 }
 
 .ocean-wave-animation-small {
@@ -111,23 +108,3 @@
 .delay-150 {
   animation-delay: 0.15s;
 }
-
-/* Language button */
-.language-btn {
-  position: relative;
-  overflow: hidden;
-}
-
-.language-btn::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
-  transform: translateX(-100%);
-  transition: transform 1s ease;
-}
-
-.language-btn:hover::after {
-  transform: translateX(100%);
-}
-

@@ -5,18 +5,16 @@ import { Challenge } from '@/types';
 export const mockChallenges: Challenge[] = [
   {
     id: '1',
-    title: 'Phantom Vault: Взлом JWT через слабый секрет',
-    description: 'Вы — аудитор безопасности, которому поручено проверить веб-приложение Phantom Vault. Оно использует JWT (JSON Web Tokens) для аутентификации, но есть подозрения, что разработчики допустили критическую ошибку. Ваша задача — найти уязвимость, получить доступ к административной панели и извлечь флаг.',
+    title: 'Уязвимый веб-сайт',
+    description: 'Найдите SQL-инъекцию на странице входа и получите доступ к учетной записи администратора.',
     category: 'web',
     difficulty: 'beginner',
-    points: 200,
-    tags: ['web', 'jwt', 'authentication', 'crypto'],
+    points: 100,
+    tags: ['sql-injection', 'authentication'],
     solved: false,
-    solvedBy: 124,
+    solvedBy: 156,
     createdAt: new Date('2023-05-15'),
     updatedAt: new Date('2023-05-15'),
-    downloadUrl: 'https://cloud.mail.ru/public/ip9t/ajXd2ZLbp',
-    fileType: 'archive',
   },
   {
     id: '2',

@@ -5,7 +5,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/lib/auth";
-import { LanguageProvider } from "@/lib/i18n/context";
 import './App.css';
 
 // Pages
@@ -35,9 +34,11 @@ import Footer from "./components/layout/Footer";
 const queryClient = new QueryClient();
 
 const App = () => {
+  // Добавляем эффект для отладки загрузки приложения
   useEffect(() => {
     console.log("App component mounted");
     
+    // Устанавливаем базовые стили для body
     document.body.style.backgroundColor = "#111827";
     document.body.style.color = "#e5e7eb";
     
@@ -47,10 +48,10 @@ const App = () => {
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <AuthProvider>
-          <LanguageProvider>
+    <div className="app-container">
+      <QueryClientProvider client={queryClient}>
+        <BrowserRouter>
+          <AuthProvider>
             <TooltipProvider>
               <Toaster />
               <Sonner />
@@ -95,10 +96,10 @@ const App = () => {
               </div>
               <Footer />
             </TooltipProvider>
-          </LanguageProvider>
-        </AuthProvider>
-      </BrowserRouter>
-    </QueryClientProvider>
+          </AuthProvider>
+        </BrowserRouter>
+      </QueryClientProvider>
+    </div>
   );
 };
 
