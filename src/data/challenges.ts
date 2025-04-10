@@ -95,6 +95,8 @@ export const mockChallenges: Challenge[] = [
     solvedBy: 42,
     createdAt: new Date('2023-11-15'),
     updatedAt: new Date('2023-11-15'),
+    downloadUrl: 'https://cloud.mail.ru/public/DMbD/FVSq8QsaK',
+    fileType: 'archive',
   },
   {
     id: '8',

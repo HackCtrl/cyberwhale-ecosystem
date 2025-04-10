@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -65,7 +66,7 @@ const challengeHints: Record<string, string[]> = {
 };
 
 const challengeFlags: Record<string, string> = {
-  '1': 'CTF{jwt_s3cr3t_k3y_vuln}',
+  '1': 'CTF{Ph4nt0m_V4u1t_Expl01t_MASTER}',
   '2': 'CW{H1dd3n_1n_pl41n_s1ght}',
   '3': 'CW{SecretFound}',
   '4': 'CW{R3v3rs1ng_Ch4mp}',
@@ -305,6 +306,12 @@ export default function ChallengePage() {
                   <p className="mt-4">Формат флага: CTF{"{...}"}</p>
                 </>
               )}
+              
+              {(challenge.id === '3' || challenge.id === '7' || challenge.id === '8') && (
+                <>
+                  <p className="mt-4">Формат флага: CW{"{...}"}</p>
+                </>
+              )}
             </div>
             
             {solved && (
@@ -323,7 +330,7 @@ export default function ChallengePage() {
                 <div className="flex-1 relative">
                   <Input
                     type="text"
-                    placeholder="Введите флаг (например, CTF{fl4g_h3r3})"
+                    placeholder="Введите флаг (например, CTF{fl4g_h3r3} или CW{fl4g_h3r3})"
                     className="bg-cyberdark-700 border-cyberdark-600 pl-10"
                     value={flagInput}
                     onChange={(e) => setFlagInput(e.target.value)}
@@ -361,8 +368,7 @@ export default function ChallengePage() {
                 </h2>
                 
                 <div className="bg-cyberdark-700 p-4 rounded-md text-gray-300">
-                  <p className="mb-4">Это задание требует применения знаний в области веб-безопасности и работы с JWT токенами.</p>
-                  
+                  {/* Для веб-задания (Phantom Vault) */}
                   {challenge.id === '1' && (
                     <>
                       <p className="mb-4">Это задание требует эксплуатации уязвимости в реализации JWT веб-приложения Phantom Vault.</p>
@@ -387,9 +393,93 @@ export default function ChallengePage() {
                       <p className="mt-4">Найдите уязвимость в реализации JWT и используйте ее для доступа к панели администратора.</p>
                     </>
                   )}
+                  
+                  {/* Для первого задания криптографии (Утечка данных CyberWhale: Тайна зашифрованного чата) */}
+                  {challenge.id === '3' && (
+                    <>
+                      <p className="mb-4">Ваша команда по кибербезопасности расследует утечку данных из компании CyberWhale. Вам удалось перехватить логи чата, который, предположительно, содержит информацию об утечке. Сообщения в чате зашифрованы.</p>
+                      
+                      <p className="mb-4">В зашифрованных сообщениях один из участников оставил подсказку: "Ключ — в нашей команде, точнее, в её имени. Помни, что алфавит цикличен."</p>
+                      
+                      <div className="bg-cyberdark-800 p-4 rounded-md mb-4">
+                        <p className="text-sm text-gray-400 mb-1">Перехваченное сообщение:</p>
+                        <p className="text-cyberblue-400 font-mono">Khoor#Zruog#43#Fkdw#lv#khuh1#Fkhuv2#CW{HvsdqbVhfuhw}</p>
+                      </div>
+                      
+                      <p className="mb-4">Цель: Расшифровать перехваченное сообщение, используя подсказку, и найти флаг в формате CW{"{...}"}.</p>
+                    </>
+                  )}
+                  
+                  {/* Для второго задания криптографии (Утечка данных CyberWhale: Зашифрованный архив) */}
+                  {challenge.id === '7' && (
+                    <>
+                      <p className="mb-4">Ваша команда получила доступ к зашифрованному архиву, который предположительно содержит важную информацию о деятельности компании CyberWhale. Архив был найден на компрометированном сервере, и его содержимое защищено паролем.</p>
+                      
+                      <p className="mb-4">Анализируя метаданные архива, вы обнаружили следующее:</p>
+                      <ol className="list-decimal pl-5 mb-4 space-y-1">
+                        <li>Архив содержит один файл с названием secret.txt.</li>
+                        <li>Пароль для распаковки архива был сгенерирован на основе фразы, связанной с компанией CyberWhale.</li>
+                        <li>Вместе с архивом был найден текстовый файл hint.txt, содержащий подсказку.</li>
+                      </ol>
+                      
+                      <div className="bg-cyberdark-800 p-4 rounded-md mb-4">
+                        <p className="text-sm text-gray-400 mb-1">Содержимое файла hint.txt:</p>
+                        <p>Пароль представляет собой комбинацию названия компании и цифры.</p>
+                        <p>Цифра представляет собой сумму значений в формате ASCII первых трех букв названия компании.</p>
+                      </div>
+                      
+                      <div className="mt-5 flex flex-col sm:flex-row items-center justify-center gap-4">
+                        <a 
+                          href="https://cloud.mail.ru/public/DMbD/FVSq8QsaK" 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="inline-flex items-center px-4 py-2 bg-cyberblue-600 text-white rounded-md hover:bg-cyberblue-700 transition-colors w-full sm:w-auto justify-center"
+                        >
+                          <Download className="w-4 h-4 mr-2" />
+                          Скачать архив
+                        </a>
+                      </div>
+                      
+                      <p className="mt-4">Цель: Расшифруйте архив, извлеките содержимое файла secret.txt и найдите флаг в формате CW{"{...}"}.</p>
+                    </>
+                  )}
+                  
+                  {/* Для третьего задания криптографии (Эхо Прошлого: Завещание в Битах) */}
+                  {challenge.id === '8' && (
+                    <>
+                      <p className="mb-4">Вы - команда исследователей, получившая доступ к старому жесткому диску, принадлежавшему эксцентричному криптографу, недавно покинувшему этот мир. По слухам, он спрятал свое состояние, зашифровав информацию о его местонахождении в своих исследованиях. На диске обнаружены файлы с обрывками заметок и подозрительным сетевым трафиком. Ваша задача - собрать воедино все улики, расшифровать сообщения и найти спрятанное завещание.</p>
+                      
+                      <p className="mb-4">Формат флага: CW{"{...}"}</p>
+                      <p className="mb-4">Сложность: Продвинутый</p>
+                      
+                      <p className="mb-4">Навыки: Анализ сетевого трафика (Wireshark), криптография (AES, шифр Цезаря), стеганография, base64, работа с командной строкой.</p>
+                      
+                      <div className="bg-cyberdark-800 p-4 rounded-md mb-4">
+                        <p className="font-medium mb-2">Предоставляемые файлы:</p>
+                        <ol className="list-decimal pl-5 space-y-1">
+                          <li>notes.txt: Текстовый файл с обрывками заметок.</li>
+                          <li>encrypted_image.png: Зашифрованное изображение.</li>
+                          <li>traffic.pcapng: Дамп сетевого трафика Wireshark.</li>
+                        </ol>
+                      </div>
+                      
+                      <div className="mt-5 flex flex-col sm:flex-row items-center justify-center gap-4">
+                        <a 
+                          href="https://cloud.mail.ru/public/cFib/6dkAnZzfo" 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="inline-flex items-center px-4 py-2 bg-cyberblue-600 text-white rounded-md hover:bg-cyberblue-700 transition-colors w-full sm:w-auto justify-center"
+                        >
+                          <Download className="w-4 h-4 mr-2" />
+                          Скачать архив
+                        </a>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
               
+              {/* Инструкция для веб-задания (Phantom Vault) */}
               {challenge.id === '1' && (
                 <div className="bg-cyberdark-800 rounded-lg p-6 border border-cyberdark-700">
                   <h2 className="text-xl font-bold text-white mb-4">Инструкция по развертыванию</h2>
@@ -453,6 +543,7 @@ export default function ChallengePage() {
                 </div>
               )}
               
+              {/* Дополнительные ресурсы для веб-задания */}
               {challenge.id === '1' && (
                 <div className="bg-cyberdark-800 rounded-lg p-6 border border-cyberdark-700 mt-6">
                   <h2 className="text-xl font-bold text-white mb-4">Дополнительные ресурсы</h2>
