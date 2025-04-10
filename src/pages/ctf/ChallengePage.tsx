@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -492,7 +493,7 @@ export default function ChallengePage() {
                 <div className="flex-1 relative">
                   <Input
                     type="text"
-                    placeholder={t('ctf.enterFlag')}
+                    placeholder={t('ctf.enterFlag', { example: challenge.id === '1' ? 'CTF{flag}' : 'CW{flag}' })}
                     className="bg-cyberdark-700 border-cyberdark-600 pl-10"
                     value={flagInput}
                     onChange={(e) => setFlagInput(e.target.value)}
@@ -634,7 +635,7 @@ export default function ChallengePage() {
                       </li>
                       <li>
                         <a href="https://github.com/ticarpi/jwt_tool" target="_blank" rel="noopener noreferrer" className="text-cyberblue-400 hover:underline hover:text-cyberblue-300">
-                          jwt_tool - {t('ctf.web.jwtExploitationTool')}
+                          jwt_tool - {t('ctf.web.jwtTool')}
                         </a>
                       </li>
                       <li>
@@ -653,3 +654,4 @@ export default function ChallengePage() {
     </div>
   );
 }
+
