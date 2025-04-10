@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { X, Send, Minimize2, Maximize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -100,7 +101,7 @@ export default function ChatAssistant() {
         setTimeout(() => {
           const helpMessage: Message = {
             id: Date.now().toString(),
-            text: "Похоже, возникли проблемы с подключением к AI. Вы можете попробовать перезагрузить страницу или воспользоваться основными функциями без ИИ.",
+            text: "Похоже, возникли проблемы с подключением к ИИ. Вы можете попробовать перезагрузить страницу или воспользоваться основными функциями без ИИ.",
             isBot: true,
             timestamp: new Date(),
           };
@@ -130,7 +131,7 @@ export default function ChatAssistant() {
         >
           <img 
             src="/whale-icon.png" 
-            alt="CyberWhale AI" 
+            alt="CyberWhale ИИ" 
             className="w-10 h-10 object-contain hover:opacity-90 transition-opacity"
           />
         </button>
@@ -148,7 +149,7 @@ export default function ChatAssistant() {
               <div className="mr-2 ocean-wave-animation-small">
                 <img 
                   src="/whale-icon.png" 
-                  alt="CyberWhale AI" 
+                  alt="CyberWhale ИИ" 
                   className="w-8 h-8 object-contain"
                 />
               </div>

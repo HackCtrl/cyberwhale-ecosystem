@@ -46,7 +46,7 @@ const navLinks: NavLink[] = [
   },
   {
     name: 'Сообщество',
-    to: '/community', // Keep this as internal link to /community
+    to: '/community',
     icon: <Users className="w-4 h-4 mr-1" />,
     requiresAuth: true,
   },
@@ -196,6 +196,7 @@ export default function Navbar() {
         </div>
       </div>
 
+      {/* Mobile menu */}
       {mobileMenuOpen && (
         <div className="md:hidden bg-cyberblue-900/95 backdrop-blur-md border-b border-cyberblue-800/50 animate-fade-in">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
