@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 type Language = 'en' | 'ru';
@@ -51,7 +52,7 @@ const translations: Translations = {
     'footer.subscribeSuccess': 'Thank you for subscribing!',
 
     // Chat assistant
-    'chat.title': 'CyberAssistant',
+    'chat.title': 'CyberWhale AI',
     'chat.placeholder': 'Ask a question...',
     'chat.send': 'Send',
     'chat.close': 'Close',
@@ -124,16 +125,7 @@ const translations: Translations = {
     'ctf.web.jwtResources': 'Here are some helpful resources for working with JWT:',
     'ctf.web.jwtDecoderDebugger': 'JWT Decoder & Debugger',
     'ctf.web.jwtTool': 'Toolkit for testing, forging and manipulating JWT',
-    'ctf.web.jwtVulnerabilities': 'Common JWT vulnerabilities and exploitation techniques',
-    'ctf.web.basicPythonScript': 'Basic Python script for JWT manipulation:',
-
-    // Knowledge base
-    'knowledge.title': 'Knowledge Base',
-    'knowledge.description': 'Learn cybersecurity concepts and techniques',
-
-    // User profile
-    'profile.title': 'Profile',
-    'profile.description': 'View and edit your profile information',
+    'ctf.web.jwtDecoder': 'JWT Decoder for JavaScript',
   },
   ru: {
     'site.title': 'CyberWhale',
@@ -174,7 +166,7 @@ const translations: Translations = {
     'footer.subscribeSuccess': 'Спасибо за подписку!',
 
     // Chat assistant
-    'chat.title': 'КиберАссистент',
+    'chat.title': 'CyberWhale AI',
     'chat.placeholder': 'Задайте вопрос...',
     'chat.send': 'Отправить',
     'chat.close': 'Закрыть',
@@ -247,16 +239,7 @@ const translations: Translations = {
     'ctf.web.jwtResources': 'Вот несколько полезных ресурсов для работы с JWT:',
     'ctf.web.jwtDecoderDebugger': 'JWT декодер и отладчик',
     'ctf.web.jwtTool': 'Инструмент для тестирования, подделки и манипуляции JWT',
-    'ctf.web.jwtVulnerabilities': 'Распространенные уязвимости JWT и методы эксплуатации',
-    'ctf.web.basicPythonScript': 'Базовый скрипт Python для работы с JWT:',
-
-    // Knowledge base
-    'knowledge.title': 'База знаний',
-    'knowledge.description': 'Изучение концепций и методов кибербезопасности',
-
-    // User profile
-    'profile.title': 'Профиль',
-    'profile.description': 'Просмотр и редактирование информации профиля',
+    'ctf.web.jwtDecoder': 'JWT декодер для JavaScript',
   },
 };
 

@@ -8,7 +8,7 @@ export const mockChallenges: Challenge[] = [
     title: 'Phantom Vault: Взлом JWT через слабый секрет',
     description: 'Вы — аудитор безопасности, которому поручено проверить веб-приложение Phantom Vault. Оно использует JWT (JSON Web Tokens) для аутентификации, но есть подозрения, что разработчики допустили критическую ошибку. Ваша задача — найти уязвимость, получить доступ к административной панели и извлечь флаг.',
     category: 'web',
-    difficulty: 'intermediate',
+    difficulty: 'beginner',
     points: 200,
     tags: ['web', 'jwt', 'authentication', 'crypto'],
     solved: false,

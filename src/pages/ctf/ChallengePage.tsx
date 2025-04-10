@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -634,24 +633,4 @@ export default function ChallengePage() {
                         </a>
                       </li>
                       <li>
-                        <a href="https://github.com/ticarpi/jwt_tool" target="_blank" rel="noopener noreferrer" className="text-cyberblue-400 hover:underline hover:text-cyberblue-300">
-                          jwt_tool - {t('ctf.web.jwtTool')}
-                        </a>
-                      </li>
-                      <li>
-                        <a href="https://www.npmjs.com/package/jwt-decode" target="_blank" rel="noopener noreferrer" className="text-cyberblue-400 hover:underline hover:text-cyberblue-300">
-                          jwt-decode - {t('ctf.web.jwtDecoder')}
-                        </a>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
+                        <a href="https://github.com/ticarpi/jwt_tool" target="_blank" rel="noopener noreferrer" className="text-cyberblue-400 hover:underline hover
