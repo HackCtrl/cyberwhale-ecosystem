@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { 
   ArrowLeft, 
   Trophy, 
@@ -23,9 +22,10 @@ import { mockChallenges } from '@/data/challenges';
 
 const challengeHints: Record<string, string[]> = {
   '1': [
-    'Проверьте поля формы входа на наличие уязвимостей SQL-инъекции',
-    'Попробуйте использовать одинарные кавычки и логические операторы в поле username',
-    'Классическая инъекция: admin\' OR \'1\'=\'1'
+    'Изучите документацию по JWT и его структуре (header.payload.signature)',
+    'Обратите внимание на алгоритм подписи JWT токена',
+    'Попробуйте использовать jwt_tool или jwt.io для анализа и манипуляции с токеном',
+    'Слабый секрет может быть уязвим к брутфорс-атаке или словарной атаке'
   ],
   '2': [
     'Изучите метаданные изображения с помощью специальных инструментов',
@@ -65,7 +65,7 @@ const challengeHints: Record<string, string[]> = {
 };
 
 const challengeFlags: Record<string, string> = {
-  '1': 'CW{SQLi_M4st3r}',
+  '1': 'CTF{jwt_s3cr3t_k3y_vuln}',
   '2': 'CW{H1dd3n_1n_pl41n_s1ght}',
   '3': 'CW{SecretFound}',
   '4': 'CW{R3v3rs1ng_Ch4mp}',
@@ -300,72 +300,9 @@ export default function ChallengePage() {
             <div className="bg-cyberdark-700 p-4 rounded-md mb-6 text-gray-300">
               <p>{challenge.description}</p>
               
-              {challenge.id === '3' && (
+              {challenge.id === '1' && (
                 <>
-                  <p className="mt-4">В зашифрованных сообщениях один из участников оставил подсказку: "Ключ — в нашей команде, точнее, в её имени. Помни, что алфавит цикличен."</p>
-                  <p className="mt-4">Перехваченное сообщение:<br />
-                  <code className="bg-cyberdark-800 px-2 py-1 rounded font-mono text-cyan-400">{"Khoor#Zruog#43#Fkdw#lv#khuh1#Fkhhuv2#CW{HvsdqbVhfuhw}"}</code></p>
-                  <p className="mt-4">Цель: Расшифровать перехваченное сообщение, используя подсказку, и найти флаг в формате CW{"{...}"}.</p>
-                </>
-              )}
-              
-              {challenge.id === '7' && (
-                <>
-                  <p className="mt-4">Анализируя метаданные архива, вы обнаружили следующее:</p>
-                  <ol className="list-decimal pl-5 mt-2 space-y-1">
-                    <li>Архив содержит один файл с названием secret.txt.</li>
-                    <li>Пароль для распаковки архива был сгенерирован на основе фразы, связанной с компанией CyberWhale.</li>
-                    <li>Вместе с архивом был найден текстовый файл hint.txt, содержащий подсказку.</li>
-                  </ol>
-                  
-                  <div className="mt-4 p-4 bg-cyberdark-800 rounded-md">
-                    <p className="font-medium mb-2">Содержимое файла hint.txt:</p>
-                    <p>Пароль представляет собой комбинацию названия компании и цифры.</p>
-                    <p>Цифра представляет собой сумму значений в формате ASCII первых трех букв названия компании.</p>
-                  </div>
-                  
-                  <div className="mt-4">
-                    <a 
-                      href="https://cloud.mail.ru/public/DMbD/FVSq8QsaK" 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
-                      className="inline-flex items-center px-4 py-2 bg-cyberblue-600 text-white rounded-md hover:bg-cyberblue-700 transition-colors"
-                    >
-                      <Download className="w-4 h-4 mr-2" />
-                      Скачать архив
-                    </a>
-                    <p className="text-sm text-gray-400 mt-2">Архив содержит зашифрованный файл secret.txt</p>
-                  </div>
-                </>
-              )}
-              
-              {challenge.id === '8' && (
-                <>
-                  <p className="mt-4">Формат флага: CW{"{...}"}</p>
-                  <p className="mt-4">Сложность: Продвинутый</p>
-                  <p className="mt-4">Навыки: Анализ сетевого трафика (Wireshark), криптография (AES, шифр Цезаря), стеганография, base64, работа с командной строкой.</p>
-                  
-                  <div className="mt-4 p-4 bg-cyberdark-800 rounded-md">
-                    <p className="font-medium mb-2">Предоставляемые файлы:</p>
-                    <ol className="list-decimal pl-5 mt-2 space-y-1">
-                      <li>notes.txt: Текстовый файл с обрывками заметок.</li>
-                      <li>encrypted_image.png: Зашифрованное изображение.</li>
-                      <li>traffic.pcapng: Дамп сетевого трафика Wireshark.</li>
-                    </ol>
-                  </div>
-                  
-                  <div className="mt-4">
-                    <a 
-                      href="https://cloud.mail.ru/public/cFib/6dkAnZzfo" 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
-                      className="inline-flex items-center px-4 py-2 bg-cyberblue-600 text-white rounded-md hover:bg-cyberblue-700 transition-colors"
-                    >
-                      <Download className="w-4 h-4 mr-2" />
-                      Скачать архив
-                    </a>
-                    <p className="text-sm text-gray-400 mt-2">Архив содержит необходимые файлы для решения задания</p>
-                  </div>
+                  <p className="mt-4">Формат флага: CTF{"{...}"}</p>
                 </>
               )}
             </div>
@@ -386,7 +323,7 @@ export default function ChallengePage() {
                 <div className="flex-1 relative">
                   <Input
                     type="text"
-                    placeholder="Введите флаг (например, CW{'{fl4g_h3r3}'})"
+                    placeholder="Введите флаг (например, CTF{fl4g_h3r3})"
                     className="bg-cyberdark-700 border-cyberdark-600 pl-10"
                     value={flagInput}
                     onChange={(e) => setFlagInput(e.target.value)}
@@ -424,131 +361,115 @@ export default function ChallengePage() {
                 </h2>
                 
                 <div className="bg-cyberdark-700 p-4 rounded-md text-gray-300">
-                  <p className="mb-4">Это задание требует применения знаний в области {
-                    challenge.category === 'web' ? 'веб-безопасности' :
-                    challenge.category === 'crypto' ? 'криптографии' :
-                    challenge.category === 'osint' ? 'OSINT' :
-                    challenge.category === 'steganography' ? 'стеганографии' :
-                    challenge.category === 'reverse-engineering' ? 'реверс-инжиниринга' :
-                    challenge.category === 'forensics' ? 'форензики' :
-                    challenge.category === 'pwn' ? 'PWN' :
-                    challenge.category === 'programming' ? 'программирования' :
-                    'сетевой безопасности'
-                  }.</p>
+                  <p className="mb-4">Это задание требует применения знаний в области веб-безопасности и работы с JWT токенами.</p>
                   
-                  {challenge.id === '3' && (
+                  {challenge.id === '1' && (
                     <>
-                      <p>Для решения этого задания вам потребуется:</p>
+                      <p className="mb-4">Это задание требует эксплуатации уязвимости в реализации JWT веб-приложения Phantom Vault.</p>
+                      
+                      <p className="mb-4">Ваши задачи:</p>
                       <ul className="list-disc pl-5 mt-2 space-y-1">
-                        <li>Проанализировать подсказку о ключе и "цикличности алфавита"</li>
-                        <li>Определить метод шифрования на основе подсказок</li>
-                        <li>Расшифровать перехваченное сообщение</li>
-                        <li>Найти флаг в формате CW{"{...}"}</li>
+                        <li>Проанализировать механизм аутентификации приложения</li>
+                        <li>Выявить уязвимости в реализации JWT</li>
+                        <li>Использовать уязвимость для получения доступа администратора</li>
+                        <li>Извлечь флаг из панели администратора</li>
                       </ul>
                       
-                      <div className="mt-4 p-4 bg-cyberdark-800 rounded-md">
-                        <p className="text-sm text-gray-400 mb-2">Перехваченное сообщение:</p>
-                        <code className="font-mono text-cyan-400 break-all">{"Khoor#Zruog#43#Fkdw#lv#khuh1#Fkhhuv2#CW{HvsdqbVhfuhw}"}</code>
+                      <div className="mt-6 p-4 bg-cyberdark-800 rounded-md">
+                        <p className="font-medium mb-2">Функции приложения Phantom Vault:</p>
+                        <ul className="list-disc pl-5 space-y-1">
+                          <li>Система входа и регистрации пользователей</li>
+                          <li>Защищенная панель пользователя</li>
+                          <li>Панель администратора с доступом к конфиденциальной информации</li>
+                        </ul>
                       </div>
-                    </>
-                  )}
-                  
-                  {challenge.id === '7' && (
-                    <>
-                      <p>Для решения этого задания вам потребуется:</p>
-                      <ul className="list-disc pl-5 mt-2 space-y-1">
-                        <li>Скачать и проанализировать зашифрованный архив</li>
-                        <li>Расшифровать пароль архива, используя подсказку</li>
-                        <li>Извлечь содержимое архива</li>
-                        <li>Расшифровать содержимое файла secret.txt</li>
-                        <li>Найти флаг в формате CW{"{...}"}</li>
-                      </ul>
                       
-                      <div className="mt-4 p-4 bg-cyberdark-800 rounded-md">
-                        <p className="text-sm text-gray-400 mb-2">Цель:</p>
-                        <p>Расшифруйте архив, извлеките содержимое ф��йла secret.txt и найдите флаг в формате CW{"{...}"}.</p>
-                      </div>
-                    </>
-                  )}
-                  
-                  {challenge.id === '8' && (
-                    <>
-                      <p>Для решения этого комплексного задания вам потребуется:</p>
-                      <ul className="list-disc pl-5 mt-2 space-y-1">
-                        <li>Проанализировать текстовый файл с обрывками заметок</li>
-                        <li>Расшифровать зашифрованное изображение</li>
-                        <li>Проанализировать дамп сетевого трафика с помощью Wireshark</li>
-                        <li>Объединить полученные данные для нахождения завещания</li>
-                        <li>Найти и отправить флаг в формате CW{"{...}"}</li>
-                      </ul>
-                      
-                      <div className="mt-4 p-4 bg-cyberdark-800 rounded-md">
-                        <p className="text-sm text-gray-400 mb-2">Цель:</p>
-                        <p>Собрать воедино все улики, расшифровать сообщения и найти спрятанное завещание в формате CW{"{...}"}.</p>
-                      </div>
+                      <p className="mt-4">Найдите уязвимость в реализации JWT и используйте ее для доступа к панели администратора.</p>
                     </>
                   )}
                 </div>
               </div>
               
-              {(challenge.id === '3' || challenge.id === '7' || challenge.id === '8') && (
+              {challenge.id === '1' && (
                 <div className="bg-cyberdark-800 rounded-lg p-6 border border-cyberdark-700">
-                  <h2 className="text-xl font-bold text-white mb-4">Дополнительная информация</h2>
+                  <h2 className="text-xl font-bold text-white mb-4">Инструкция по развертыванию</h2>
                   
                   <div className="bg-cyberdark-700 p-4 rounded-md text-gray-300">
-                    {challenge.id === '3' && (
-                      <>
-                        <p>В криптографии существует множество классических шифров замены, включая:</p>
-                        <ul className="list-disc pl-5 mt-2 space-y-1">
-                          <li>Шифр Цезаря - сдвиг каждой буквы на фиксированное число позиций</li>
-                          <li>Шифр Виженера - использование ключевого слова для определения сдвига каждой буквы</li>
-                          <li>Шифр замены - замена каждой буквы на другую по заданной таблице</li>
-                        </ul>
-                        
-                        <p className="mt-4">Помните, что "алфавит цикличен" означает, что после последней буквы алфавита (Z) идет первая (A).</p>
-                      </>
-                    )}
+                    <h3 className="font-semibold text-lg mb-2">1. Подготовка системы (Kali Linux / Ubuntu):</h3>
+                    <p className="mb-2">Убедитесь, что установлены Docker и Python3:</p>
                     
-                    {challenge.id === '7' && (
-                      <>
-                        <p>При работе с зашифрованными архивами и файлами полезно знать:</p>
-                        <ul className="list-disc pl-5 mt-2 space-y-1">
-                          <li>ASCII (American Standard Code for Information Interchange) - таблица, которая сопоставляет каждому символу числовое значение</li>
-                          <li>Базовые символы ASCII имеют значения:
-                            <ul className="list-disc pl-5 mt-1">
-                              <li>A-Z: 65-90</li>
-                              <li>a-z: 97-122</li>
-                              <li>0-9: 48-57</li>
-                            </ul>
-                          </li>
-                          <li>Base64 - формат кодирования бинарных данных для передачи в текстовом виде</li>
-                          <li>AES (Advanced Encryption Standard) - популярный алгоритм симметричного шифрования</li>
-                        </ul>
-                        
-                        <p className="mt-4">Для проверки ASCII-значений символов можно использовать онлайн-инструменты или функции языков программирования, например, в Python: <code className="bg-cyberdark-800 px-2 py-1 rounded">ord('C')</code> вернет 67.</p>
-                      </>
-                    )}
+                    <div className="bg-cyberdark-800 p-3 rounded-md mb-4 font-mono text-sm">
+                      <div className="flex justify-between items-center">
+                        <span className="text-gray-400">bash</span>
+                      </div>
+                      <code className="text-cyan-400">sudo apt update && sudo apt install -y docker.io python3 python3-pip</code>
+                    </div>
                     
-                    {challenge.id === '8' && (
-                      <>
-                        <p>Для успешного решения этого комплексного задания полезно знать:</p>
-                        <ul className="list-disc pl-5 mt-2 space-y-1">
-                          <li>Алгоритм шифрования AES (Advanced Encryption Standard)</li>
-                          <li>Шифр Цезаря и принципы его работы</li>
-                          <li>Методы стеганографии и инструменты для работы с ними</li>
-                          <li>Base64 кодирование и декодирование</li>
-                          <li>Wireshark и методы анализа сетевого трафика</li>
-                        </ul>
-                        
-                        <p className="mt-4">Полезные инструменты для решения задания:</p>
-                        <ul className="list-disc pl-5 mt-2 space-y-1">
-                          <li>CyberChef - универсальный онлайн-инструмент для криптографических операций</li>
-                          <li>StegSolve или Steghide - для анализа стеганографии в изображениях</li>
-                          <li>Wireshark - для анализа сетевого трафика</li>
-                          <li>Командная строка для работы с файлами и выполнения скриптов</li>
-                        </ul>
-                      </>
-                    )}
+                    <h3 className="font-semibold text-lg mb-2">2. Запуск CTF-окружения:</h3>
+                    <ol className="list-decimal pl-5 space-y-3">
+                      <li>
+                        <p>Распакуйте архив (phantom_vault.zip):</p>
+                        <div className="bg-cyberdark-800 p-3 rounded-md my-2 font-mono text-sm">
+                          <div className="flex justify-between items-center">
+                            <span className="text-gray-400">bash</span>
+                          </div>
+                          <code className="text-cyan-400">unzip phantom_vault.zip -d ~/phantom_vault && cd ~/phantom_vault</code>
+                        </div>
+                      </li>
+                      <li>
+                        <p>Запустите Docker-контейнер:</p>
+                        <div className="bg-cyberdark-800 p-3 rounded-md my-2 font-mono text-sm">
+                          <div className="flex justify-between items-center">
+                            <span className="text-gray-400">bash</span>
+                          </div>
+                          <code className="text-cyan-400">docker-compose up -d --build</code>
+                        </div>
+                      </li>
+                      <li>
+                        <p>Проверьте, что сервер работает:</p>
+                        <p className="mb-2">Откройте в браузере:</p>
+                        <div className="bg-cyberdark-800 p-3 rounded-md my-2 font-mono text-sm">
+                          <div className="flex justify-between items-center">
+                            <span className="text-gray-400">url</span>
+                          </div>
+                          <code className="text-cyan-400">http://localhost:5000</code>
+                        </div>
+                      </li>
+                    </ol>
+                    
+                    <div className="mt-4">
+                      <a 
+                        href="https://cloud.mail.ru/public/ip9t/ajXd2ZLbp" 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="inline-flex items-center px-4 py-2 bg-cyberblue-600 text-white rounded-md hover:bg-cyberblue-700 transition-colors"
+                      >
+                        <Download className="w-4 h-4 mr-2" />
+                        Скачать архив
+                      </a>
+                      <p className="text-sm text-gray-400 mt-2">Архив содержит файлы для запуска задания</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {challenge.id === '1' && (
+                <div className="bg-cyberdark-800 rounded-lg p-6 border border-cyberdark-700 mt-6">
+                  <h2 className="text-xl font-bold text-white mb-4">Дополнительные ресурсы</h2>
+                  
+                  <div className="bg-cyberdark-700 p-4 rounded-md text-gray-300">
+                    <p>Вот несколько полезных ресурсов для работы с JWT:</p>
+                    <ul className="list-disc pl-5 mt-3 space-y-2">
+                      <li>
+                        <a href="https://jwt.io" target="_blank" rel="noopener noreferrer" className="text-cyberblue-400 hover:text-cyberblue-300">JWT.io</a> - JWT декодер и отладчик
+                      </li>
+                      <li>
+                        <a href="https://github.com/ticarpi/jwt_tool" target="_blank" rel="noopener noreferrer" className="text-cyberblue-400 hover:text-cyberblue-300">jwt_tool</a> - Инструмент для тестирования, подделки и манипуляции JWT
+                      </li>
+                      <li>
+                        <a href="https://ctf.web.jwtdecoder" target="_blank" rel="noopener noreferrer" className="text-cyberblue-400 hover:text-cyberblue-300">jwt-decode</a> - ctf.web.jwtDecoder
+                      </li>
+                    </ul>
                   </div>
                 </div>
               )}
