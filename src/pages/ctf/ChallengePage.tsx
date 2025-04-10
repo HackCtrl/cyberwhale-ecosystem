@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -317,8 +316,8 @@ export default function ChallengePage() {
                     
                     <div className="mt-4 bg-cyberdark-800 p-4 rounded-md">
                       <p className="font-medium mb-2">{t('ctf.difficulty')}:</p>
-                      <div className="bg-yellow-500/20 text-yellow-500 border border-yellow-500/30 text-xs font-medium px-2.5 py-0.5 rounded-full inline-flex">
-                        {t('ctf.difficultyLevels.intermediate')}
+                      <div className="bg-green-500/20 text-green-500 border border-green-500/30 text-xs font-medium px-2.5 py-0.5 rounded-full inline-flex">
+                        {t('ctf.difficultyLevels.beginner')}
                       </div>
                     </div>
                     
@@ -340,7 +339,7 @@ export default function ChallengePage() {
                         className="inline-flex items-center px-4 py-2 bg-cyberblue-600 text-white rounded-md hover:bg-cyberblue-700 transition-colors"
                       >
                         <Download className="w-4 h-4 mr-2" />
-                        {t('ctf.downloadFiles')}
+                        Скачать архив
                       </a>
                       <p className="text-sm text-gray-400 mt-2">{t('ctf.downloadArchiveHint')}</p>
                     </div>
