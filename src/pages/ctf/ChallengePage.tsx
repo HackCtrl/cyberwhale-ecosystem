@@ -159,7 +159,7 @@ export default function ChallengePage() {
         setSolved(true);
         toast({
           title: "Поздравляем!",
-          description: "Вы успешно решили задание!",
+          description: t('ctf.congratulations', { points: challenge.points }),
           variant: "default",
         });
       } else {
@@ -481,7 +481,7 @@ export default function ChallengePage() {
                 <CheckCircle className="text-green-500 w-5 h-5 mt-0.5 mr-3 flex-shrink-0" />
                 <div>
                   <h3 className="text-green-500 font-semibold mb-1">{t('ctf.challengeCompleted')}</h3>
-                  <p className="text-gray-300">{t('ctf.congratulations')}</p>
+                  <p className="text-gray-300">{t('ctf.congratulations', { points: challenge.points })}</p>
                   <p className="text-gray-400 text-sm mt-2">{t('ctf.solutionTime')}: {formatTime(elapsedTime)}</p>
                 </div>
               </div>
@@ -638,3 +638,18 @@ export default function ChallengePage() {
                         </a>
                       </li>
                       <li>
+                        <a href="https://www.npmjs.com/package/jwt-decode" target="_blank" rel="noopener noreferrer" className="text-cyberblue-400 hover:underline hover:text-cyberblue-300">
+                          jwt-decode - {t('ctf.web.jwtDecoder')}
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

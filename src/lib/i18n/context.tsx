@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
 type Language = 'en' | 'ru';
@@ -9,7 +8,7 @@ type Translations = Record<Language, Record<TranslationKey, TranslationValue>>;
 interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
-  t: (key: string) => string;
+  t: (key: string, params?: Record<string, any>) => string;
 }
 
 const translations: Translations = {
@@ -279,12 +278,20 @@ export const LanguageProvider = ({ children }: { children: React.ReactNode }) =>
     setLanguageState(lang);
   };
 
-  const t = (key: string): string => {
-    const translation = translations[language][key];
+  const t = (key: string, params?: Record<string, any>): string => {
+    let translation = translations[language][key];
     if (!translation) {
       console.warn(`Translation missing for key: ${key}`);
       return key;
     }
+
+    if (params) {
+      Object.keys(params).forEach(paramKey => {
+        const regex = new RegExp(`{${paramKey}}`, 'g');
+        translation = translation.replace(regex, params[paramKey]);
+      });
+    }
+
     return translation;
   };
 
