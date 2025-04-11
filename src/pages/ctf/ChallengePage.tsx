@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -415,7 +414,7 @@ export default function ChallengePage() {
                       
                       <div className="bg-cyberdark-800 p-4 rounded-md mb-4">
                         <p className="text-sm text-gray-400 mb-1">Перехваченное сообщение:</p>
-                        <p className="text-cyberblue-400 font-mono">Khoor#Zruog#43#Fkdw#lv#khuh1#Fkhuv2#CW{SecretFound}</p>
+                        <p className="text-cyberblue-400 font-mono">Khoor#Zruog#43#Fkdw#lv#khuh1#Fkhuv2#CW{"SecretFound"}</p>
                       </div>
                       
                       <p className="mb-4">Цель: Расшифровать перехваченное сообщение, используя подсказку, и найти флаг в формате CW{"{...}"}.</p>
