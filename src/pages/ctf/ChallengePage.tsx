@@ -391,6 +391,18 @@ export default function ChallengePage() {
                       </div>
                       
                       <p className="mt-4">Найдите уязвимость в реализации JWT и используйте ее для доступа к панели администратора.</p>
+
+                      <div className="mt-5 flex flex-col sm:flex-row items-center justify-center gap-4">
+                        <a 
+                          href="https://cloud.mail.ru/public/ip9t/ajXd2ZLbp" 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="inline-flex items-center px-4 py-2 bg-cyberblue-600 text-white rounded-md hover:bg-cyberblue-700 transition-colors w-full sm:w-auto justify-center"
+                        >
+                          <Download className="w-4 h-4 mr-2" />
+                          Скачать архив
+                        </a>
+                      </div>
                     </>
                   )}
                   
@@ -526,19 +538,6 @@ export default function ChallengePage() {
                         </div>
                       </li>
                     </ol>
-                    
-                    <div className="mt-4">
-                      <a 
-                        href="https://cloud.mail.ru/public/ip9t/ajXd2ZLbp" 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        className="inline-flex items-center px-4 py-2 bg-cyberblue-600 text-white rounded-md hover:bg-cyberblue-700 transition-colors"
-                      >
-                        <Download className="w-4 h-4 mr-2" />
-                        Скачать архив
-                      </a>
-                      <p className="text-sm text-gray-400 mt-2">Архив содержит файлы для запуска задания</p>
-                    </div>
                   </div>
                 </div>
               )}
