@@ -61,6 +61,12 @@ const challengeHints: Record<string, string[]> = {
     'Начните с анализа заметок в notes.txt, они могут содержать ключи или подсказки',
     'Проверьте сетевой трафик с помощью Wireshark, ищите необычные пакеты или закономерности',
     'Для работы с зашифрованным изображением может потребоваться использовать инструменты стеганографии'
+  ],
+  '9': [
+    'Проанализируйте, как формируется SQL-запрос к базе данных при поиске сотрудников',
+    'Попробуйте разные символы, которые могут нарушить структуру SQL-запроса (например, одинарная кавычка)',
+    'Изучите, как можно использовать оператор UNION для объединения результатов нескольких запросов',
+    'Подумайте, где может храниться структура базы данных в SQLite'
   ]
 };
 
@@ -73,6 +79,7 @@ const challengeFlags: Record<string, string> = {
   '6': 'CW{Buff3r_0v3rfl0w_pr0}',
   '7': 'CW{HiddenInPlainSight}',
   '8': 'CW{Caesar_AES_Stego}',
+  '9': 'CW{HR_Leak_Protection_Fail}',
 };
 
 export default function ChallengePage() {
@@ -306,7 +313,7 @@ export default function ChallengePage() {
                 </>
               )}
               
-              {(challenge.id === '3' || challenge.id === '7' || challenge.id === '8') && (
+              {(challenge.id === '3' || challenge.id === '7' || challenge.id === '8' || challenge.id === '9') && (
                 <>
                   <p className="mt-4">Формат флага: CW{"{...}"}</p>
                 </>
@@ -487,6 +494,52 @@ export default function ChallengePage() {
                       </div>
                     </>
                   )}
+
+                  {/* Для веб-задания - HR-портал CyberWolf Corp: SQL-инъекция */}
+                  {challenge.id === '9' && (
+                    <>
+                      <p className="mb-4">Вы получили доступ к внутреннему HR-порталу компании CyberWolf Corp. Система позволяет искать сотрудников по имени, но администраторы уверены, что в ней есть критическая уязвимость, позволяющая получить доступ к конфиденциальным данным.</p>
+                      
+                      <p className="mb-4">Ваши задачи:</p>
+                      <ul className="list-disc pl-5 mt-2 space-y-1">
+                        <li>Проанализировать механизм поиска сотрудников</li>
+                        <li>Выявить уязвимости в обработке входных данных</li>
+                        <li>Использовать уязвимость для доступа к конфиденциальной информации</li>
+                        <li>Найти скрытый флаг в системе</li>
+                      </ul>
+                      
+                      <div className="mt-6 p-4 bg-cyberdark-800 rounded-md">
+                        <p className="font-medium mb-2">Функции HR-портала:</p>
+                        <ul className="list-disc pl-5 space-y-1">
+                          <li>Поиск сотрудников по имени</li>
+                          <li>Отображение основной информации о сотрудниках</li>
+                          <li>База данных с конфиденциальной информацией</li>
+                        </ul>
+                      </div>
+                      
+                      <div className="mt-6 p-4 bg-cyberdark-800 rounded-md">
+                        <p className="font-medium mb-2">Инструкция по запуску:</p>
+                        <ol className="list-decimal pl-5 space-y-1">
+                          <li>Распакуйте архив в удобное место</li>
+                          <li>Перейдите в распакованную папку</li>
+                          <li>Запустите веб-сервер командой: <code className="bg-cyberdark-900 px-2 py-1 rounded">php -S 0.0.0.0:8000</code></li>
+                          <li>Откройте в браузере: <code className="bg-cyberdark-900 px-2 py-1 rounded">http://localhost:8000</code></li>
+                        </ol>
+                      </div>
+
+                      <div className="mt-5 flex flex-col sm:flex-row items-center justify-center gap-4">
+                        <a 
+                          href="https://cloud.mail.ru/public/NGcQ/FGdbzMBa9" 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="inline-flex items-center px-4 py-2 bg-cyberblue-600 text-white rounded-md hover:bg-cyberblue-700 transition-colors w-full sm:w-auto justify-center"
+                        >
+                          <Download className="w-4 h-4 mr-2" />
+                          Скачать архив
+                        </a>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
               
@@ -557,6 +610,28 @@ export default function ChallengePage() {
                       </li>
                       <li>
                         <a href="https://ctf.web.jwtdecoder" target="_blank" rel="noopener noreferrer" className="text-cyberblue-400 hover:text-cyberblue-300">jwt-decode</a> - ctf.web.jwtDecoder
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              )}
+
+              {/* Дополнительные ресурсы для SQL-инъекции */}
+              {challenge.id === '9' && (
+                <div className="bg-cyberdark-800 rounded-lg p-6 border border-cyberdark-700 mt-6">
+                  <h2 className="text-xl font-bold text-white mb-4">Дополнительные ресурсы</h2>
+                  
+                  <div className="bg-cyberdark-700 p-4 rounded-md text-gray-300">
+                    <p>Вот несколько полезных ресурсов для работы с SQL-инъекциями:</p>
+                    <ul className="list-disc pl-5 mt-3 space-y-2">
+                      <li>
+                        <a href="https://portswigger.net/web-security/sql-injection" target="_blank" rel="noopener noreferrer" className="text-cyberblue-400 hover:text-cyberblue-300">Portswigger SQL Injection</a> - Подробное руководство по SQL-инъекциям
+                      </li>
+                      <li>
+                        <a href="https://owasp.org/www-community/attacks/SQL_Injection" target="_blank" rel="noopener noreferrer" className="text-cyberblue-400 hover:text-cyberblue-300">OWASP SQL Injection</a> - Описание атаки и методов защиты
+                      </li>
+                      <li>
+                        <a href="https://www.sqlite.org/lang_expr.html" target="_blank" rel="noopener noreferrer" className="text-cyberblue-400 hover:text-cyberblue-300">SQLite Документация</a> - Справочник по SQLite, используемому в задании
                       </li>
                     </ul>
                   </div>
