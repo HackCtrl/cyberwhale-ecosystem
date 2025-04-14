@@ -1,4 +1,3 @@
-
 import React from 'react';
 import Navbar from '@/components/layout/Navbar';
 import ChatAssistant from '@/components/layout/ChatAssistant';
@@ -19,7 +18,7 @@ import {
   Network,
   Fingerprint,
   Cpu,
-  Star  // Added Star icon import
+  Star
 } from 'lucide-react';
 
 export default function ReferenceGuide() {
@@ -112,7 +111,6 @@ export default function ReferenceGuide() {
             </div>
           </div>
           
-          {/* Hero image */}
           <div className="bg-cyberdark-800 rounded-lg p-6 border border-cyberdark-700 mb-12 relative overflow-hidden">
             <div className="absolute inset-0 opacity-10">
               <img 
@@ -148,7 +146,6 @@ export default function ReferenceGuide() {
             </div>
           </div>
           
-          {/* Categories section */}
           <h2 className="text-2xl font-semibold text-white mb-6">Основные категории справочника</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
@@ -174,7 +171,6 @@ export default function ReferenceGuide() {
             ))}
           </div>
           
-          {/* Features section */}
           <div className="bg-cyberdark-800 rounded-lg border border-cyberdark-700 p-8 mb-12">
             <h2 className="text-2xl font-semibold text-white mb-6">Особенности справочника</h2>
             
@@ -229,7 +225,6 @@ export default function ReferenceGuide() {
             </div>
           </div>
           
-          {/* Sample preview */}
           <div className="mb-12">
             <h2 className="text-2xl font-semibold text-white mb-6">Предварительный просмотр</h2>
             
@@ -258,7 +253,6 @@ export default function ReferenceGuide() {
             </div>
           </div>
           
-          {/* CTA */}
           <div className="bg-gradient-to-r from-cyberblue-900/50 to-purple-900/50 rounded-lg p-8 border border-cyberblue-500/30 text-center">
             <h2 className="text-2xl font-bold text-white mb-4">Присоединяйтесь к проекту</h2>
             <p className="text-lg text-gray-300 mb-6 max-w-2xl mx-auto">
