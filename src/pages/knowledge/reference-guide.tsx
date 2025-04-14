@@ -18,7 +18,8 @@ import {
   Terminal,
   Network,
   Fingerprint,
-  Cpu
+  Cpu,
+  Star  // Added Star icon import
 } from 'lucide-react';
 
 export default function ReferenceGuide() {
