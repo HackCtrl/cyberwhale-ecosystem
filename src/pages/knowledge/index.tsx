@@ -14,10 +14,16 @@ import {
   Filter,
   Clock,
   ChevronRight,
-  Star
+  Star,
+  Github,
+  ExternalLink,
+  BookMarked,
+  Database,
+  Library
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
 // Mock articles data
 const mockArticles = [
@@ -203,6 +209,60 @@ export default function KnowledgeBase() {
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          {/* CyberWhale Reference Repository Section */}
+          <div className="mb-16 bg-gradient-to-r from-cyberdark-800 via-cyberdark-700 to-cyberdark-800 rounded-lg overflow-hidden border border-cyberblue-500/30 shadow-glow-sm">
+            <div className="md:flex">
+              <div className="md:w-2/3 p-8">
+                <div className="flex items-center mb-4">
+                  <Library className="w-8 h-8 text-cyberblue-400 mr-3" />
+                  <h2 className="text-3xl font-bold text-white">Справочник CyberWhale</h2>
+                </div>
+                <Badge className="bg-cyberblue-500/20 text-cyberblue-400 border-cyberblue-500/30 mb-4">Эксклюзив</Badge>
+                <p className="text-gray-300 text-lg mb-6">
+                  Полный справочник инструментов и ресурсов для специалистов по кибербезопасности. Более 300 инструментов, 
+                  разделенных по категориям: пентестинг, анализ вредоносного ПО, OSINT, форензика и многое другое.
+                </p>
+                <div className="space-y-3 mb-6">
+                  <div className="flex items-center">
+                    <Shield className="w-5 h-5 text-cyberblue-400 mr-2" />
+                    <span className="text-gray-300">Операционные системы для пентеста и анализа</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Database className="w-5 h-5 text-cyberblue-400 mr-2" />
+                    <span className="text-gray-300">Базы данных уязвимостей и угроз</span>
+                  </div>
+                  <div className="flex items-center">
+                    <Code className="w-5 h-5 text-cyberblue-400 mr-2" />
+                    <span className="text-gray-300">Инструменты для анализа кода и поиска уязвимостей</span>
+                  </div>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <a href="https://github.com/CyberWhaleOffical1/CyberWhale_Cybersecurity_Reference" target="_blank" rel="noopener noreferrer">
+                    <Button className="bg-cyberblue-500 hover:bg-cyberblue-600 w-full sm:w-auto">
+                      <Github className="mr-2 h-5 w-5" />
+                      Открыть справочник
+                      <ExternalLink className="ml-2 h-4 w-4" />
+                    </Button>
+                  </a>
+                  <Link to="/knowledge/reference-guide">
+                    <Button variant="outline" className="w-full sm:w-auto">
+                      <BookMarked className="mr-2 h-5 w-5" />
+                      Подробнее о справочнике
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+              <div className="hidden md:block md:w-1/3 bg-cyberdark-700 p-8 flex items-center justify-center">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-cyberblue-500/20 rounded-full animate-pulse"></div>
+                  <div className="relative bg-cyberdark-800 rounded-full p-8 border border-cyberblue-500/30">
+                    <BookOpen className="h-24 w-24 text-cyberblue-500" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
           <div className="md:flex md:items-center md:justify-between mb-8">
             <h2 className="text-2xl font-bold text-white">База знаний по кибербезопасности</h2>
             <p className="mt-2 md:mt-0 text-gray-400">
@@ -382,6 +442,96 @@ export default function KnowledgeBase() {
             </div>
           </div>
 
+          {/* Tools from the Reference Repository */}
+          <div className="mt-16">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-2xl font-bold text-white">Популярные инструменты из справочника</h2>
+              <a 
+                href="https://github.com/CyberWhaleOffical1/CyberWhale_Cybersecurity_Reference" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-cyberblue-400 hover:text-cyberblue-300 flex items-center"
+              >
+                <span>Все инструменты</span>
+                <ArrowRight className="ml-1 h-4 w-4" />
+              </a>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+              <Card className="bg-cyberdark-800 border-cyberdark-700 text-white hover:shadow-glow-sm transition-all duration-300 hover:border-cyberblue-500/30">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg flex items-center">
+                    <Shield className="mr-2 h-5 w-5 text-cyberblue-400" />
+                    Kali Linux
+                  </CardTitle>
+                  <CardDescription className="text-gray-400">Операционные системы</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-300">Лучшая OS для пентеста с более чем 300 предустановлеными инструментами.</p>
+                </CardContent>
+                <CardFooter>
+                  <a 
+                    href="https://www.kali.org/" 
+                    target="_blank"
+                    rel="noopener noreferrer" 
+                    className="text-cyberblue-400 hover:text-cyberblue-300 text-sm flex items-center"
+                  >
+                    Подробнее
+                    <ExternalLink className="ml-1 h-3 w-3" />
+                  </a>
+                </CardFooter>
+              </Card>
+              
+              <Card className="bg-cyberdark-800 border-cyberdark-700 text-white hover:shadow-glow-sm transition-all duration-300 hover:border-cyberblue-500/30">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg flex items-center">
+                    <Database className="mr-2 h-5 w-5 text-cyberblue-400" />
+                    MITRE ATT&CK
+                  </CardTitle>
+                  <CardDescription className="text-gray-400">Базы данных угроз</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-300">База данных тактик и техник атак, используемых злоумышленниками.</p>
+                </CardContent>
+                <CardFooter>
+                  <a 
+                    href="https://attack.mitre.org/" 
+                    target="_blank"
+                    rel="noopener noreferrer" 
+                    className="text-cyberblue-400 hover:text-cyberblue-300 text-sm flex items-center"
+                  >
+                    Подробнее
+                    <ExternalLink className="ml-1 h-3 w-3" />
+                  </a>
+                </CardFooter>
+              </Card>
+              
+              <Card className="bg-cyberdark-800 border-cyberdark-700 text-white hover:shadow-glow-sm transition-all duration-300 hover:border-cyberblue-500/30">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg flex items-center">
+                    <Search className="mr-2 h-5 w-5 text-cyberblue-400" />
+                    OSINT Framework
+                  </CardTitle>
+                  <CardDescription className="text-gray-400">OSINT</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-300">Фреймворк для поиска информации из открытых источников.</p>
+                </CardContent>
+                <CardFooter>
+                  <a 
+                    href="https://osintframework.com/" 
+                    target="_blank"
+                    rel="noopener noreferrer" 
+                    className="text-cyberblue-400 hover:text-cyberblue-300 text-sm flex items-center"
+                  >
+                    Подробнее
+                    <ExternalLink className="ml-1 h-3 w-3" />
+                  </a>
+                </CardFooter>
+              </Card>
+            </div>
+          </div>
+
           {/* Courses section */}
           <div className="mt-16">
             <h2 className="text-2xl font-bold text-white mb-8">Популярные курсы</h2>
@@ -463,7 +613,6 @@ export default function KnowledgeBase() {
               </TabsContent>
               
               <TabsContent value="web" className="mt-6">
-                {/* Web security courses content */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <div className="bg-cyberdark-800 rounded-lg overflow-hidden border border-cyberdark-700">
                     <div className="h-40 bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center">
@@ -487,8 +636,6 @@ export default function KnowledgeBase() {
                   </div>
                 </div>
               </TabsContent>
-              
-              {/* Other tabs content would go here */}
             </Tabs>
           </div>
 

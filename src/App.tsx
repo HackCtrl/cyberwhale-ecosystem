@@ -1,3 +1,4 @@
+
 import { useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -14,6 +15,7 @@ import ChallengePage from "./pages/ctf/ChallengePage";
 import CategoryChallenges from "./pages/ctf/CategoryChallenges";
 import KnowledgeBase from "./pages/knowledge/index";
 import ArticlePage from "./pages/knowledge/ArticlePage";
+import ReferenceGuide from "./pages/knowledge/reference-guide";
 import AIAssistant from "./pages/ai-assistant/index";
 import Community from "./pages/community/index";
 import Products from "./pages/products/index";
@@ -68,6 +70,7 @@ const App = () => {
                   {/* Knowledge Base Routes */}
                   <Route path="/knowledge" element={<KnowledgeBase />} />
                   <Route path="/knowledge/article/:id" element={<ArticlePage />} />
+                  <Route path="/knowledge/reference-guide" element={<ReferenceGuide />} />
                   
                   {/* AI Assistant Routes */}
                   <Route path="/ai-assistant" element={<AIAssistant />} />
