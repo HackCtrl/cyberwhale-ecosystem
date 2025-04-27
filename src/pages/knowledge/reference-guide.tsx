@@ -112,7 +112,7 @@ export default function ReferenceGuide() {
             </div>
           </div>
           
-          <div className="bg-cyberdark-800 rounded-lg border border-cyberdark-700 p-8 mb-12">
+          <div className="bg-gradient-to-r from-cyberdark-800 to-cyberdark-700 rounded-lg border border-cyberdark-700 p-8 mb-12">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
               <div className="bg-cyberdark-700/50 p-4 rounded-lg">
                 <div className="text-2xl font-bold text-white">300+</div>
