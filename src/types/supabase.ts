@@ -1,5 +1,5 @@
 
-export type Json =
+type Json =
   | string
   | number
   | boolean

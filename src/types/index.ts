@@ -12,7 +12,7 @@ export interface User {
   profile?: UserProfile;
 }
 
-export interface UserProfile {
+interface UserProfile {
   fullName?: string;
   bio?: string;
   website?: string;
@@ -23,7 +23,7 @@ export interface UserProfile {
   achievements?: Achievement[];
 }
 
-export interface Achievement {
+interface Achievement {
   id: string;
   name: string;
   description: string;
@@ -61,7 +61,7 @@ export type ChallengeCategory =
   | 'network';
 
 // Knowledge Base types
-export interface Article {
+interface Article {
   id: string;
   title: string;
   description: string;
@@ -100,7 +100,7 @@ export interface Event {
 }
 
 // Notification types
-export interface Notification {
+interface Notification {
   id: string;
   title: string;
   message: string;
