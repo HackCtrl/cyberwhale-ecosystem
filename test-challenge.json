@@ -1,0 +1,22 @@
+[
+  {
+    "id": "12",
+    "title": "Тестовый кейс 2",
+    "description": "Это еще один тестовый кейс для проверки импорта.",
+    "category": "web",
+    "difficulty": "beginner",
+    "points": 150,
+    "tags": ["web", "test"],
+    "solved": false,
+    "solvedBy": 0,
+    "createdAt": "2025-05-21",
+    "updatedAt": "2025-05-21",
+    "downloadUrl": "https://example.com/test2.zip",
+    "fileType": "archive",
+    "hints": [
+      "Подсказка 1 для теста.",
+      "Подсказка 2 для теста."
+    ],
+    "flag": "CW{TestFlag456}"
+  }
+]
