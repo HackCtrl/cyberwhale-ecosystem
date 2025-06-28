@@ -33,7 +33,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   } = useAuthState();
 
   const handleLogin = async (email: string, password: string) => {
-    return login(email, password, setIsLoading, setError);
+    console.log('AuthProvider: handleLogin called with:', email);
+    try {
+      const session = await login(email, password, setIsLoading, setError);
+      console.log('AuthProvider: Login successful');
+      return session;
+    } catch (error) {
+      console.error('AuthProvider: Login failed:', error);
+      throw error;
+    }
   };
 
   const handleRegister = async (username: string, email: string, password: string) => {

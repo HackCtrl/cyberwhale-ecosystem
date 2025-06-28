@@ -20,18 +20,34 @@ export const login = async (
 
     if (error) {
       console.error('Login error from Supabase:', error);
-      throw error;
+      
+      // Более понятные сообщения об ошибках
+      let errorMessage = 'Произошла ошибка при входе';
+      if (error.message.includes('Invalid login credentials')) {
+        errorMessage = 'Неверный email или пароль';
+      } else if (error.message.includes('Email not confirmed')) {
+        errorMessage = 'Подтвердите email перед входом';
+      } else if (error.message.includes('Too many requests')) {
+        errorMessage = 'Слишком много попыток входа. Попробуйте позже';
+      }
+      
+      setError(errorMessage);
+      throw new Error(errorMessage);
     }
 
     if (!data.session) {
-      throw new Error('Не удалось создать сессию');
+      const errorMessage = 'Не удалось создать сессию';
+      setError(errorMessage);
+      throw new Error(errorMessage);
     }
 
     console.log('Login successful, session created:', data.session.user.id);
     return data.session;
   } catch (error: any) {
     console.error('Login error:', error);
-    setError(error.message || 'Произошла ошибка при входе');
+    if (!error.message.includes('Неверный email') && !error.message.includes('Подтвердите email')) {
+      setError(error.message || 'Произошла ошибка при входе');
+    }
     throw error;
   } finally {
     setIsLoading(false);
@@ -64,7 +80,18 @@ export const register = async (
 
     if (error) {
       console.error('Registration error from Supabase:', error);
-      throw error;
+      
+      let errorMessage = 'Произошла ошибка при регистрации';
+      if (error.message.includes('User already registered')) {
+        errorMessage = 'Пользователь с таким email уже существует';
+      } else if (error.message.includes('Password should be at least')) {
+        errorMessage = 'Пароль должен содержать минимум 6 символов';
+      } else if (error.message.includes('Invalid email')) {
+        errorMessage = 'Неверный формат email';
+      }
+      
+      setError(errorMessage);
+      throw new Error(errorMessage);
     }
 
     console.log('Registration response:', data);
@@ -78,14 +105,16 @@ export const register = async (
     // If email confirmation is required
     if (data.user && !data.session) {
       console.log('Email confirmation required');
-      navigate('/verify-otp', { state: { email } });
+      navigate('/verify-otp');
       return null;
     }
 
     return data.session;
   } catch (error: any) {
     console.error('Registration error:', error);
-    setError(error.message || 'Произошла ошибка при регистрации');
+    if (!error.message.includes('уже существует') && !error.message.includes('минимум 6')) {
+      setError(error.message || 'Произошла ошибка при регистрации');
+    }
     throw error;
   } finally {
     setIsLoading(false);
