@@ -31,13 +31,10 @@ export function LoginForm() {
     
     try {
       console.log('LoginForm: Attempting login for:', email.trim());
-      await login(email.trim(), password);
-      console.log('LoginForm: Login successful, redirecting...');
+      const session = await login(email.trim(), password);
+      console.log('LoginForm: Login successful, session:', session);
       
-      // Получаем URL для редиректа
-      const returnUrl = new URLSearchParams(location.search).get('returnUrl');
-      const redirectTo = returnUrl || '/';
-      navigate(redirectTo);
+      // Navigation will be handled by the auth state change in useAuthState
     } catch (err) {
       console.error('LoginForm: Login failed:', err);
     } finally {
