@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { Session } from '@supabase/supabase-js';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -32,8 +31,8 @@ export const useAuthState = () => {
     
     // First set up the subscription
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, currentSession) => {
-        console.log('Auth state changed:', event);
+      async (event, currentSession) => {
+        console.log('Auth state changed:', event, currentSession?.user?.id);
         
         // Set session synchronously
         setSession(currentSession);
@@ -42,10 +41,12 @@ export const useAuthState = () => {
           if (userUpdateInProgress.current) return;
           userUpdateInProgress.current = true;
           
-          // Use setTimeout to prevent blocking the auth state change
-          setTimeout(async () => {
-            try {
-              const userProfile = await handleUserLogin(currentSession.user);
+          try {
+            console.log('Processing signed in user:', currentSession.user.id);
+            const userProfile = await handleUserLogin(currentSession.user);
+            console.log('User profile loaded:', userProfile);
+            
+            if (userProfile) {
               setUser(userProfile);
               
               const returnUrl = new URLSearchParams(location.search).get('returnUrl');
@@ -58,18 +59,22 @@ export const useAuthState = () => {
                 title: "Успешный вход",
                 description: "Добро пожаловать в CyberWhale!",
               });
-            } catch (err) {
-              console.error('Error loading user profile:', err);
+            } else {
+              console.error('Failed to load user profile');
               setError('Ошибка загрузки профиля');
-            } finally {
-              setIsLoading(false);
-              userUpdateInProgress.current = false;
             }
-          }, 0);
+          } catch (err) {
+            console.error('Error loading user profile:', err);
+            setError('Ошибка загрузки профиля');
+          } finally {
+            setIsLoading(false);
+            userUpdateInProgress.current = false;
+          }
         } else if (event === 'SIGNED_OUT') {
+          console.log('User signed out');
           setUser(null);
           setIsLoading(false);
-          setLoadingTimedOut(false); // Reset timeout state on sign-out
+          setLoadingTimedOut(false);
         } else if (event === 'PASSWORD_RECOVERY') {
           navigate('/reset-password');
           setIsLoading(false);
@@ -77,19 +82,21 @@ export const useAuthState = () => {
           if (currentSession && !userUpdateInProgress.current) {
             userUpdateInProgress.current = true;
             
-            // Use setTimeout to prevent blocking the auth state change
-            setTimeout(async () => {
-              try {
-                const userProfile = await handleUserLogin(currentSession.user);
+            try {
+              const userProfile = await handleUserLogin(currentSession.user);
+              if (userProfile) {
                 setUser(userProfile);
-              } catch (err) {
-                console.error('Error updating user profile:', err);
-              } finally {
-                setIsLoading(false);
-                userUpdateInProgress.current = false;
               }
-            }, 0);
+            } catch (err) {
+              console.error('Error updating user profile:', err);
+            } finally {
+              setIsLoading(false);
+              userUpdateInProgress.current = false;
+            }
           }
+        } else {
+          // For other events, just stop loading
+          setIsLoading(false);
         }
       }
     );
@@ -99,7 +106,7 @@ export const useAuthState = () => {
       const loadInitialSession = async () => {
         try {
           const { data: { session: currentSession } } = await supabase.auth.getSession();
-          console.log('Initial session:', currentSession);
+          console.log('Initial session:', currentSession?.user?.id);
           
           // Set session synchronously
           setSession(currentSession);
@@ -108,20 +115,25 @@ export const useAuthState = () => {
             if (userUpdateInProgress.current) return;
             userUpdateInProgress.current = true;
             
-            // Use setTimeout to prevent potential deadlocks
-            setTimeout(async () => {
-              try {
-                const userProfile = await handleUserLogin(currentSession.user);
+            try {
+              console.log('Loading initial user profile for:', currentSession.user.id);
+              const userProfile = await handleUserLogin(currentSession.user);
+              console.log('Initial user profile loaded:', userProfile);
+              
+              if (userProfile) {
                 setUser(userProfile);
-              } catch (err) {
-                console.error('Error loading initial user profile:', err);
+              } else {
+                console.error('Failed to load initial user profile');
                 setError('Ошибка загрузки профиля');
-              } finally {
-                setIsLoading(false);
-                authInitialized.current = true;
-                userUpdateInProgress.current = false;
               }
-            }, 0);
+            } catch (err) {
+              console.error('Error loading initial user profile:', err);
+              setError('Ошибка загрузки профиля');
+            } finally {
+              setIsLoading(false);
+              authInitialized.current = true;
+              userUpdateInProgress.current = false;
+            }
           } else {
             setIsLoading(false);
             authInitialized.current = true;
