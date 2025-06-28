@@ -18,8 +18,9 @@ export function LoginForm() {
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    e.stopPropagation();
     
-    console.log('Form submitted with:', { email: email.trim(), passwordLength: password.length });
+    console.log('Login form submitted with:', { email: email.trim(), passwordLength: password.length });
     
     if (!email.trim() || !password) {
       console.log('Validation failed: missing email or password');
@@ -31,12 +32,31 @@ export function LoginForm() {
     try {
       console.log('LoginForm: Attempting login for:', email.trim());
       await login(email.trim(), password);
-      console.log('LoginForm: Login call completed');
+      console.log('LoginForm: Login successful, redirecting...');
+      
+      // Получаем URL для редиректа
+      const returnUrl = new URLSearchParams(location.search).get('returnUrl');
+      const redirectTo = returnUrl || '/';
+      navigate(redirectTo);
     } catch (err) {
       console.error('LoginForm: Login failed:', err);
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const handleButtonClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    console.log('Login button clicked directly');
+    
+    if (!email.trim() || !password) {
+      console.log('Validation failed: missing email or password');
+      return;
+    }
+    
+    handleSubmit(e as any);
   };
 
   const isFormDisabled = isLoading || isSubmitting;
@@ -88,6 +108,11 @@ export function LoginForm() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               disabled={isFormDisabled}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !isSubmitDisabled) {
+                  handleSubmit(e as any);
+                }
+              }}
             />
           </div>
         </div>
@@ -119,6 +144,7 @@ export function LoginForm() {
           <Button
             type="submit"
             disabled={isSubmitDisabled}
+            onClick={handleButtonClick}
             className="w-full bg-cyberblue-500 hover:bg-cyberblue-600 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isFormDisabled ? (
