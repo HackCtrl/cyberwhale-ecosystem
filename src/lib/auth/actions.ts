@@ -11,15 +11,23 @@ export const login = async (
   setError(null);
   
   try {
+    console.log('Attempting login for:', email);
+    
     const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
+      email: email.trim(),
+      password: password,
     });
 
     if (error) {
+      console.error('Login error from Supabase:', error);
       throw error;
     }
 
+    if (!data.session) {
+      throw new Error('Не удалось создать сессию');
+    }
+
+    console.log('Login successful, session created:', data.session.user.id);
     return data.session;
   } catch (error: any) {
     console.error('Login error:', error);
@@ -42,27 +50,34 @@ export const register = async (
   setError(null);
   
   try {
+    console.log('Attempting registration for:', email, 'with username:', username);
+    
     const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
+      email: email.trim(),
+      password: password,
       options: {
         data: {
-          username: username,
+          username: username.trim(),
         }
       }
     });
 
     if (error) {
+      console.error('Registration error from Supabase:', error);
       throw error;
     }
 
+    console.log('Registration response:', data);
+
     // If user is immediately confirmed (email confirmation disabled)
     if (data.session) {
+      console.log('User immediately confirmed, session created');
       return data.session;
     }
 
     // If email confirmation is required
     if (data.user && !data.session) {
+      console.log('Email confirmation required');
       navigate('/verify-otp', { state: { email } });
       return null;
     }
@@ -88,12 +103,15 @@ export const logout = async (
   setError(null);
   
   try {
+    console.log('Attempting logout');
+    
     const { error } = await supabase.auth.signOut();
     
     if (error) {
       throw error;
     }
 
+    console.log('Logout successful');
     setUser(null);
     setSession(null);
     navigate('/');

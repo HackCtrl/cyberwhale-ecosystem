@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/lib/auth';
@@ -21,23 +20,23 @@ export function RegisterForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!username.trim() || !email.trim() || !password || !confirmPassword) {
+      return;
+    }
+    
     if (password !== confirmPassword) {
       return; // Password mismatch is handled by form validation
     }
     
     try {
-      // Fix: Don't try to destructure 'session' from the result, as the register 
-      // function already returns a Session object or null
+      console.log('RegisterForm: Attempting registration');
       const session = await register(username, email, password);
+      console.log('RegisterForm: Registration successful', session ? 'with session' : 'without session');
       
-      // If session is available, user is signed in immediately (no email verification)
-      if (session) {
-        navigate('/');
-      }
-      // If not, the AuthProvider will navigate to verification page
+      // Navigation is handled in the auth provider or register function
     } catch (err) {
+      console.error('RegisterForm: Registration failed:', err);
       // Error is handled by the auth context
-      console.error('Registration error:', err);
     }
   };
 
@@ -67,6 +66,7 @@ export function RegisterForm() {
               placeholder="username"
               minLength={3}
               maxLength={30}
+              disabled={isLoading}
             />
           </div>
         </div>
@@ -86,6 +86,7 @@ export function RegisterForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="your@email.com"
+              disabled={isLoading}
             />
           </div>
         </div>
@@ -105,6 +106,7 @@ export function RegisterForm() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               minLength={6}
+              disabled={isLoading}
             />
           </div>
           <p className="mt-1 text-xs text-gray-400">Минимум 6 символов</p>
@@ -126,6 +128,7 @@ export function RegisterForm() {
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder="••••••••"
+              disabled={isLoading}
             />
           </div>
           {confirmPassword && password !== confirmPassword && (
@@ -139,6 +142,7 @@ export function RegisterForm() {
             name="terms"
             type="checkbox"
             required
+            disabled={isLoading}
             className="h-4 w-4 rounded border-cyberdark-600 bg-cyberdark-700 text-cyberblue-500 focus:ring-cyberblue-500"
           />
           <Label htmlFor="terms" className="ml-2 block text-sm text-gray-300">
@@ -156,7 +160,7 @@ export function RegisterForm() {
         <div>
           <Button
             type="submit"
-            disabled={isLoading || (confirmPassword && password !== confirmPassword)}
+            disabled={isLoading || !username.trim() || !email.trim() || !password || !confirmPassword || (confirmPassword && password !== confirmPassword)}
             className="w-full bg-cyberblue-500 hover:bg-cyberblue-600"
           >
             {isLoading ? (

@@ -20,52 +20,58 @@ export const useAuthState = () => {
   useEffect(() => {
     console.log("Auth provider mounted");
     
-    // Set a shorter timeout to force exit loading state after 2 seconds
+    // Set a timeout to force exit loading state after 3 seconds
     const loadingTimeout = setTimeout(() => {
       if (isLoading) {
         console.log("Loading timed out, forcing exit loading state");
         setLoadingTimedOut(true);
         setIsLoading(false);
       }
-    }, 2000);
+    }, 3000);
     
-    // First set up the subscription
+    // Set up the auth state change subscription
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, currentSession) => {
         console.log('Auth state changed:', event, currentSession?.user?.id);
         
-        // Set session synchronously
-        setSession(currentSession);
+        // Clear any previous errors
+        setError(null);
         
         if (event === 'SIGNED_IN' && currentSession) {
-          if (userUpdateInProgress.current) return;
+          if (userUpdateInProgress.current) {
+            console.log('User update already in progress, skipping');
+            return;
+          }
           userUpdateInProgress.current = true;
           
           try {
             console.log('Processing signed in user:', currentSession.user.id);
             const userProfile = await handleUserLogin(currentSession.user);
-            console.log('User profile loaded:', userProfile);
             
             if (userProfile) {
+              console.log('User profile loaded successfully:', userProfile.username);
               setUser(userProfile);
+              setSession(currentSession);
               
+              // Handle navigation
               const returnUrl = new URLSearchParams(location.search).get('returnUrl');
               const redirectTo = returnUrl || '/';
               if (location.pathname.includes('/login') || location.pathname.includes('/register')) {
+                console.log('Redirecting to:', redirectTo);
                 navigate(redirectTo);
               }
               
               toast({
                 title: "Успешный вход",
-                description: "Добро пожаловать в CyberWhale!",
+                description: `Добро пожаловать, ${userProfile.username}!`,
               });
             } else {
               console.error('Failed to load user profile');
-              setError('Ошибка загрузки профиля');
+              setError('Ошибка загрузки профиля пользователя');
             }
           } catch (err) {
-            console.error('Error loading user profile:', err);
-            setError('Ошибка загрузки профиля');
+            console.error('Error processing signed in user:', err);
+            setError('Ошибка загрузки профиля пользователя');
           } finally {
             setIsLoading(false);
             userUpdateInProgress.current = false;
@@ -73,43 +79,57 @@ export const useAuthState = () => {
         } else if (event === 'SIGNED_OUT') {
           console.log('User signed out');
           setUser(null);
+          setSession(null);
           setIsLoading(false);
           setLoadingTimedOut(false);
         } else if (event === 'PASSWORD_RECOVERY') {
+          console.log('Password recovery event');
           navigate('/reset-password');
           setIsLoading(false);
-        } else if (event === 'USER_UPDATED') {
-          if (currentSession && !userUpdateInProgress.current) {
-            userUpdateInProgress.current = true;
-            
-            try {
-              const userProfile = await handleUserLogin(currentSession.user);
-              if (userProfile) {
-                setUser(userProfile);
-              }
-            } catch (err) {
-              console.error('Error updating user profile:', err);
-            } finally {
-              setIsLoading(false);
-              userUpdateInProgress.current = false;
+        } else if (event === 'USER_UPDATED' && currentSession) {
+          if (userUpdateInProgress.current) {
+            console.log('User update already in progress, skipping');
+            return;
+          }
+          userUpdateInProgress.current = true;
+          
+          try {
+            console.log('Processing user update:', currentSession.user.id);
+            const userProfile = await handleUserLogin(currentSession.user);
+            if (userProfile) {
+              setUser(userProfile);
+              setSession(currentSession);
             }
+          } catch (err) {
+            console.error('Error processing user update:', err);
+          } finally {
+            setIsLoading(false);
+            userUpdateInProgress.current = false;
           }
         } else {
-          // For other events, just stop loading
+          // For other events or no session, just stop loading
+          setSession(currentSession);
           setIsLoading(false);
         }
       }
     );
     
-    // Then get the initial session (if not already initialized)
+    // Get the initial session
     if (!authInitialized.current) {
       const loadInitialSession = async () => {
         try {
-          const { data: { session: currentSession } } = await supabase.auth.getSession();
-          console.log('Initial session:', currentSession?.user?.id);
+          console.log('Loading initial session...');
+          const { data: { session: currentSession }, error } = await supabase.auth.getSession();
           
-          // Set session synchronously
-          setSession(currentSession);
+          if (error) {
+            console.error('Error getting initial session:', error);
+            setError('Ошибка загрузки сессии');
+            setIsLoading(false);
+            authInitialized.current = true;
+            return;
+          }
+          
+          console.log('Initial session loaded:', currentSession?.user?.id || 'no session');
           
           if (currentSession) {
             if (userUpdateInProgress.current) return;
@@ -118,17 +138,18 @@ export const useAuthState = () => {
             try {
               console.log('Loading initial user profile for:', currentSession.user.id);
               const userProfile = await handleUserLogin(currentSession.user);
-              console.log('Initial user profile loaded:', userProfile);
               
               if (userProfile) {
+                console.log('Initial user profile loaded:', userProfile.username);
                 setUser(userProfile);
+                setSession(currentSession);
               } else {
                 console.error('Failed to load initial user profile');
-                setError('Ошибка загрузки профиля');
+                setError('Ошибка загрузки профиля пользователя');
               }
             } catch (err) {
               console.error('Error loading initial user profile:', err);
-              setError('Ошибка загрузки профиля');
+              setError('Ошибка загрузки профиля пользователя');
             } finally {
               setIsLoading(false);
               authInitialized.current = true;
@@ -139,8 +160,8 @@ export const useAuthState = () => {
             authInitialized.current = true;
           }
         } catch (err) {
-          console.error('Error loading initial session:', err);
-          setError('Ошибка загрузки сессии');
+          console.error('Error in loadInitialSession:', err);
+          setError('Ошибка инициализации');
           setIsLoading(false);
           authInitialized.current = true;
         }

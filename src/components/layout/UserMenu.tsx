@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/lib/auth';
@@ -58,6 +57,23 @@ export default function UserMenu() {
             ...
           </AvatarFallback>
         </Avatar>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="flex items-center space-x-2">
+        <Link to="/login">
+          <Button variant="ghost" size="sm" className="text-gray-300 hover:text-white">
+            Войти
+          </Button>
+        </Link>
+        <Link to="/register">
+          <Button size="sm" className="bg-cyberblue-500 hover:bg-cyberblue-600 text-white">
+            Регистрация
+          </Button>
+        </Link>
       </div>
     );
   }

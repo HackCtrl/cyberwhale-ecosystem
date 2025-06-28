@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '@/lib/auth';
@@ -19,12 +18,18 @@ export function LoginForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!email.trim() || !password) {
+      return;
+    }
+    
     try {
+      console.log('LoginForm: Attempting login');
       await login(email, password);
-      // Redirect is handled in the auth provider
+      console.log('LoginForm: Login successful');
+      // Navigation is handled in the auth provider
     } catch (err) {
+      console.error('LoginForm: Login failed:', err);
       // Error is handled by the auth context
-      console.error('Login error:', err);
     }
   };
 
@@ -53,6 +58,7 @@ export function LoginForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="your@email.com"
+              disabled={isLoading}
             />
           </div>
         </div>
@@ -72,6 +78,7 @@ export function LoginForm() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
+              disabled={isLoading}
             />
           </div>
         </div>
@@ -84,6 +91,7 @@ export function LoginForm() {
               type="checkbox"
               checked={rememberMe}
               onChange={(e) => setRememberMe(e.target.checked)}
+              disabled={isLoading}
               className="h-4 w-4 rounded border-cyberdark-600 bg-cyberdark-700 text-cyberblue-500 focus:ring-cyberblue-500"
             />
             <Label htmlFor="remember-me" className="ml-2 block text-sm text-gray-300">
@@ -101,7 +109,7 @@ export function LoginForm() {
         <div>
           <Button
             type="submit"
-            disabled={isLoading}
+            disabled={isLoading || !email.trim() || !password}
             className="w-full bg-cyberblue-500 hover:bg-cyberblue-600"
           >
             {isLoading ? (
